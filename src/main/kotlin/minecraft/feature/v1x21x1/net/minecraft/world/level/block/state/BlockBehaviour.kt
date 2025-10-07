@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_level_block_Block
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_level_block_state_BlockBehaviour
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_level_block_state_BlockBehaviour_Properties
+import java.util.function.ToIntFunction
 
 /*
     net.minecraft.core.Direction[] UPDATE_SHAPE_ORDER -> aF
@@ -134,10 +135,6 @@ abstract class BlockBehaviour(around: Any) : MimickedClass(around) {
     595:596:net.minecraft.world.level.block.state.BlockBehaviour$Properties speedFactor(float) -> b
     600:601:net.minecraft.world.level.block.state.BlockBehaviour$Properties jumpFactor(float) -> c
     605:606:net.minecraft.world.level.block.state.BlockBehaviour$Properties sound(net.minecraft.world.level.block.SoundType) -> a
-    610:611:net.minecraft.world.level.block.state.BlockBehaviour$Properties lightLevel(java.util.function.ToIntFunction) -> a
-    615:615:net.minecraft.world.level.block.state.BlockBehaviour$Properties strength(float,float) -> a
-    619:619:net.minecraft.world.level.block.state.BlockBehaviour$Properties instabreak() -> d
-    623:624:net.minecraft.world.level.block.state.BlockBehaviour$Properties strength(float) -> d
     628:629:net.minecraft.world.level.block.state.BlockBehaviour$Properties randomTicks() -> e
     633:634:net.minecraft.world.level.block.state.BlockBehaviour$Properties dynamicShape() -> f
     642:643:net.minecraft.world.level.block.state.BlockBehaviour$Properties noLootTable() -> g
@@ -190,5 +187,24 @@ abstract class BlockBehaviour(around: Any) : MimickedClass(around) {
 				clazz.getMethod("a", BlockBehaviour.clazz).invoke(null, p.around)
 			)
 		}
+
+		fun lightLevel(function: (BlockState) -> Int): Properties = Properties(
+			clazz.getMethod("a", ToIntFunction::class.java)
+				.invoke(this.around, ToIntFunction<Any> { function(BlockState(it)) })
+		)
+
+		fun strength(destroyTime: Float, explosionResistance: Float): Properties = Properties(
+			clazz.getMethod("a", Float::class.java, Float::class.java)
+				.invoke(this.around, destroyTime, explosionResistance)
+		)
+
+		fun strength(strength: Float): Properties = Properties(
+			clazz.getMethod("d",Float::class.java)
+				.invoke(this.around, strength)
+		)
+
+		fun instabreak(): Properties = Properties(
+			clazz.getMethod("d").invoke(this.around)
+		)
 	}
 }
