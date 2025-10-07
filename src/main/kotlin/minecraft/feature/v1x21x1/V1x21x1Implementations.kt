@@ -1,26 +1,15 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
-import org.bread_experts_group.eam.minecraft.MinecraftProvider
-import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
-import java.lang.classfile.ClassFile
+import org.bread_experts_group.eam.minecraft.feature.Implementations
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
-import java.lang.instrument.Instrumentation
-import java.security.ProtectionDomain
-import java.util.*
 
-object V1x21x1Implementations {
-	private val classFile: ClassFile = ClassFile.of()
-
-	lateinit var instrumentation: Instrumentation
-	lateinit var scanning: MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
-	val mods: List<MinecraftMod> = ServiceLoader.load(MinecraftMod::class.java).toList()
-
-	fun preBootstrap() {
+object V1x21x1Implementations : Implementations() {
+	override fun start() {
 		scanning[net_minecraft_core_registries_BuiltInRegistries] = { _, _, _, data ->
 			val model = classFile.parse(data)
 			classFile.transformClass(model) nextElement@{ classBuilder, classElement ->
@@ -49,7 +38,6 @@ object V1x21x1Implementations {
 	@JvmStatic
 	@Suppress("unused")
 	fun afterCreateContents() {
-		MinecraftProvider.features.add(MinecraftBlockFeature1x21x1())
-		mods.forEach { it.registerObjects() }
+		mods.forEach { it.addBlocks(MinecraftBlockFeature1x21x1()) }
 	}
 }
