@@ -1,0 +1,17 @@
+package org.bread_experts_group.eam.minecraft.feature.v1x21x1
+
+const val net_minecraft_core_registries_BuiltInRegistries: String = "lt"
+const val net_minecraft_core_registries_BuiltInRegistries_createContents: String = "b"
+const val net_minecraft_world_level_block_Block: String = "dfy"
+const val net_minecraft_world_level_block_state_BlockBehaviour: String = "dtb"
+const val net_minecraft_world_level_block_state_BlockBehaviour_Properties: String = $$"dtb$d"
+const val net_minecraft_world_level_block_Blocks: String = "dga"
+const val net_minecraft_core_IdMapper: String = "js"
+const val net_minecraft_world_level_block_state_BlockState: String = "dtc"
+const val net_minecraft_world_level_block_state_StateDefinition: String = "dtd"
+const val net_minecraft_world_item_Item_Properties: String = $$"cul$a"
+const val net_minecraft_world_item_Item: String = "cul"
+const val net_minecraft_world_item_BlockItem: String = "cso"
+const val net_minecraft_world_item_Items: String = "cut"
+const val net_minecraft_world_food_FoodProperties: String = "cpr"
+const val net_minecraft_world_food_FoodProperties_Builder: String = $$"cpr$a"
