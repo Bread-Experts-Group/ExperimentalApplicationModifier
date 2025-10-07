@@ -1,4 +1,4 @@
-package org.bread_experts_group.eam.minecraft.feature
+package org.bread_experts_group.eam.minecraft
 
 import org.bread_experts_group.api.FeatureImplementation
 
