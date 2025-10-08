@@ -2,6 +2,7 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.worl
 
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Items
 
 /*
@@ -1342,8 +1343,6 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
     1440:1440:net.minecraft.world.item.Item registerBlock(net.minecraft.world.level.block.Block,java.util.function.UnaryOperator) -> a
     1445:1450:net.minecraft.world.item.Item registerBlock(net.minecraft.world.level.block.Block,net.minecraft.world.level.block.Block[]) -> a
     1458:1458:net.minecraft.world.item.Item registerBlock(net.minecraft.world.level.block.Block,net.minecraft.world.item.Item) -> a
-    1462:1462:net.minecraft.world.item.Item registerItem(java.lang.String,net.minecraft.world.item.Item) -> a
-    1466:1466:net.minecraft.world.item.Item registerItem(net.minecraft.resources.ResourceLocation,net.minecraft.world.item.Item) -> a
     1470:1473:net.minecraft.world.item.Item registerItem(net.minecraft.resources.ResourceKey,net.minecraft.world.item.Item) -> a
     1306:1306:net.minecraft.world.item.Item$Properties lambda$static$14(net.minecraft.world.item.Item$Properties) -> a
     1305:1305:net.minecraft.world.item.Item$Properties lambda$static$13(net.minecraft.world.item.Item$Properties) -> b
@@ -1369,6 +1368,16 @@ class Items(around: Any) : MimickedClass(around) {
 
 		fun registerBlock(blockItem: BlockItem): Item = Item(
 			clazz.getMethod("a", BlockItem.clazz).invoke(null, blockItem.around)
+		)
+
+		fun registerItem(name: String, item: Item): Item = Item(
+			clazz.getMethod("a", String::class.java, Item.clazz)
+				.invoke(null, name, item.around)
+		)
+
+		fun registerItem(id: ResourceLocation, item: Item): Item = Item(
+			clazz.getMethod("a", ResourceLocation.clazz, Item.clazz)
+				.invoke(null, id.around, item.around)
 		)
 
 		val AIR: Item

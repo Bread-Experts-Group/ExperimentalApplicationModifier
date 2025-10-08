@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.food.FoodProperties
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Item
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Item_Properties
+import java.lang.constant.ClassDesc
 
 /*
     org.slf4j.Logger LOGGER -> a
@@ -98,10 +99,11 @@ net.minecraft.world.item.Item$Properties -> cul$a:
 class Item(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_world_item_Item)
+		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
 	}
 	
 	constructor(properties: Properties) : this(
-		clazz.getConstructor(Properties.clazz).newInstance(properties)
+		clazz.getConstructor(Properties.clazz).newInstance(properties.around)
 	)
 
 	fun getDefaultInstance(): ItemStack = ItemStack(
@@ -111,6 +113,8 @@ class Item(around: Any) : MimickedClass(around) {
 	class Properties(around: Any) : MimickedClass(around) {
 		companion object {
 			val clazz: Class<*> = loadClass(net_minecraft_world_item_Item_Properties)
+			val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+			val mimicClassDesc: ClassDesc = ClassDesc.of(Properties::class.java.name)
 		}
 
 		constructor() : this(clazz.getConstructor().newInstance())

@@ -48,6 +48,7 @@ object V1x21x1Implementations : Implementations() {
 	@Suppress("unused")
 	fun afterCreateContents() {
 		mods.forEach { it.addBlocks(MinecraftBlockFeature1x21x1()) }
+		mods.forEach { it.addItems(MinecraftItemFeature1x21x1()) }
 	}
 
 	@JvmStatic

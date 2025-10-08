@@ -1,6 +1,7 @@
 package org.bread_experts_group.eam.minecraft.feature
 
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
+import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import java.lang.constant.ClassDesc
 
 object EAMRegistries {
@@ -8,4 +9,7 @@ object EAMRegistries {
 
 	@JvmField
 	val blocks: EAMRegistry<MinecraftBlock> = EAMRegistry()
+
+	@JvmField
+	val items: EAMRegistry<MinecraftItem> = EAMRegistry()
 }
