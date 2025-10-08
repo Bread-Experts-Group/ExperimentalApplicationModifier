@@ -4,6 +4,7 @@ import org.bread_experts_group.api.FeatureExpression
 import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.Identifier
+import org.bread_experts_group.eam.minecraft.feature.invokeVirtualMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
@@ -18,6 +19,7 @@ import java.lang.classfile.ClassFile.*
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
+import kotlin.reflect.jvm.javaMethod
 
 class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 	override val source: ImplementationSource = ImplementationSource.JVM_NATIVE
@@ -62,11 +64,7 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 										"reference",
 										MinecraftItem.mimicClassDesc
 									)
-									.invokevirtual(
-										MinecraftItem.mimicClassDesc,
-										"inventoryTick",
-										MethodTypeDesc.of(ConstantDescs.CD_void)
-									)
+									.invokeVirtualMethodWithMimics(MinecraftItem::inventoryTick.javaMethod!!)
 									.return_()
 							}
 						}

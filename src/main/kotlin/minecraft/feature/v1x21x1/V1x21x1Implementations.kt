@@ -1,7 +1,7 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
 import org.bread_experts_group.eam.minecraft.feature.Implementations
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.feature.invokeStaticMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.math.Axis
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.GuiGraphics
@@ -11,11 +11,9 @@ import java.awt.Color
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.instruction.ReturnInstruction
-import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.javaMethod
 
 object V1x21x1Implementations : Implementations() {
@@ -93,41 +91,7 @@ object V1x21x1Implementations : Implementations() {
 				) {
 					classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 						if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-							if (codeElement is ReturnInstruction) {
-								var lVarPos = 0
-								val sourceMethodType = MethodTypeDesc.of(
-									ConstantDescs.CD_void,
-									method.parameters.map {
-										val slot = lVarPos++
-										when (val c = it.type) {
-											else if !c.isPrimitive -> {
-												val desc = ClassDesc.of(c.name)
-												if (c.kotlin.isSubclassOf(MimickedClass::class)) codeBuilder
-													.new_(desc)
-													.dup()
-													.aload(slot)
-													.invokespecial(
-														desc,
-														"<init>",
-														MethodTypeDesc.of(
-															ConstantDescs.CD_void,
-															ConstantDescs.CD_Object
-														)
-													)
-												else codeBuilder.aload(slot)
-												desc
-											}
-
-											else -> throw IllegalArgumentException("No ClassDesc cnv for $c")
-										}
-									}
-								)
-								codeBuilder.invokestatic(
-									ClassDesc.of(method.declaringClass.name),
-									method.name,
-									sourceMethodType
-								)
-							}
+							if (codeElement is ReturnInstruction) codeBuilder.invokeStaticMethodWithMimics(method)
 							codeBuilder.with(codeElement)
 						}
 					}
