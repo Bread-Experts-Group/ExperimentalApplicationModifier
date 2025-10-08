@@ -5,7 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_GuiGraphics
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_GuiGraphics_ScissorStack
+import java.lang.constant.ClassDesc
 
 /*
 926:985:void <clinit>() -> <clinit>
@@ -104,6 +104,7 @@ net.minecraft.client.gui.GuiGraphics -> fhz:
 class GuiGraphics(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_client_gui_GuiGraphics)
+		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
 	}
 
 	fun pose(): PoseStack = PoseStack(
@@ -135,11 +136,11 @@ class GuiGraphics(around: Any) : MimickedClass(around) {
     762:766:net.minecraft.client.gui.navigation.ScreenRectangle pop() -> a
     770:773:boolean containsPoint(int,int) -> a
     */
-	class ScissorStack(around: Any) : MimickedClass(around) {
-		companion object {
-			val clazz: Class<*> = loadClass(net_minecraft_client_gui_GuiGraphics_ScissorStack)
-		}
-
-		constructor() : this(clazz.getConstructor().newInstance())
-	}
+//	class ScissorStack(around: Any) : MimickedClass(around) {
+//		companion object {
+//			val clazz: Class<*> = loadClass(net_minecraft_client_gui_GuiGraphics_ScissorStack)
+//		}
+//
+//		constructor() : this(clazz.getConstructor().newInstance())
+//	}
 }

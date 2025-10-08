@@ -293,7 +293,6 @@ net.minecraft.client.Minecraft -> fgo:
     2951:2951:net.minecraft.client.resources.SplashManager getSplashManager() -> aJ
     2956:2956:net.minecraft.client.gui.screens.Overlay getOverlay() -> aK
     2960:2960:net.minecraft.client.gui.screens.social.PlayerSocialManager getPlayerSocialManager() -> aL
-    2964:2964:com.mojang.blaze3d.platform.Window getWindow() -> aM
     2968:2968:net.minecraft.client.gui.components.DebugScreenOverlay getDebugOverlay() -> aN
     2972:2972:net.minecraft.client.renderer.RenderBuffers renderBuffers() -> aO
     2976:2977:void updateMaxMipLevel(int) -> b

@@ -1,6 +1,7 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
 import org.bread_experts_group.eam.minecraft.feature.Implementations
+import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.math.Axis
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.GuiGraphics
@@ -13,45 +14,33 @@ import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
+import java.lang.reflect.Method
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.javaMethod
 
 object V1x21x1Implementations : Implementations() {
 	override fun start() {
-		injectMethodIntoMethodReturn(
+		invokeAtMethodReturns(
 			net_minecraft_core_registries_BuiltInRegistries,
 			net_minecraft_core_registries_BuiltInRegistries_createContents,
-			ClassDesc.of(this::class.qualifiedName),
-			"afterCreateContents"
+			MethodTypeDesc.of(ConstantDescs.CD_void),
+			::afterCreateContents.javaMethod!!
 		)
-		scanning[net_minecraft_client_gui_screens_TitleScreen] = { _, _, _, data ->
-			val model = classFile.parse(data)
-			classFile.transformClass(model) nextElement@{ classBuilder, classElement ->
-				if (
-					classElement is MethodModel &&
-					classElement.methodName().equalsString(net_minecraft_client_gui_screens_TitleScreen_render) &&
-					classElement.methodType().equalsString("(Lfhz;IIF)V")
-				) {
-					classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-						if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-							if (codeElement is ReturnInstruction) {
-								codeBuilder
-									.aload(1)
-									.invokestatic(
-										ClassDesc.of(this::class.qualifiedName),
-										"renderTitleScreen",
-										MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
-									)
-							}
-							codeBuilder.with(codeElement)
-						}
-					}
-				} else classBuilder.with(classElement)
-			}
-		}
-		injectMethodIntoMethodReturn(
+		invokeAtMethodReturns(
+			net_minecraft_client_gui_screens_TitleScreen,
+			net_minecraft_client_gui_screens_TitleScreen_render,
+			MethodTypeDesc.of(
+				ConstantDescs.CD_void,
+				GuiGraphics.classDesc, ConstantDescs.CD_int, ConstantDescs.CD_int,
+				ConstantDescs.CD_float
+			),
+			::renderTitleScreen.javaMethod!!
+		)
+		invokeAtMethodReturns(
 			net_minecraft_client_Minecraft,
-			"d",
-			ClassDesc.of(this::class.qualifiedName),
-			"updateWindowTitle"
+			net_minecraft_client_Minecraft_updateTitle,
+			MethodTypeDesc.of(ConstantDescs.CD_void),
+			::updateWindowTitle.javaMethod!!
 		)
 	}
 
@@ -63,8 +52,7 @@ object V1x21x1Implementations : Implementations() {
 
 	@JvmStatic
 	@Suppress("unused")
-	fun renderTitleScreen(clazz: Any) {
-		val guiGraphics = GuiGraphics(clazz)
+	fun renderTitleScreen(self: Any, guiGraphics: GuiGraphics) {
 		val poseStack = guiGraphics.pose()
 		poseStack.pushPose()
 		poseStack.translate(10f, 3f, 0f)
@@ -81,36 +69,63 @@ object V1x21x1Implementations : Implementations() {
 
 	@JvmStatic
 	@Suppress("unused")
-	fun updateWindowTitle() {
-		Minecraft.getInstance().getWindow().setTitle("Minecraft - EAM 1.21.1")
+	fun updateWindowTitle(self: Minecraft) {
+		self.getWindow().setTitle("Minecraft - EAM 1.21.1")
 	}
-	/**
-	 * Only works with methods that have a void return type.
-	 * The source method must be static and not contain any args.
-	 */
-	private fun injectMethodIntoMethodReturn(
+
+	private fun invokeAtMethodReturns(
 		scanClass: String,
 		targetMethodName: String,
-		sourceClassDesc: ClassDesc,
-		sourceMethodName: String
+		targetMethodType: MethodTypeDesc,
+		method: Method
 	) {
+		if (method.returnType != Void.TYPE) throw IllegalArgumentException(
+			"$method (in injection to returns of $targetMethodName : $targetMethodType) must return void!"
+		)
 		scanning[scanClass] = { _, _, _, data ->
 			val model = classFile.parse(data)
 			classFile.transformClass(model) nextElement@{ classBuilder, classElement ->
 				if (
 					classElement is MethodModel &&
 					classElement.methodName().equalsString(targetMethodName) &&
-					classElement.methodType().equalsString("()V")
+					classElement.methodType().equalsString(targetMethodType.descriptorString())
 				) {
 					classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 						if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 							if (codeElement is ReturnInstruction) {
-								codeBuilder
-									.invokestatic(
-										sourceClassDesc,
-										sourceMethodName,
-										MethodTypeDesc.of(ConstantDescs.CD_void)
-									)
+								var lVarPos = 0
+								val sourceMethodType = MethodTypeDesc.of(
+									ConstantDescs.CD_void,
+									method.parameters.map {
+										val slot = lVarPos++
+										when (val c = it.type) {
+											else if !c.isPrimitive -> {
+												val desc = ClassDesc.of(c.name)
+												if (c.kotlin.isSubclassOf(MimickedClass::class)) codeBuilder
+													.new_(desc)
+													.dup()
+													.aload(slot)
+													.invokespecial(
+														desc,
+														"<init>",
+														MethodTypeDesc.of(
+															ConstantDescs.CD_void,
+															ConstantDescs.CD_Object
+														)
+													)
+												else codeBuilder.aload(slot)
+												desc
+											}
+
+											else -> throw IllegalArgumentException("No ClassDesc cnv for $c")
+										}
+									}
+								)
+								codeBuilder.invokestatic(
+									ClassDesc.of(method.declaringClass.name),
+									method.name,
+									sourceMethodType
+								)
 							}
 							codeBuilder.with(codeElement)
 						}
