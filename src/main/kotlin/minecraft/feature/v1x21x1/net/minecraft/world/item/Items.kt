@@ -1,11 +1,10 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item
 
+import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_BlockItem
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Items
 
 /*
-    net.minecraft.world.item.Item AIR -> a
     net.minecraft.world.item.Item STONE -> b
     net.minecraft.world.item.Item GRANITE -> c
     net.minecraft.world.item.Item POLISHED_GRANITE -> d
@@ -1366,10 +1365,15 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
  */
 class Items(around: Any) : MimickedClass(around) {
 	companion object {
-		val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_world_item_Items)
+		val clazz: Class<*> = loadClass(net_minecraft_world_item_Items)
 
 		fun registerBlock(blockItem: BlockItem): Item = Item(
 			clazz.getMethod("a", BlockItem.clazz).invoke(null, blockItem.around)
 		)
+
+		val AIR: Item
+			get() = Item(clazz.getField("a").get(null))
+		val GRASS_BLOCK: Item
+			get() = Item(clazz.getField("B").get(null))
 	}
 }

@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core
 
+import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_registries_Registry
 
 /*
     net.minecraft.resources.ResourceKey key() -> d
@@ -66,6 +68,6 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
  */
 abstract class Registry<T>(around: Any) : MimickedClass(around) {
 	companion object {
-		val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass("jz")
+		val clazz: Class<*> = loadClass(net_minecraft_core_registries_Registry)
 	}
 }

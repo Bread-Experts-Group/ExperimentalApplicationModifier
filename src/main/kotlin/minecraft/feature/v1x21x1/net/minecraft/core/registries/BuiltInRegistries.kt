@@ -1,5 +1,6 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.registries
 
+import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.DefaultedRegistry
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Item
@@ -152,7 +153,7 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_
  */
 class BuiltInRegistries(around: Any) : MimickedClass(around) {
 	companion object {
-		private val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_core_registries_BuiltInRegistries)
+		private val clazz: Class<*> = loadClass(net_minecraft_core_registries_BuiltInRegistries)
 		val BLOCK: DefaultedRegistry<Block>
 			get() = DefaultedRegistry(clazz.getField("e").get(null))
 		val ITEM: DefaultedRegistry<Item>

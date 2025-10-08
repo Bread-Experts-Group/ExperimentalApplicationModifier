@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block
 
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.IdMapper
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block.state.BlockState
@@ -104,7 +104,7 @@ net.minecraft.world.level.block.Block -> dfy:
  */
 class Block(around: Any) : BlockBehaviour(around) {
 	companion object {
-		val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_world_level_block_Block)
+		val clazz: Class<*> = loadClass(net_minecraft_world_level_block_Block)
 		val BLOCK_STATE_REGISTRY: IdMapper<BlockState>
 			get() = IdMapper(clazz.getField("q").get(null))
 	}

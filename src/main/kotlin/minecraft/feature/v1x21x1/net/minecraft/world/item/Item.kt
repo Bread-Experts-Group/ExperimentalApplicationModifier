@@ -1,5 +1,6 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item
 
+import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.food.FoodProperties
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Item
@@ -21,7 +22,6 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
     74:74:int getId(net.minecraft.world.item.Item) -> a
     78:78:net.minecraft.world.item.Item byId(int) -> b
     84:84:net.minecraft.world.item.Item byBlock(net.minecraft.world.level.block.Block) -> a
-    71:108:void <init>(net.minecraft.world.item.Item$Properties) -> <init>
     115:115:net.minecraft.core.Holder$Reference builtInRegistryHolder() -> o
     119:119:net.minecraft.core.component.DataComponentMap components() -> p
     123:123:int getDefaultMaxStackSize() -> q
@@ -69,7 +69,6 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
     417:417:boolean isValidRepairItem(net.minecraft.world.item.ItemStack,net.minecraft.world.item.ItemStack) -> a
     425:425:net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers() -> j
     429:429:boolean useOnRelease(net.minecraft.world.item.ItemStack) -> l
-    433:433:net.minecraft.world.item.ItemStack getDefaultInstance() -> w
     437:437:net.minecraft.sounds.SoundEvent getDrinkingSound() -> ap_
     441:441:net.minecraft.sounds.SoundEvent getEatingSound() -> aq_
     445:445:net.minecraft.sounds.SoundEvent getBreakingSound() -> e
@@ -82,7 +81,6 @@ net.minecraft.world.item.Item$Properties -> cul$a:
     net.minecraft.core.component.DataComponentMap$Builder components -> b
     net.minecraft.world.item.Item craftingRemainingItem -> c
     net.minecraft.world.flag.FeatureFlagSet requiredFeatures -> d
-    126:133:void <init>() -> <init>
     136:136:net.minecraft.world.item.Item$Properties food(net.minecraft.world.food.FoodProperties) -> a
     140:140:net.minecraft.world.item.Item$Properties stacksTo(int) -> a
     144:147:net.minecraft.world.item.Item$Properties durability(int) -> b
@@ -99,12 +97,20 @@ net.minecraft.world.item.Item$Properties -> cul$a:
  */
 class Item(around: Any) : MimickedClass(around) {
 	companion object {
-		val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_world_item_Item)
+		val clazz: Class<*> = loadClass(net_minecraft_world_item_Item)
 	}
+	
+	constructor(properties: Properties) : this(
+		clazz.getConstructor(Properties.clazz).newInstance(properties)
+	)
+
+	fun getDefaultInstance(): ItemStack = ItemStack(
+		clazz.getMethod("w").invoke(around)
+	)
 
 	class Properties(around: Any) : MimickedClass(around) {
 		companion object {
-			val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_world_item_Item_Properties)
+			val clazz: Class<*> = loadClass(net_minecraft_world_item_Item_Properties)
 		}
 
 		constructor() : this(clazz.getConstructor().newInstance())

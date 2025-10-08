@@ -5,7 +5,9 @@ import org.bread_experts_group.eam.minecraft.feature.EAMRegistry
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
-import java.lang.classfile.ClassFile.*
+import java.lang.classfile.ClassFile.ACC_PRIVATE
+import java.lang.classfile.ClassFile.ACC_PROTECTED
+import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.TypeKind
@@ -19,36 +21,34 @@ object V1x0x0Implementations : Implementations() {
 		scanning[net_minecraft_Block] = { _, _, _, data ->
 			val model = classFile.parse(data)
 			classFile.transformClass(model) nextElement@{ classBuilder, classElement ->
-				if (
-					classElement is MethodModel &&
-					classElement.methodName().equalsString("<init>")
-				) {
-					classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-						methodBuilder.withFlags(
-							classElement.flags().flagsMask() and (ACC_PRIVATE or ACC_PROTECTED).inv() or ACC_PUBLIC
-						)
-						methodBuilder.with(methodElement)
+				when (classElement) {
+					is MethodModel if classElement.methodName().equalsString("<init>")   -> {
+						classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
+							methodBuilder.withFlags(
+								classElement.flags().flagsMask() and (ACC_PRIVATE or ACC_PROTECTED).inv() or ACC_PUBLIC
+							)
+							methodBuilder.with(methodElement)
+						}
 					}
-				} else if (
-					classElement is MethodModel &&
-					classElement.methodName().equalsString("<clinit>")
-				) {
-					classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-						var added = true
-						if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-							if (codeElement is LineNumber && codeElement.line() == 262 && added) {
-								@Suppress("AssignedValueIsNeverRead")
-								added = false
-								codeBuilder.invokestatic(
-									ClassDesc.of(this::class.qualifiedName),
-									"registerBlocks",
-									MethodTypeDesc.of(ConstantDescs.CD_void)
-								)
-							}
-							codeBuilder.with(codeElement)
-						} else methodBuilder.with(methodElement)
+					is MethodModel if classElement.methodName().equalsString("<clinit>") -> {
+						classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
+							var added = true
+							if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+								if (codeElement is LineNumber && codeElement.line() == 262 && added) {
+									@Suppress("AssignedValueIsNeverRead")
+									added = false
+									codeBuilder.invokestatic(
+										ClassDesc.of(this::class.qualifiedName),
+										"registerBlocks",
+										MethodTypeDesc.of(ConstantDescs.CD_void)
+									)
+								}
+								codeBuilder.with(codeElement)
+							} else methodBuilder.with(methodElement)
+						}
 					}
-				} else classBuilder.with(classElement)
+					else                                                                 -> classBuilder.with(classElement)
+				}
 			}
 		}
 		scanning[net_minecraft_ContainerCreative] = { _, _, _, data ->

@@ -1,15 +1,11 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.food
 
+import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_food_FoodProperties
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_food_FoodProperties_Builder
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Item_Properties
 
 /*
-    int nutrition -> c
-    float saturation -> d
-    boolean canAlwaysEat -> e
-    float eatSeconds -> f
     java.util.Optional usingConvertsTo -> g
     java.util.List effects -> h
     float DEFAULT_EAT_SECONDS -> i
@@ -31,8 +27,17 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
  */
 class FoodProperties(around: Any) : MimickedClass(around) {
 	companion object {
-		val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_world_food_FoodProperties)
+		val clazz: Class<*> = loadClass(net_minecraft_world_food_FoodProperties)
 	}
+
+	val nutrition: Int
+		get() = clazz.getField("c").getInt(null)
+	val saturation: Float
+		get() = clazz.getField("d").getFloat(null)
+	val canAlwaysEat: Boolean
+		get() = clazz.getField("e").getBoolean(null)
+	val eatSeconds: Float
+		get() = clazz.getField("f").getFloat(null)
 
 	/*
 	    int nutrition -> a
@@ -53,7 +58,7 @@ class FoodProperties(around: Any) : MimickedClass(around) {
 	 */
 	class Builder(around: Any) : MimickedClass(around) {
 		companion object {
-			val clazz: Class<*> = ClassLoader.getSystemClassLoader().loadClass(net_minecraft_world_food_FoodProperties_Builder)
+			val clazz: Class<*> = loadClass(net_minecraft_world_food_FoodProperties_Builder)
 		}
 
 		constructor() : this(clazz.getConstructor().newInstance())
