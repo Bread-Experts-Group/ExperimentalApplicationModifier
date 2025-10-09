@@ -55,8 +55,8 @@ fun CodeBuilder.getMethodMimicry(method: Method, pos: Int): MethodRefEntry = thi
 	this.prepareMimicry(method, pos)
 )
 
-fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
-	this.invokevirtual(this.getMethodMimicry(method, 1))
+fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method, pos: Int = 1): CodeBuilder =
+	this.invokevirtual(this.getMethodMimicry(method, pos))
 
-fun CodeBuilder.invokeStaticMethodWithMimics(method: Method): CodeBuilder =
-	this.invokestatic(this.getMethodMimicry(method, 0))
+fun CodeBuilder.invokeStaticMethodWithMimics(method: Method, pos: Int = 0): CodeBuilder =
+	this.invokestatic(this.getMethodMimicry(method, pos))

@@ -8,14 +8,20 @@ import org.bread_experts_group.eam.minecraft.feature.invokeVirtualMethodWithMimi
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.InteractionResult
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.entity.Entity
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.food.FoodProperties
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Item
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Item.Properties.Companion.mimicClassDesc
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Items
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.context.UseOnContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.Level
-import java.lang.classfile.ClassFile.*
+import java.lang.classfile.ClassFile.ACC_FINAL
+import java.lang.classfile.ClassFile.ACC_PRIVATE
+import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFile.StackMapsOption
+import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -45,7 +51,7 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 			val around = cl.define(
 				name,
 				cf.build(ClassDesc.of(name)) { classBuilder ->
-					classBuilder.withSuperclass(ClassDesc.of(Item.clazz.name))
+					classBuilder.withSuperclass(Item.classDesc)
 					item::class.java.declaredMethods.forEach {
 						when (it.name) {
 							"inventoryTick" -> classBuilder.withMethodBody(
@@ -66,6 +72,46 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 									)
 									.invokeVirtualMethodWithMimics(MinecraftItem::inventoryTick.javaMethod!!)
 									.return_()
+							}
+							"useOn" -> classBuilder.withMethodBody(
+								net_minecraft_world_item_Item_useOn,
+								MethodTypeDesc.of(
+									InteractionResult.classDesc,
+									UseOnContext.classDesc
+								),
+								ACC_PUBLIC or ACC_FINAL
+							) { codeBuilder ->
+								codeBuilder
+									.aload(0)
+									.getfield(
+										ClassDesc.of(name),
+										"reference",
+										MinecraftItem.mimicClassDesc
+									)
+									.new_(UseOnContext.mimicClassDesc)
+									.dup()
+									.aload(1)
+									.invokespecial(
+										UseOnContext.mimicClassDesc,
+										"<init>",
+										MethodTypeDesc.of(
+											ConstantDescs.CD_void,
+											ConstantDescs.CD_Object
+										)
+									)
+									.invokevirtual(
+										codeBuilder.constantPool().methodRefEntry(
+											MinecraftItem.mimicClassDesc,
+											"useOn",
+											MethodTypeDesc.of(
+												InteractionResult.mimicClassDesc,
+												UseOnContext.mimicClassDesc
+											)
+										)
+									)
+									.getfield(InteractionResult.mimicClassDesc, "around", ConstantDescs.CD_Object)
+									.checkcast(InteractionResult.classDesc)
+									.areturn()
 							}
 						}
 					}
