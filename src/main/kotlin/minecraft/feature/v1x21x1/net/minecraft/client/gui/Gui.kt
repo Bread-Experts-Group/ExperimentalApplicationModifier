@@ -3,6 +3,7 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.clie
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_Gui
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_Gui_layers
 
 /*
 net.minecraft.client.gui.Gui -> fhy:
@@ -194,4 +195,7 @@ class Gui(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_client_gui_Gui)
 	}
+
+	val layers: LayeredDraw
+		get() = LayeredDraw(clazz.getField(net_minecraft_client_gui_Gui_layers).get(around))
 }

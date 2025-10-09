@@ -155,8 +155,8 @@ class BuiltInRegistries(around: Any) : MimickedClass(around) {
 	companion object {
 		private val clazz: Class<*> = loadClass(net_minecraft_core_registries_BuiltInRegistries)
 		val BLOCK: DefaultedRegistry<Block>
-			get() = DefaultedRegistry(clazz.getField("e").get(null))
+			get() = DefaultedRegistry(Block::class.java, clazz.getField("e").get(null))
 		val ITEM: DefaultedRegistry<Item>
-			get() = DefaultedRegistry(clazz.getField("g").get(null))
+			get() = DefaultedRegistry(Item::class.java, clazz.getField("g").get(null))
 	}
 }

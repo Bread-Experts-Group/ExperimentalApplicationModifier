@@ -37,7 +37,7 @@ class LayeredDraw(around: Any) : MimickedClass(around) {
 	open class Layer(around: Any) : MimickedClass(around) {
 		companion object {
 			val clazz: Class<*> = loadClass(net_minecraft_client_gui_LayeredDraw_Layer)
-			val classDesc: ClassDesc = ClassDesc.of(LayeredDraw.Companion.clazz.name)
+			val classDesc: ClassDesc = ClassDesc.of(clazz.name)
 			val mimicClassDesc: ClassDesc = ClassDesc.of(Layer::class.qualifiedName)
 		}
 	}

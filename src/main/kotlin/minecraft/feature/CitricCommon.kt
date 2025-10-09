@@ -8,8 +8,8 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import kotlin.reflect.full.isSubclassOf
 
-fun CodeBuilder.prepareMimicry(method: Method, pos: Int): MethodTypeDesc {
-	var lVarPos = pos
+fun CodeBuilder.prepareMimicry(method: Method): MethodTypeDesc {
+	var lVarPos = 0
 	return MethodTypeDesc.of(
 		ConstantDescs.CD_void,
 		method.parameters.map {
@@ -49,14 +49,14 @@ fun CodeBuilder.prepareMimicry(method: Method, pos: Int): MethodTypeDesc {
 	)
 }
 
-fun CodeBuilder.getMethodMimicry(method: Method, pos: Int): MethodRefEntry = this.constantPool().methodRefEntry(
+fun CodeBuilder.getMethodMimicry(method: Method): MethodRefEntry = this.constantPool().methodRefEntry(
 	ClassDesc.of(method.declaringClass.name),
 	method.name,
-	this.prepareMimicry(method, pos)
+	this.prepareMimicry(method)
 )
 
-fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method, pos: Int = 1): CodeBuilder =
-	this.invokevirtual(this.getMethodMimicry(method, pos))
+fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
+	this.invokevirtual(this.getMethodMimicry(method))
 
-fun CodeBuilder.invokeStaticMethodWithMimics(method: Method, pos: Int = 0): CodeBuilder =
-	this.invokestatic(this.getMethodMimicry(method, pos))
+fun CodeBuilder.invokeStaticMethodWithMimics(method: Method): CodeBuilder =
+	this.invokestatic(this.getMethodMimicry(method))

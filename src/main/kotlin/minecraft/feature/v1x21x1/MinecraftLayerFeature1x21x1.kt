@@ -8,11 +8,7 @@ import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayerFeature
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.DeltaTracker
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.LayeredDraw
-import java.lang.classfile.ClassFile.ACC_FINAL
-import java.lang.classfile.ClassFile.ACC_PRIVATE
-import java.lang.classfile.ClassFile.ACC_PUBLIC
-import java.lang.classfile.ClassFile.StackMapsOption
-import java.lang.classfile.ClassFile.of
+import java.lang.classfile.ClassFile.*
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -32,15 +28,15 @@ class MinecraftLayerFeature1x21x1 : MinecraftLayerFeature() {
 		val around = cl.define(
 			name,
 			cf.build(ClassDesc.of(name)) { classBuilder ->
-				classBuilder.withSuperclass(LayeredDraw.Layer.classDesc)
+				classBuilder.withInterfaceSymbols(LayeredDraw.Layer.classDesc)
 				classBuilder.withMethodBody(
-					net_minecraft_client_gui_LayeredDraw_Layer_render,
+					"render",
 					MethodTypeDesc.of(
 						ConstantDescs.CD_void,
 						GuiGraphics.classDesc,
 						DeltaTracker.classDesc
 					),
-					ACC_PUBLIC or ACC_FINAL
+					ACC_PUBLIC
 				) { codeBuilder ->
 					codeBuilder
 						.aload(0)
@@ -59,12 +55,12 @@ class MinecraftLayerFeature1x21x1 : MinecraftLayerFeature() {
 				) { codeBuilder ->
 					codeBuilder
 						.aload(0)
+						.dup()
 						.invokespecial(
-							LayeredDraw.Layer.classDesc,
+							ConstantDescs.CD_Object,
 							"<init>",
 							MethodTypeDesc.of(ConstantDescs.CD_void)
 						)
-						.aload(0)
 						.aload(1)
 						.putfield(
 							ClassDesc.of(name),
