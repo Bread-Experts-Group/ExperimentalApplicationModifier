@@ -60,3 +60,11 @@ fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
 
 fun CodeBuilder.invokeStaticMethodWithMimics(method: Method): CodeBuilder =
 	this.invokestatic(this.getMethodMimicry(method))
+
+fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuilder =
+	this.aload(0)
+		.getfield(
+			ClassDesc.of(name),
+			"reference",
+			fieldType
+		)

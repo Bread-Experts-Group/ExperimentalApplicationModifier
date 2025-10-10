@@ -28,6 +28,9 @@ class BreadMod : MinecraftMod() {
 				return InteractionResult.CONSUME
 			}
 		})
+		items.add(Identifier("breadmod", "tool_gun"), object : MinecraftItem() {
+
+		})
 	}
 
 	override fun addLayers(layers: MinecraftLayerFeature) {

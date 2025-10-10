@@ -173,9 +173,14 @@ class ItemStack(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_world_item_ItemStack)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(ItemStack::class.qualifiedName)
 	}
 
 	constructor(item: Item) : this(
 		clazz.getConstructor(Item.clazz).newInstance(item)
+	)
+
+	fun getItem(): Item = Item(
+		clazz.getMethod("g").invoke(around)
 	)
 }

@@ -2,13 +2,18 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
 import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.feature.Identifier
+import org.bread_experts_group.eam.minecraft.feature.getReferenceField
 import org.bread_experts_group.eam.minecraft.feature.invokeVirtualMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayer
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayerFeature
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.DeltaTracker
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.LayeredDraw
-import java.lang.classfile.ClassFile.*
+import java.lang.classfile.ClassFile.ACC_FINAL
+import java.lang.classfile.ClassFile.ACC_PRIVATE
+import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFile.StackMapsOption
+import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -39,12 +44,7 @@ class MinecraftLayerFeature1x21x1 : MinecraftLayerFeature() {
 					ACC_PUBLIC
 				) { codeBuilder ->
 					codeBuilder
-						.aload(0)
-						.getfield(
-							ClassDesc.of(name),
-							"reference",
-							MinecraftLayer.mimicClassDesc
-						)
+						.getReferenceField(name, MinecraftLayer.mimicClassDesc)
 						.invokeVirtualMethodWithMimics(MinecraftLayer::render.javaMethod!!)
 						.return_()
 				}

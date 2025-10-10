@@ -4,6 +4,9 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.platform.Window
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.Font
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.multiplayer.ClientLevel
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.ModelManager
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_Minecraft
 
 /*
@@ -271,7 +274,6 @@ net.minecraft.client.Minecraft -> fgo:
     2745:2745:net.minecraft.client.renderer.block.BlockRenderDispatcher getBlockRenderer() -> ao
     2749:2749:net.minecraft.client.renderer.entity.EntityRenderDispatcher getEntityRenderDispatcher() -> ap
     2753:2753:net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher getBlockEntityRenderDispatcher() -> aq
-    2757:2757:net.minecraft.client.renderer.entity.ItemRenderer getItemRenderer() -> ar
     2761:2761:com.mojang.datafixers.DataFixer getFixerUpper() -> as
     2765:2765:net.minecraft.client.DeltaTracker getTimer() -> at
     2769:2769:net.minecraft.client.color.block.BlockColors getBlockColors() -> au
@@ -280,7 +282,6 @@ net.minecraft.client.Minecraft -> fgo:
     2781:2781:net.minecraft.client.tutorial.Tutorial getTutorial() -> ax
     2785:2785:boolean isWindowActive() -> aA
     2789:2789:net.minecraft.client.HotbarManager getHotbarManager() -> aB
-    2793:2793:net.minecraft.client.resources.model.ModelManager getModelManager() -> aC
     2797:2797:net.minecraft.client.resources.PaintingTextureManager getPaintingTextures() -> aD
     2801:2801:net.minecraft.client.resources.MobEffectTextureManager getMobEffectTextures() -> aE
     2805:2805:net.minecraft.client.resources.MapDecorationTextureManager getMapDecorationTextures() -> aF
@@ -377,8 +378,21 @@ class Minecraft(around: Any) : MimickedClass(around) {
 
 	val font: Font
 		get() = Font(clazz.getField("h").get(around))
+	val level: ClientLevel?
+		get() {
+			val level = clazz.getField("r").get(around) ?: return null
+			return ClientLevel(level)
+		}
 
 	fun getWindow(): Window = Window(
 		clazz.getMethod("aM").invoke(around)
+	)
+
+	fun getModelManager(): ModelManager = ModelManager(
+		clazz.getMethod("aC").invoke(around)
+	)
+
+	fun getItemRenderer(): ItemRenderer = ItemRenderer(
+		clazz.getMethod("ar").invoke(around)
 	)
 }

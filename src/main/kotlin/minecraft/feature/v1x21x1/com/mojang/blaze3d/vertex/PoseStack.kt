@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_blaze3d_vertex_PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_blaze3d_vertex_PoseStack_Pose
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.org.joml.Quaternionf
+import java.lang.constant.ClassDesc
 
 /*
 com.mojang.blaze3d.vertex.PoseStack -> fbi:
@@ -19,6 +20,8 @@ com.mojang.blaze3d.vertex.PoseStack -> fbi:
 class PoseStack(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(com_mojang_blaze3d_vertex_PoseStack)
+		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(PoseStack::class.qualifiedName)
 	}
 
 	constructor() : this(clazz.getConstructor().newInstance())

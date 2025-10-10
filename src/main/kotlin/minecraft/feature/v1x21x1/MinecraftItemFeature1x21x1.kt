@@ -4,6 +4,7 @@ import org.bread_experts_group.api.FeatureExpression
 import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.Identifier
+import org.bread_experts_group.eam.minecraft.feature.getReferenceField
 import org.bread_experts_group.eam.minecraft.feature.invokeVirtualMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
@@ -64,12 +65,7 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 								ACC_PUBLIC or ACC_FINAL
 							) { codeBuilder ->
 								codeBuilder
-									.aload(0)
-									.getfield(
-										ClassDesc.of(name),
-										"reference",
-										MinecraftItem.mimicClassDesc
-									)
+									.getReferenceField(name, MinecraftItem.mimicClassDesc)
 									.invokeVirtualMethodWithMimics(MinecraftItem::inventoryTick.javaMethod!!)
 									.return_()
 							}
@@ -82,12 +78,7 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 								ACC_PUBLIC or ACC_FINAL
 							) { codeBuilder ->
 								codeBuilder
-									.aload(0)
-									.getfield(
-										ClassDesc.of(name),
-										"reference",
-										MinecraftItem.mimicClassDesc
-									)
+									.getReferenceField(name, MinecraftItem.mimicClassDesc)
 									.new_(UseOnContext.mimicClassDesc)
 									.dup()
 									.aload(1)

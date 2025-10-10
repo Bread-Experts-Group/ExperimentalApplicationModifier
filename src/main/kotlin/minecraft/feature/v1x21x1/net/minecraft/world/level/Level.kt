@@ -150,7 +150,7 @@ import java.lang.constant.ClassDesc
     84:88:void <clinit>() -> <clinit>
 
  */
-class Level(around: Any) : MimickedClass(around) {
+open class Level(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_world_level_Level)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)

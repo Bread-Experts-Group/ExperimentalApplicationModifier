@@ -3,6 +3,7 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.reso
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_resources_ResourceLocation
+import java.lang.constant.ClassDesc
 
 /*
     com.mojang.serialization.Codec CODEC -> a
@@ -56,6 +57,7 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_resou
 class ResourceLocation(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_resources_ResourceLocation)
+		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
 
 		fun parse(location: String) = ResourceLocation(
 			clazz.getMethod("a", String::class.java).invoke(null, location)
