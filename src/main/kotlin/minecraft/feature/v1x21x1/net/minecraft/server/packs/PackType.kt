@@ -1,4 +1,4 @@
-package org.bread_experts_group.eam.minecraft.feature.v1x0x0.net.minecraft.server.packs
+package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs
 
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass

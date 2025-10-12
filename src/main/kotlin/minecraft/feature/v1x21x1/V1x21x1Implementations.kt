@@ -1,6 +1,7 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
 import org.bread_experts_group.eam.minecraft.feature.Implementations
+import org.bread_experts_group.eam.minecraft.feature.invokeSpecialNewMimicClass
 import org.bread_experts_group.eam.minecraft.feature.invokeStaticMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.VertexConsumer
@@ -10,14 +11,20 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.clien
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.LayeredDraw
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.ItemBlockRenderTypes
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.RenderType
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.ModelBakery
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.UnbakedModel
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.PackType
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository.FolderRepositorySource
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository.PackRepository
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
 import java.awt.Color
@@ -29,12 +36,17 @@ import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
 import java.lang.classfile.FieldModel
 import java.lang.classfile.MethodModel
-import java.lang.classfile.instruction.InvokeInstruction
+import java.lang.classfile.instruction.LineNumber
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
+import java.net.URI
+import java.nio.file.FileSystemNotFoundException
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import kotlin.io.path.Path
 import kotlin.reflect.jvm.javaMethod
 
 object V1x21x1Implementations : Implementations() {
@@ -49,6 +61,7 @@ object V1x21x1Implementations : Implementations() {
 			)
 			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 		}
+
 		transformClass(
 			net_minecraft_client_gui_screens_TitleScreen
 		) { classBuilder, classElement ->
@@ -63,6 +76,7 @@ object V1x21x1Implementations : Implementations() {
 			)
 			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 		}
+
 		transformClass(
 			net_minecraft_client_Minecraft
 		) { classBuilder, classElement ->
@@ -73,6 +87,7 @@ object V1x21x1Implementations : Implementations() {
 			)
 			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 		}
+
 		transformClass(
 			net_minecraft_client_gui_Gui
 		) { classBuilder, classElement ->
@@ -90,26 +105,29 @@ object V1x21x1Implementations : Implementations() {
 						p.invoke(classBuilder, classElement))
 			) classBuilder.with(classElement)
 		}
+
+//		transformClass(
+//			net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer
+//		) { classBuilder, classElement ->
+//			val r = invokeAtMethodReturns(
+//				"a",
+//				MethodTypeDesc.of(
+//					ConstantDescs.CD_void,
+//					ItemStack.classDesc,
+//					ItemDisplayContext.classDesc,
+//					PoseStack.classDesc,
+//					MultiBufferSource.classDesc,
+//					ConstantDescs.CD_int,
+//					ConstantDescs.CD_int
+//				),
+//				::renderBEWLR.javaMethod!!
+//			)
+//			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
+//		}
+
 		transformClass(
-			net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer
-		) { classBuilder, classElement ->
-			val r = invokeAtMethodReturns(
-				"a",
-				MethodTypeDesc.of(
-					ConstantDescs.CD_void,
-					ItemStack.classDesc,
-					ItemDisplayContext.classDesc,
-					PoseStack.classDesc,
-					MultiBufferSource.classDesc,
-					ConstantDescs.CD_int,
-					ConstantDescs.CD_int
-				),
-				::renderBEWLR.javaMethod!!
-			)
-			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
-		}
-		transformClass(
-			net_minecraft_client_renderer_entity_ItemRenderer
+			net_minecraft_client_renderer_entity_ItemRenderer,
+			true
 		) { classBuilder, classElement ->
 			val p = modifyMethodAccess(
 				"a",
@@ -124,8 +142,50 @@ object V1x21x1Implementations : Implementations() {
 				),
 				ACC_PUBLIC
 			)
-			if (!p.invoke(classBuilder, classElement)) classBuilder.with(classElement)
+
+			if (
+				classElement is MethodModel &&
+				classElement.methodName().equalsString("a") &&
+				classElement.methodTypeSymbol() == MethodTypeDesc.of(
+					ConstantDescs.CD_void,
+					ItemStack.classDesc,
+					ItemDisplayContext.classDesc,
+					ConstantDescs.CD_boolean,
+					PoseStack.classDesc,
+					MultiBufferSource.classDesc,
+					ConstantDescs.CD_int,
+					ConstantDescs.CD_int,
+					BakedModel.classDesc
+				)) {
+				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
+					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						codeBuilder.with(codeElement)
+						if (codeElement is LineNumber && codeElement.line() == 127)
+							codeBuilder
+								.invokeSpecialNewMimicClass(ItemStack.mimicClassDesc, 1)
+								.invokeSpecialNewMimicClass(ItemDisplayContext.mimicClassDesc, 2)
+								.invokeSpecialNewMimicClass(PoseStack.mimicClassDesc, 4)
+								.invokeSpecialNewMimicClass(MultiBufferSource.mimicClassDesc, 5)
+								.iload(6)
+								.iload(7)
+								.invokestatic(
+									ClassDesc.of(this::class.qualifiedName),
+									"renderBEWLR",
+									MethodTypeDesc.of(
+										ConstantDescs.CD_void,
+										ItemStack.mimicClassDesc,
+										ItemDisplayContext.mimicClassDesc,
+										PoseStack.mimicClassDesc,
+										MultiBufferSource.mimicClassDesc,
+										ConstantDescs.CD_int,
+										ConstantDescs.CD_int
+									)
+								)
+					}
+				}
+			} else if (!p.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 		}
+
 		transformClass(
 			net_minecraft_client_resources_model_ModelBakery
 		) { classBuilder, classElement ->
@@ -164,10 +224,109 @@ object V1x21x1Implementations : Implementations() {
 						)
 				) classBuilder.with(classElement)
 		}
+
+		transformClass(
+			net_minecraft_server_packs_repository_PackRepository
+		) { classBuilder, classElement ->
+			if (
+				classElement is MethodModel &&
+				classElement.methodName().equalsString("<init>")
+			) {
+				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
+					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						if (
+							codeElement is LineNumber &&
+							codeElement.line() == 27
+							) {
+							codeBuilder
+								.aload(0)
+								.new_(ClassDesc.of(java.util.LinkedHashSet::class.java.name))
+								.dup()
+								.aload(1)
+								.invokestatic(
+									ClassDesc.of(java.util.List::class.java.name),
+									"of",
+									MethodTypeDesc.of(
+										ClassDesc.of(java.util.List::class.java.name),
+										ConstantDescs.CD_Object.arrayType(1)
+									),
+									true
+								)
+								.invokespecial(
+									ClassDesc.of(java.util.LinkedHashSet::class.java.name),
+									"<init>",
+									MethodTypeDesc.of(
+										ConstantDescs.CD_void,
+										ClassDesc.of(java.util.Collection::class.java.name)
+									)
+								)
+								.putfield(
+									ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
+									"a",
+									ClassDesc.of(java.util.Set::class.java.name)
+								)
+								.aload(0)
+								.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
+								.return_()
+						}
+						codeBuilder.with(codeElement)
+					}
+				}
+				classBuilder.withMethod(
+					"addSources",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void,
+						ClassDesc.of("java.util.Collection")
+					),
+					ACC_PUBLIC
+				) { methodBuilder ->
+					methodBuilder.withCode { codeBuilder ->
+						codeBuilder
+							.aload(0)
+							.getfield(
+								ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
+								"a",
+								ClassDesc.of("java.util.Set")
+							)
+							.aload(1)
+							.invokeinterface(
+								ClassDesc.of("java.util.Set"),
+								"addAll",
+								MethodTypeDesc.of(
+									ConstantDescs.CD_boolean,
+									ClassDesc.of("java.util.Collection")
+								)
+							)
+							.return_()
+					}
+				}
+			} else classBuilder.with(classElement)
+		}
 	}
 
 	// todo temporary solution until i write adding layers directly into Gui itself
 	val drawLayers: MutableList<LayeredDraw.Layer> = mutableListOf()
+
+	@JvmStatic
+	@Suppress("unused")
+	fun addPackSources(self: PackRepository) {
+		val validator = Minecraft.getInstance().directoryValidator()
+		val resourceLocation = this::class.java.getResource("/resources")?.toURI()
+		val env = hashMapOf<String, String>()
+		val array = resourceLocation.toString().split("!")
+		val uri = URI.create(array[0])
+		val fs = try {
+			FileSystems.getFileSystem(uri)
+		} catch (_: FileSystemNotFoundException) {
+			FileSystems.newFileSystem(uri, env)
+		}
+		val path = fs.getPath(array[1])
+		val sources = listOf(
+			FolderRepositorySource(path, PackType.CLIENT_RESOURCES, PackSource.DEFAULT, validator)
+		)
+		self.addSources(sources)
+		println("adding additional pack sources")
+	}
 
 	@JvmStatic
 	@Suppress("unused")
@@ -182,7 +341,6 @@ object V1x21x1Implementations : Implementations() {
 	@JvmStatic
 	@Suppress("unused")
 	fun renderBEWLR(
-		self: BlockEntityWithoutLevelRenderer,
 		stack: ItemStack,
 		displayContext: ItemDisplayContext,
 		poseStack: PoseStack,
@@ -190,13 +348,33 @@ object V1x21x1Implementations : Implementations() {
 		packedLight: Int,
 		packedOverlay: Int
 	) {
-		val mainModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation("breadmod:item/tool_gun/item"))
-		val coilModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation("breadmod:item/tool_gun/coil"))
-		val itemRenderer = Minecraft.getInstance().getItemRenderer()
-		val consumer = bufferSource.getBuffer(RenderType.solid())
+		val minecraft = Minecraft.getInstance()
+		object : BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels()) {
+			val mainModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation("breadmod:item/tool_gun/item"))
+			val coilModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation("breadmod:item/tool_gun/coil"))
+			val itemRenderer = Minecraft.getInstance().getItemRenderer()
 
-		itemRenderer.renderModelLists(mainModel, stack, packedLight, packedOverlay, poseStack, consumer)
-		itemRenderer.renderModelLists(coilModel, stack, packedLight, packedOverlay, poseStack, consumer)
+			override fun renderByItem(
+				stack: ItemStack,
+				displayContext: ItemDisplayContext,
+				poseStack: PoseStack,
+				bufferSource: MultiBufferSource,
+				packedLight: Int,
+				packedOverlay: Int
+			) {
+				val consumer = ItemRenderer.getFoilBufferDirect(
+					bufferSource,
+					ItemBlockRenderTypes.getRenderType(stack, false),
+					true,
+					stack.hasFoil()
+				)
+
+				poseStack.pushPose()
+				itemRenderer.renderModelLists(mainModel, stack, packedLight, packedOverlay, poseStack, consumer)
+				itemRenderer.renderModelLists(coilModel, stack, packedLight, packedOverlay, poseStack, consumer)
+				poseStack.popPose()
+			}
+		}.renderByItem(stack, displayContext, poseStack, bufferSource, packedLight, packedOverlay)
 	}
 
 	@JvmStatic
@@ -204,7 +382,6 @@ object V1x21x1Implementations : Implementations() {
 	fun addLayers(self: Gui) {
 		println("registering drawLayers")
 		val layers = self.layers
-		println(layers)
 		this.drawLayers.forEach { layers.add(it) }
 	}
 
@@ -241,13 +418,14 @@ object V1x21x1Implementations : Implementations() {
 
 	private fun transformClass(
 		qualifiedName: String,
+		writeModifiedFile: Boolean = false,
 		transform: (ClassBuilder, ClassElement) -> Unit
 	) {
 		scanning[qualifiedName] = { _, _, _, data ->
 			val model = classFile.parse(data)
-			classFile.transformClass(model) nextElement@{ classBuilder, classElement ->
+			classFile.transformClass(model) { classBuilder, classElement ->
 				transform(classBuilder, classElement)
-			}
+			}.also { if(writeModifiedFile) Files.write(Path("${qualifiedName.substringAfterLast('_')}.class"), it) }
 		}
 	}
 

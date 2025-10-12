@@ -92,7 +92,7 @@ class ModelBakery(around: Any) : MimickedClass(around) {
 	}
 
 	fun getModel(location: String): UnbakedModel =
-		this.getModel(ResourceLocation.parse("breadmod:item/tool_gun/item"))
+		this.getModel(ResourceLocation.parse(location))
 
 	fun getModel(arg: ResourceLocation): UnbakedModel = UnbakedModel(
 		clazz.getMethod("a", ResourceLocation.clazz)

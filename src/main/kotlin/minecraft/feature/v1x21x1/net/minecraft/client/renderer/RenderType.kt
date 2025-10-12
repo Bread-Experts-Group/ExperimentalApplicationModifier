@@ -192,5 +192,8 @@ class RenderType(around: Any) : MimickedClass(around) {
 		fun solid(): RenderType = RenderType(
 			clazz.getMethod("c").invoke(null)
 		)
+		fun translucent(): RenderType = RenderType(
+			clazz.getMethod("f").invoke(null)
+		)
 	}
 }

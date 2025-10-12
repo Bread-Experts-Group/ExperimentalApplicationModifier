@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.VertexConsumer
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.RenderType
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
@@ -41,7 +42,6 @@ net.minecraft.client.renderer.entity.ItemRenderer -> glh:
     169:175:com.mojang.blaze3d.vertex.VertexConsumer getArmorFoilBuffer(net.minecraft.client.renderer.MultiBufferSource,net.minecraft.client.renderer.RenderType,boolean) -> a
     179:181:com.mojang.blaze3d.vertex.VertexConsumer getCompassFoilBuffer(net.minecraft.client.renderer.MultiBufferSource,net.minecraft.client.renderer.RenderType,com.mojang.blaze3d.vertex.PoseStack$Pose) -> a
     186:199:com.mojang.blaze3d.vertex.VertexConsumer getFoilBuffer(net.minecraft.client.renderer.MultiBufferSource,net.minecraft.client.renderer.RenderType,boolean,boolean) -> a
-    203:209:com.mojang.blaze3d.vertex.VertexConsumer getFoilBufferDirect(net.minecraft.client.renderer.MultiBufferSource,net.minecraft.client.renderer.RenderType,boolean,boolean) -> b
     213:229:void renderQuadList(com.mojang.blaze3d.vertex.PoseStack,com.mojang.blaze3d.vertex.VertexConsumer,java.util.List,net.minecraft.world.item.ItemStack,int,int) -> a
     234:246:net.minecraft.client.resources.model.BakedModel getModel(net.minecraft.world.item.ItemStack,net.minecraft.world.level.Level,net.minecraft.world.entity.LivingEntity,int) -> a
     250:251:void renderStatic(net.minecraft.world.item.ItemStack,net.minecraft.world.item.ItemDisplayContext,int,int,com.mojang.blaze3d.vertex.PoseStack,net.minecraft.client.renderer.MultiBufferSource,net.minecraft.world.level.Level,int) -> a
@@ -99,6 +99,21 @@ class ItemRenderer(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_client_renderer_entity_ItemRenderer)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+
+		fun getFoilBufferDirect(
+			bufferSource: MultiBufferSource,
+			renderType: RenderType,
+			noEntity: Boolean,
+			withGlint: Boolean
+		): VertexConsumer = VertexConsumer(
+			clazz.getMethod(
+				"b",
+				MultiBufferSource.clazz,
+				RenderType.clazz,
+				Boolean::class.java,
+				Boolean::class.java
+			).invoke(null, bufferSource.around, renderType.around, noEntity, withGlint)
+		)
 	}
 
 	fun renderStatic(

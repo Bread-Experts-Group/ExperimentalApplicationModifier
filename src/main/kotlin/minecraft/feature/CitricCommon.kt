@@ -68,3 +68,21 @@ fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuild
 			"reference",
 			fieldType
 		)
+
+fun CodeBuilder.invokeSpecialNewMimicClass(
+	classDesc: ClassDesc,
+	slot: Int,
+	isInterface: Boolean = false
+) = this
+	.new_(classDesc)
+	.dup()
+	.aload(slot)
+	.invokespecial(
+		classDesc,
+		"<init>",
+		MethodTypeDesc.of(
+			ConstantDescs.CD_void,
+			ConstantDescs.CD_Object
+		),
+		isInterface
+	)

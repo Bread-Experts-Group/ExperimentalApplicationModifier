@@ -115,7 +115,6 @@ net.minecraft.world.item.ItemStack -> cuq:
     745:807:java.util.List getTooltipLines(net.minecraft.world.item.Item$TooltipContext,net.minecraft.world.entity.player.Player,net.minecraft.world.item.TooltipFlag) -> a
     811:826:void addAttributeTooltips(java.util.function.Consumer,net.minecraft.world.entity.player.Player) -> a
     830:876:void addModifierTooltip(java.util.function.Consumer,net.minecraft.world.entity.player.Player,net.minecraft.core.Holder,net.minecraft.world.entity.ai.attributes.AttributeModifier) -> a
-    879:883:boolean hasFoil() -> x
     887:894:net.minecraft.world.item.Rarity getRarity() -> y
     899:903:boolean isEnchantable() -> z
     907:908:void enchant(net.minecraft.core.Holder,int) -> a
@@ -183,4 +182,6 @@ class ItemStack(around: Any) : MimickedClass(around) {
 	fun getItem(): Item = Item(
 		clazz.getMethod("g").invoke(around)
 	)
+
+	fun hasFoil(): Boolean = clazz.getMethod("x").invoke(around) as Boolean
 }

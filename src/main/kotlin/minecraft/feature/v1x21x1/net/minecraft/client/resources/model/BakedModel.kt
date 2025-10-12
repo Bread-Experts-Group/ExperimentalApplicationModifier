@@ -21,5 +21,6 @@ class BakedModel(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_client_resources_model_BakedModel)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(BakedModel::class.qualifiedName)
 	}
 }

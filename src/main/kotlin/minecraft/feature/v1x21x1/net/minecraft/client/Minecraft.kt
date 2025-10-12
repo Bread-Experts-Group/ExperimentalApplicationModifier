@@ -4,10 +4,14 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.platform.Window
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.Font
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.model.geom.EntityModelSet
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.multiplayer.ClientLevel
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.ModelManager
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.validation.DirectoryValidator
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_Minecraft
+import java.lang.constant.ClassDesc
 
 /*
  266:266:void <clinit>() -> <clinit>
@@ -136,7 +140,6 @@ net.minecraft.client.Minecraft -> fgo:
     net.minecraft.client.multiplayer.chat.ChatListener chatListener -> br
     net.minecraft.client.multiplayer.chat.report.ReportingContext reportingContext -> bs
     net.minecraft.client.CommandHistory commandHistory -> bt
-    net.minecraft.world.level.validation.DirectoryValidator directoryValidator -> bu
     boolean gameLoadFinished -> bv
     long clientStartTimeMs -> bw
     long clientTickCount -> bx
@@ -310,7 +313,6 @@ net.minecraft.client.Minecraft -> fgo:
     3023:3023:com.mojang.realmsclient.gui.RealmsDataFetcher realmsDataFetcher() -> aY
     3027:3027:net.minecraft.client.quickplay.QuickPlayLog quickPlayLog() -> aZ
     3031:3031:net.minecraft.client.CommandHistory commandHistory() -> ba
-    3035:3035:net.minecraft.world.level.validation.DirectoryValidator directoryValidator() -> bb
     3039:3045:float getTickTargetMillis(float) -> a
     3095:3095:java.lang.String getLauncherBrand() -> bc
     2932:2932:net.minecraft.network.chat.Style lambda$grabHugeScreenshot$55(java.io.File,net.minecraft.network.chat.Style) -> a
@@ -372,7 +374,8 @@ net.minecraft.client.Minecraft -> fgo:
  */
 class Minecraft(around: Any) : MimickedClass(around) {
 	companion object {
-		val clazz: Class<*> = loadClass(net_minecraft_client_Minecraft)
+		val clazz: Class<*> by lazy { loadClass(net_minecraft_client_Minecraft) }
+		val classDesc: ClassDesc = ClassDesc.of(net_minecraft_client_Minecraft)
 		fun getInstance(): Minecraft = Minecraft(clazz.getMethod("Q").invoke(null))
 	}
 
@@ -383,6 +386,18 @@ class Minecraft(around: Any) : MimickedClass(around) {
 			val level = clazz.getField("r").get(around) ?: return null
 			return ClientLevel(level)
 		}
+
+	fun getBlockEntityRenderDispatcher(): BlockEntityRenderDispatcher = BlockEntityRenderDispatcher(
+		clazz.getMethod("aq").invoke(around)
+	)
+
+	fun getEntityModels(): EntityModelSet = EntityModelSet(
+		clazz.getMethod("aP").invoke(around)
+	)
+
+	fun directoryValidator(): DirectoryValidator = DirectoryValidator(
+		clazz.getMethod("bb").invoke(around)
+	)
 
 	fun getWindow(): Window = Window(
 		clazz.getMethod("aM").invoke(around)

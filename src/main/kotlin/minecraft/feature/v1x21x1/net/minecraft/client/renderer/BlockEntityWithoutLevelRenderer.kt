@@ -2,6 +2,11 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.clie
 
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.model.geom.EntityModelSet
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemDisplayContext
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer
 import java.lang.constant.ClassDesc
 
@@ -30,9 +35,25 @@ net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer -> gem:
     53:53:net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity lambda$static$0(net.minecraft.world.item.DyeColor) -> a
     53:54:void <clinit>() -> <clinit>
  */
-class BlockEntityWithoutLevelRenderer(around: Any) : MimickedClass(around) {
+open class BlockEntityWithoutLevelRenderer(around: Any) : MimickedClass(around) {
 	companion object {
 		val clazz: Class<*> = loadClass(net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
 	}
+
+	constructor(
+		blockEntityRenderDispatcher: BlockEntityRenderDispatcher,
+		entityModelSet: EntityModelSet
+	) : this(clazz.getConstructor(BlockEntityRenderDispatcher.clazz, EntityModelSet.clazz)
+		.newInstance(blockEntityRenderDispatcher.around, entityModelSet.around)
+	)
+
+	open fun renderByItem(
+		stack: ItemStack,
+		displayContext: ItemDisplayContext,
+		poseStack: PoseStack,
+		bufferSource: MultiBufferSource,
+		packedLight: Int,
+		packedOverlay: Int,
+	) {}
 }
