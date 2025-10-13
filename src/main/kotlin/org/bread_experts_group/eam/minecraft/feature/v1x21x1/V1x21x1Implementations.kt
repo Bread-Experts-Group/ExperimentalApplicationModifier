@@ -1,7 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
+import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.feature.Implementations
-import org.bread_experts_group.eam.minecraft.feature.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.feature.invokeStaticMethodWithLocalVars
 import org.bread_experts_group.eam.minecraft.feature.invokeStaticMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.VertexConsumer
@@ -26,13 +27,7 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.serve
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
-import org.bread_experts_group.eam.classDesc
-import org.bread_experts_group.eam.getAroundClassName
-import org.bread_experts_group.eam.getLocalVariableInfo
-import org.bread_experts_group.eam.getMimicParameters
-import org.bread_experts_group.eam.getNativeLocalVariable
 import org.bread_experts_group.eam.printLocalVarInfo
-import org.bread_experts_group.eam.printParameterInfo
 import java.awt.Color
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder
@@ -43,7 +38,6 @@ import java.lang.classfile.CodeModel
 import java.lang.classfile.FieldModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.instruction.LineNumber
-import java.lang.classfile.instruction.LocalVariable
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
@@ -54,7 +48,6 @@ import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.util.Collection
-import java.util.LinkedHashSet
 import java.util.Set
 import kotlin.io.path.Path
 import kotlin.reflect.jvm.javaMethod
@@ -134,29 +127,13 @@ object V1x21x1Implementations : Implementations() {
 					BakedModel.classDesc
 				)) {
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						codeBuilder.with(codeElement)
-						if (codeElement is LineNumber && codeElement.line() == 127)
-							codeBuilder
-								.invokeSpecialNewMimicClass(ItemStack.mimicClassDesc, 1)
-								.invokeSpecialNewMimicClass(ItemDisplayContext.mimicClassDesc, 2)
-								.invokeSpecialNewMimicClass(PoseStack.mimicClassDesc, 4)
-								.invokeSpecialNewMimicClass(MultiBufferSource.mimicClassDesc, 5)
-								.iload(6)
-								.iload(7)
-								.invokestatic(
-									ClassDesc.of(this::class.qualifiedName),
-									"renderBEWLR",
-									MethodTypeDesc.of(
-										ConstantDescs.CD_void,
-										ItemStack.mimicClassDesc,
-										ItemDisplayContext.mimicClassDesc,
-										PoseStack.mimicClassDesc,
-										MultiBufferSource.mimicClassDesc,
-										ConstantDescs.CD_int,
-										ConstantDescs.CD_int
-									)
-								)
+					if (methodElement is CodeModel) {
+						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
+						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+							codeBuilder.with(codeElement)
+							if (codeElement is LineNumber && codeElement.line() == 127)
+								codeBuilder.invokeStaticMethodWithLocalVars(::renderBEWLR.javaMethod, localVars)
+						}
 					}
 				}
 			} else if (!p.invoke(classBuilder, classElement)) classBuilder.with(classElement)
@@ -283,39 +260,30 @@ object V1x21x1Implementations : Implementations() {
 		}
 
 		transformClass(
-			net_minecraft_client_gui_screens_TitleScreen
+			net_minecraft_client_gui_screens_TitleScreen,
+			true
 		) { classBuilder, classElement ->
-			val r = invokeAtMethodReturns(
-				net_minecraft_client_gui_screens_TitleScreen_render,
-				MethodTypeDesc.of(
-					ConstantDescs.CD_void,
-					GuiGraphics.classDesc, ConstantDescs.CD_int, ConstantDescs.CD_int,
-					ConstantDescs.CD_float
-				),
-				::renderTitleScreen.javaMethod!!
-			)
 			if (
 				classElement is MethodModel &&
 				classElement.methodName().equalsString(net_minecraft_client_gui_screens_TitleScreen_render) &&
 				classElement.methodTypeSymbol() == MethodTypeDesc.of(
 					ConstantDescs.CD_void,
-					GuiGraphics.classDesc, ConstantDescs.CD_int, ConstantDescs.CD_int,
+					GuiGraphics.classDesc,
+					ConstantDescs.CD_int,
+					ConstantDescs.CD_int,
 					ConstantDescs.CD_float
 				)) {
-				var localVars: List<LocalVariable> = listOf()
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-					if (methodElement is CodeModel) localVars = methodBuilder.getLocalVariableInfo(methodElement)
-					methodBuilder.with(methodElement)
+					if (methodElement is CodeModel) {
+						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
+						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+							if (codeElement is LineNumber && codeElement.line() == 273)
+								codeBuilder.invokeStaticMethodWithLocalVars(::renderTitleScreen.javaMethod, localVars)
+							codeBuilder.with(codeElement)
+						}
+					}
 				}
-				val method = ::renderTitleScreen.javaMethod!!
-				val mimicParams = method.getMimicParameters()
-				mimicParams.printParameterInfo()
-				localVars.printLocalVarInfo()
-				mimicParams.forEach { param ->
-					val nativeName = param.type.getAroundClassName()
-					println("Mimic parameter ${param.classDesc.displayName()}[$nativeName] -> Native parameter ${localVars.getNativeLocalVariable(nativeName)}")
-				}
-			} else if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
+			} else classBuilder.with(classElement)
 		}
 	}
 
@@ -415,7 +383,7 @@ object V1x21x1Implementations : Implementations() {
 
 	@JvmStatic
 	@Suppress("unused")
-	fun renderTitleScreen(titleScreen: Any, guiGraphics: GuiGraphics) {
+	fun renderTitleScreen(guiGraphics: GuiGraphics) {
 		val poseStack = guiGraphics.pose()
 		poseStack.pushPose()
 		poseStack.translate(10f, 3f, 0f)
@@ -465,6 +433,7 @@ object V1x21x1Implementations : Implementations() {
 			) {
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						// todo replace with invokeStaticMethodWithLocalVars
 						if (codeElement is ReturnInstruction) codeBuilder.invokeStaticMethodWithMimics(method)
 						codeBuilder.with(codeElement)
 					}

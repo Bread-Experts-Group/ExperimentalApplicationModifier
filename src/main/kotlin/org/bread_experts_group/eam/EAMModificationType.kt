@@ -16,7 +16,7 @@ enum class EAMModificationType(
 	val instrument: (instrumentation: Instrumentation, args: Array<String>) -> Unit
 ) : Mappable<EAMModificationType, String> {
 	MINECRAFT(
-		"org/bread_experts_group/minecraft_experts_group/minecraft",
+		"minecraft",
 		{ instrumentation, args ->
 			val scanning = mutableMapOf<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>()
 			val versionFlag = Flag(

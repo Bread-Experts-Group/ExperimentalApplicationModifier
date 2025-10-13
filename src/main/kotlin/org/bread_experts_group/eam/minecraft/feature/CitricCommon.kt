@@ -1,12 +1,61 @@
 package org.bread_experts_group.eam.minecraft.feature
 
+import org.bread_experts_group.eam.classDesc
+import org.bread_experts_group.eam.getAroundClassName
+import org.bread_experts_group.eam.getNativeLocalVariable
 import java.lang.classfile.CodeBuilder
 import java.lang.classfile.constantpool.MethodRefEntry
+import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import kotlin.reflect.full.isSubclassOf
+
+fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List<LocalVariable>): CodeBuilder {
+	if (method == null) throw NullPointerException("Method is somehow null??")
+	val params = method.parameters
+	params.forEach { parameter ->
+		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
+			val native = localVars.getNativeLocalVariable(parameter.type.getAroundClassName())
+			this.invokeSpecialNewMimicClass(
+				parameter.classDesc,
+				native.slot()
+			)
+		} else if (parameter.type.isPrimitive) {
+			when (val c = parameter.type) {
+				Boolean::class.java -> {
+					val variable = localVars.getNativeLocalVariable(c.name)
+					iload(variable.slot())
+				}
+				Float::class.java -> {
+					val variable = localVars.getNativeLocalVariable(c.name)
+					fload(variable.slot())
+				}
+				Int::class.java -> {
+					val variable = localVars.getNativeLocalVariable(c.name)
+					iload(variable.slot())
+				}
+			}
+		}
+	}
+	this.invokestatic(
+		ClassDesc.of(method.declaringClass.name),
+		method.name,
+		MethodTypeDesc.of(
+			ConstantDescs.CD_void,
+			params.map { if (it.type.isPrimitive) {
+				when (it.type) {
+					Int::class.java -> ConstantDescs.CD_int
+					Float::class.java -> ConstantDescs.CD_float
+					Boolean::class.java -> ConstantDescs.CD_boolean
+					else -> ConstantDescs.CD_Object
+				}
+			} else it.classDesc }
+		)
+	)
+	return this
+}
 
 fun CodeBuilder.prepareMimicry(method: Method): MethodTypeDesc {
 	var lVarPos = 0
@@ -71,8 +120,7 @@ fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuild
 
 fun CodeBuilder.invokeSpecialNewMimicClass(
 	classDesc: ClassDesc,
-	slot: Int,
-	isInterface: Boolean = false
+	slot: Int
 ): CodeBuilder = this
 	.new_(classDesc)
 	.dup()
@@ -83,6 +131,5 @@ fun CodeBuilder.invokeSpecialNewMimicClass(
 		MethodTypeDesc.of(
 			ConstantDescs.CD_void,
 			ConstantDescs.CD_Object
-		),
-		isInterface
+		)
 	)

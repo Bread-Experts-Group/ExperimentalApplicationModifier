@@ -1,6 +1,7 @@
 package org.bread_experts_group.eam
 
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import java.lang.classfile.CodeElement
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.instruction.LocalVariable
@@ -44,6 +45,13 @@ fun List<Parameter>.printParameterInfo() {
 	}
 }
 
+fun List<Parameter>.printMatchingNativeLocalVars(localVars: List<LocalVariable>) {
+	this.forEach { param ->
+		val nativeName = param.type.getAroundClassName()
+		println("Mimic parameter ${param.classDesc.displayName()}[$nativeName] -> Native parameter ${localVars.getNativeLocalVariable(nativeName)}")
+	}
+}
+
 fun List<LocalVariable>.getNativeLocalVariable(target: String): LocalVariable =
 	this.first { it.typeSymbol().displayName() == target }
 
@@ -60,6 +68,10 @@ fun MethodBuilder.getLocalVariableInfo(code: CodeModel): List<LocalVariable> {
 		this.with(code)
 	}
 	return list
+}
+
+fun populateLocalVarList(code: CodeElement, destination: MutableList<LocalVariable>) {
+	if (code is LocalVariable) destination.add(code)
 }
 
 fun MethodBuilder.populateVariableList(code: CodeModel, destination: MutableList<LocalVariable>) {
