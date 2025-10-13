@@ -1,4 +1,4 @@
-package org.bread_experts_group.eam.org.bread_experts_group
+package org.bread_experts_group.eam
 
 import org.bread_experts_group.coder.Mappable.Companion.id
 import org.bread_experts_group.command_line.Flag
