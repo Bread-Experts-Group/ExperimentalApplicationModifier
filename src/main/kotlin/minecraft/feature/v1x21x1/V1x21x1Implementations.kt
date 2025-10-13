@@ -1,5 +1,9 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
+import org.bread_experts_group.eam.classDesc
+import org.bread_experts_group.eam.getAroundClassName
+import org.bread_experts_group.eam.getLocalVariableInfo
+import org.bread_experts_group.eam.getMimicParameters
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.invokeSpecialNewMimicClass
 import org.bread_experts_group.eam.minecraft.feature.invokeStaticMethodWithMimics
@@ -13,7 +17,6 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.clien
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.ItemBlockRenderTypes
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.RenderType
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model.ModelBakery
@@ -27,6 +30,9 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.serve
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
+import org.bread_experts_group.eam.getNativeLocalVariable
+import org.bread_experts_group.eam.printParameterInfo
+import org.bread_experts_group.eam.printLocalVarInfo
 import java.awt.Color
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder
@@ -37,6 +43,7 @@ import java.lang.classfile.CodeModel
 import java.lang.classfile.FieldModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.instruction.LineNumber
+import java.lang.classfile.instruction.LocalVariable
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
@@ -58,21 +65,6 @@ object V1x21x1Implementations : Implementations() {
 				net_minecraft_core_registries_BuiltInRegistries_createContents,
 				MethodTypeDesc.of(ConstantDescs.CD_void),
 				::afterCreateContents.javaMethod!!
-			)
-			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
-		}
-
-		transformClass(
-			net_minecraft_client_gui_screens_TitleScreen
-		) { classBuilder, classElement ->
-			val r = invokeAtMethodReturns(
-				net_minecraft_client_gui_screens_TitleScreen_render,
-				MethodTypeDesc.of(
-					ConstantDescs.CD_void,
-					GuiGraphics.classDesc, ConstantDescs.CD_int, ConstantDescs.CD_int,
-					ConstantDescs.CD_float
-				),
-				::renderTitleScreen.javaMethod!!
 			)
 			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 		}
@@ -105,25 +97,6 @@ object V1x21x1Implementations : Implementations() {
 						p.invoke(classBuilder, classElement))
 			) classBuilder.with(classElement)
 		}
-
-//		transformClass(
-//			net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer
-//		) { classBuilder, classElement ->
-//			val r = invokeAtMethodReturns(
-//				"a",
-//				MethodTypeDesc.of(
-//					ConstantDescs.CD_void,
-//					ItemStack.classDesc,
-//					ItemDisplayContext.classDesc,
-//					PoseStack.classDesc,
-//					MultiBufferSource.classDesc,
-//					ConstantDescs.CD_int,
-//					ConstantDescs.CD_int
-//				),
-//				::renderBEWLR.javaMethod!!
-//			)
-//			if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
-//		}
 
 		transformClass(
 			net_minecraft_client_renderer_entity_ItemRenderer,
@@ -233,43 +206,46 @@ object V1x21x1Implementations : Implementations() {
 				classElement.methodName().equalsString("<init>")
 			) {
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						if (
-							codeElement is LineNumber &&
-							codeElement.line() == 27
+					if (methodElement is CodeModel) {
+						methodBuilder.getLocalVariableInfo(methodElement).printLocalVarInfo()
+						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+							if (
+								codeElement is LineNumber &&
+								codeElement.line() == 27
 							) {
-							codeBuilder
-								.aload(0)
-								.new_(ClassDesc.of(java.util.LinkedHashSet::class.java.name))
-								.dup()
-								.aload(1)
-								.invokestatic(
-									ClassDesc.of(java.util.List::class.java.name),
-									"of",
-									MethodTypeDesc.of(
+								codeBuilder
+									.aload(0)
+									.new_(ClassDesc.of(java.util.LinkedHashSet::class.java.name))
+									.dup()
+									.aload(1)
+									.invokestatic(
 										ClassDesc.of(java.util.List::class.java.name),
-										ConstantDescs.CD_Object.arrayType(1)
-									),
-									true
-								)
-								.invokespecial(
-									ClassDesc.of(java.util.LinkedHashSet::class.java.name),
-									"<init>",
-									MethodTypeDesc.of(
-										ConstantDescs.CD_void,
-										ClassDesc.of(java.util.Collection::class.java.name)
+										"of",
+										MethodTypeDesc.of(
+											ClassDesc.of(java.util.List::class.java.name),
+											ConstantDescs.CD_Object.arrayType(1)
+										),
+										true
 									)
-								)
-								.putfield(
-									ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
-									"a",
-									ClassDesc.of(java.util.Set::class.java.name)
-								)
-								.aload(0)
-								.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
-								.return_()
+									.invokespecial(
+										ClassDesc.of(java.util.LinkedHashSet::class.java.name),
+										"<init>",
+										MethodTypeDesc.of(
+											ConstantDescs.CD_void,
+											ClassDesc.of(java.util.Collection::class.java.name)
+										)
+									)
+									.putfield(
+										ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
+										"a",
+										ClassDesc.of(java.util.Set::class.java.name)
+									)
+									.aload(0)
+									.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
+									.return_()
+							}
+							codeBuilder.with(codeElement)
 						}
-						codeBuilder.with(codeElement)
 					}
 				}
 				classBuilder.withMethod(
@@ -302,6 +278,42 @@ object V1x21x1Implementations : Implementations() {
 				}
 			} else classBuilder.with(classElement)
 		}
+
+		transformClass(
+			net_minecraft_client_gui_screens_TitleScreen
+		) { classBuilder, classElement ->
+			val r = invokeAtMethodReturns(
+				net_minecraft_client_gui_screens_TitleScreen_render,
+				MethodTypeDesc.of(
+					ConstantDescs.CD_void,
+					GuiGraphics.classDesc, ConstantDescs.CD_int, ConstantDescs.CD_int,
+					ConstantDescs.CD_float
+				),
+				::renderTitleScreen.javaMethod!!
+			)
+			if (
+				classElement is MethodModel &&
+				classElement.methodName().equalsString(net_minecraft_client_gui_screens_TitleScreen_render) &&
+				classElement.methodTypeSymbol() == MethodTypeDesc.of(
+					ConstantDescs.CD_void,
+					GuiGraphics.classDesc, ConstantDescs.CD_int, ConstantDescs.CD_int,
+					ConstantDescs.CD_float
+				)) {
+				var localVars: List<LocalVariable> = listOf()
+				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
+					if (methodElement is CodeModel) localVars = methodBuilder.getLocalVariableInfo(methodElement)
+					methodBuilder.with(methodElement)
+				}
+				val method = ::renderTitleScreen.javaMethod!!
+				val mimicParams = method.getMimicParameters()
+				mimicParams.printParameterInfo()
+				localVars.printLocalVarInfo()
+				mimicParams.forEach { param ->
+					val nativeName = param.type.getAroundClassName()
+					println("Mimic parameter ${param.classDesc.displayName()}[$nativeName] -> Native parameter ${localVars.getNativeLocalVariable(nativeName)}")
+				}
+			} else if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
+		}
 	}
 
 	// todo temporary solution until i write adding layers directly into Gui itself
@@ -323,6 +335,7 @@ object V1x21x1Implementations : Implementations() {
 		val path = fs.getPath(array[1])
 		val sources = listOf(
 			FolderRepositorySource(path, PackType.CLIENT_RESOURCES, PackSource.DEFAULT, validator)
+//			ClientPackSource(path, validator)
 		)
 		self.addSources(sources)
 		println("adding additional pack sources")
