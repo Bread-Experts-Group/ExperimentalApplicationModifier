@@ -8,6 +8,7 @@ import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
@@ -80,3 +81,9 @@ fun MethodBuilder.populateVariableList(code: CodeModel, destination: MutableList
 
 val Parameter.classDesc: ClassDesc
 	get() = ClassDesc.of(this.type.name)
+
+val Class<*>.classDesc: ClassDesc
+	get() = ClassDesc.of(this.name)
+
+val KClass<*>.classDesc: ClassDesc
+	get() = ClassDesc.of(this.qualifiedName)

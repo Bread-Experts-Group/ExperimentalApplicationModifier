@@ -153,9 +153,8 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_
  */
 class BuiltInRegistries(around: Any) : MimickedClass(around) {
 	companion object {
-		private val clazz: Class<*> = loadClass(
-			net_minecraft_core_registries_BuiltInRegistries
-		)
+		private val clazz: Class<*> = loadClass(net_minecraft_core_registries_BuiltInRegistries)
+
 		val BLOCK: DefaultedRegistry<Block>
 			get() = DefaultedRegistry(
 				Block::class.java,

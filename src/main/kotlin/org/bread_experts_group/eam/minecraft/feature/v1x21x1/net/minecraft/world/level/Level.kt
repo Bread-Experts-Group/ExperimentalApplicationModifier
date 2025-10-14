@@ -156,5 +156,6 @@ open class Level(around: Any) : MimickedClass(around) {
 			net_minecraft_world_level_Level
 		)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(Level::class.qualifiedName)
 	}
 }

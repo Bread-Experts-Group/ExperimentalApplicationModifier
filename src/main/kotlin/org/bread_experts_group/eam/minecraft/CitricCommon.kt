@@ -1,8 +1,9 @@
-package org.bread_experts_group.eam.minecraft.feature
+package org.bread_experts_group.eam.minecraft
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getAroundClassName
 import org.bread_experts_group.eam.getNativeLocalVariable
+import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import java.lang.classfile.CodeBuilder
 import java.lang.classfile.constantpool.MethodRefEntry
 import java.lang.classfile.instruction.LocalVariable
@@ -104,8 +105,8 @@ fun CodeBuilder.getMethodMimicry(method: Method): MethodRefEntry = this.constant
 	this.prepareMimicry(method)
 )
 
-fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
-	this.invokevirtual(this.getMethodMimicry(method))
+//fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
+//	this.invokevirtual(this.getMethodMimicry(method))
 
 fun CodeBuilder.invokeStaticMethodWithMimics(method: Method): CodeBuilder =
 	this.invokestatic(this.getMethodMimicry(method))

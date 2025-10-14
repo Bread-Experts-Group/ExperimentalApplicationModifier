@@ -26,8 +26,6 @@ class LayeredDraw(around: Any) : MimickedClass(around) {
 	}
 
 	fun add(layer: Layer) {
-		println(layer)
-		println(layer.around)
 		clazz.getMethod("a", Layer.clazz).invoke(around, layer.around)
 	}
 

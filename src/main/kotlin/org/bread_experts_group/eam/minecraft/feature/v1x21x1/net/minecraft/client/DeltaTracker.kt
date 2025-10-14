@@ -21,5 +21,6 @@ class DeltaTracker(around: Any) : MimickedClass(around) {
 			net_minecraft_client_DeltaTracker
 		)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(DeltaTracker::class.qualifiedName)
 	}
 }

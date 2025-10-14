@@ -9,18 +9,20 @@ import java.lang.instrument.Instrumentation
 import java.security.ProtectionDomain
 import java.util.*
 
+typealias Scanning = MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
+
 abstract class Implementations {
 	protected val classFile: ClassFile = ClassFile.of(
 		ClassFile.StackMapsOption.GENERATE_STACK_MAPS
 	)
 
 	private lateinit var instrumentation: Instrumentation
-	protected lateinit var scanning: MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
+	protected lateinit var scanning: Scanning
 	protected val mods: List<MinecraftMod> = ServiceLoader.load(MinecraftMod::class.java).toList()
 
 	fun implement(
 		instrumentation: Instrumentation,
-		scanning: MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
+		scanning: Scanning
 	) {
 		this.instrumentation = instrumentation
 		this.scanning = scanning

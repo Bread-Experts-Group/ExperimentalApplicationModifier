@@ -2,13 +2,13 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
 import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.feature.Identifier
-import org.bread_experts_group.eam.minecraft.feature.getReferenceField
-import org.bread_experts_group.eam.minecraft.feature.invokeVirtualMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayer
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayerFeature
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.DeltaTracker
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.LayeredDraw
+import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
 import java.lang.classfile.ClassFile.ACC_FINAL
 import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PUBLIC
@@ -17,7 +17,6 @@ import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
-import kotlin.reflect.jvm.javaMethod
 
 class MinecraftLayerFeature1x21x1 : MinecraftLayerFeature() {
 	override val source: ImplementationSource = ImplementationSource.JVM_NATIVE
@@ -45,7 +44,17 @@ class MinecraftLayerFeature1x21x1 : MinecraftLayerFeature() {
 				) { codeBuilder ->
 					codeBuilder
 						.getReferenceField(name, MinecraftLayer.mimicClassDesc)
-						.invokeVirtualMethodWithMimics(MinecraftLayer::render.javaMethod!!)
+						.invokeSpecialNewMimicClass(GuiGraphics.mimicClassDesc, 1)
+						.invokeSpecialNewMimicClass(DeltaTracker.mimicClassDesc, 2)
+						.invokevirtual(
+							MinecraftLayer.mimicClassDesc,
+							"render",
+							MethodTypeDesc.of(
+								ConstantDescs.CD_void,
+								GuiGraphics.mimicClassDesc,
+								DeltaTracker.mimicClassDesc
+							)
+						)
 						.return_()
 				}
 				classBuilder.withMethodBody(

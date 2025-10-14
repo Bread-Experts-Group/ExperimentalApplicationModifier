@@ -1,7 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
 const val net_minecraft_resources_ResourceLocation: String = "akr"
-const val net_minecraft_core_registries_Registry: String = "jz"
+const val net_minecraft_resources_ResourceKey: String = "akq"
+const val net_minecraft_core_Registry: String = "jz"
 const val net_minecraft_core_DefaultedRegistry: String = "jh"
 const val net_minecraft_core_registries_BuiltInRegistries: String = "lt"
 const val net_minecraft_core_registries_BuiltInRegistries_createContents: String = "b"
@@ -21,6 +22,7 @@ const val net_minecraft_world_item_Item_useOn: String = "a"
 const val net_minecraft_world_item_BlockItem: String = "cso"
 const val net_minecraft_world_item_Items: String = "cut"
 const val net_minecraft_world_item_ItemStack: String = "cuq"
+const val net_minecraft_world_item_CreativeModeTabs: String = "ctb"
 const val net_minecraft_world_item_context_UseOnContext: String = "cyf"
 const val net_minecraft_world_item_ItemDisplayContext: String = "cun"
 const val net_minecraft_world_food_FoodProperties: String = "cpr"

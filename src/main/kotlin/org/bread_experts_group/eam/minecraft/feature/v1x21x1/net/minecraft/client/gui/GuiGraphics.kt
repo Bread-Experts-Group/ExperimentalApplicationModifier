@@ -107,6 +107,7 @@ class GuiGraphics(around: Any) : MimickedClass(around) {
 			net_minecraft_client_gui_GuiGraphics
 		)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(GuiGraphics::class.qualifiedName)
 	}
 
 	fun pose(): PoseStack =

@@ -2,7 +2,6 @@ package org.bread_experts_group.eam.minecraft.feature.item
 
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.InteractionResult
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.entity.Entity
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Item
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.context.UseOnContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.Level
@@ -14,7 +13,6 @@ open class MinecraftItem {
 	}
 
 	open fun inventoryTick(
-		item: Item,
 		stack: ItemStack,
 		level: Level,
 		entity: Entity,

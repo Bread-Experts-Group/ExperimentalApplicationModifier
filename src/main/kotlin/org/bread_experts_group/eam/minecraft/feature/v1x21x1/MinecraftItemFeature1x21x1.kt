@@ -4,8 +4,6 @@ import org.bread_experts_group.api.FeatureExpression
 import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.Identifier
-import org.bread_experts_group.eam.minecraft.feature.getReferenceField
-import org.bread_experts_group.eam.minecraft.feature.invokeVirtualMethodWithMimics
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
@@ -18,6 +16,8 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Items
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.context.UseOnContext
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.Level
+import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
 import java.lang.classfile.ClassFile.ACC_FINAL
 import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PUBLIC
@@ -26,7 +26,6 @@ import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
-import kotlin.reflect.jvm.javaMethod
 
 class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 	override val source: ImplementationSource = ImplementationSource.JVM_NATIVE
@@ -55,19 +54,39 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 					classBuilder.withSuperclass(Item.classDesc)
 					item::class.java.declaredMethods.forEach {
 						when (it.name) {
-							"inventoryTick" -> classBuilder.withMethodBody(
-								net_minecraft_world_item_Item_inventoryTick,
-								MethodTypeDesc.of(
-									ConstantDescs.CD_void,
-									ItemStack.classDesc, Level.classDesc, Entity.classDesc,
-									ConstantDescs.CD_int, ConstantDescs.CD_boolean
-								),
-								ACC_PUBLIC or ACC_FINAL
-							) { codeBuilder ->
-								codeBuilder
-									.getReferenceField(name, MinecraftItem.mimicClassDesc)
-									.invokeVirtualMethodWithMimics(MinecraftItem::inventoryTick.javaMethod!!)
-									.return_()
+							"inventoryTick" -> {
+								// todo potential idea to invoking the needed classes/primitives using the params here..
+								val params = listOf(ItemStack.classDesc, Level.classDesc, Entity.classDesc,
+									ConstantDescs.CD_int, ConstantDescs.CD_boolean)
+								classBuilder.withMethodBody(
+									net_minecraft_world_item_Item_inventoryTick,
+									MethodTypeDesc.of(
+										ConstantDescs.CD_void,
+										params
+									),
+									ACC_PUBLIC or ACC_FINAL
+								) { codeBuilder ->
+									codeBuilder
+										.getReferenceField(name, MinecraftItem.mimicClassDesc)
+										.invokeSpecialNewMimicClass(ItemStack.mimicClassDesc, 1)
+										.invokeSpecialNewMimicClass(Level.mimicClassDesc, 2)
+										.invokeSpecialNewMimicClass(Entity.mimicClassDesc, 3)
+										.iload(4)
+										.iload(5)
+										.invokevirtual(
+											MinecraftItem.mimicClassDesc,
+											"inventoryTick",
+											MethodTypeDesc.of(
+												ConstantDescs.CD_void,
+												ItemStack.mimicClassDesc,
+												Level.mimicClassDesc,
+												Entity.mimicClassDesc,
+												ConstantDescs.CD_int,
+												ConstantDescs.CD_boolean
+											)
+										)
+										.return_()
+								}
 							}
 							"useOn" -> classBuilder.withMethodBody(
 								net_minecraft_world_item_Item_useOn,

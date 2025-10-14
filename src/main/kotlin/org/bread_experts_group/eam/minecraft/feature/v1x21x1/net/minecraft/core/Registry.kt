@@ -2,7 +2,8 @@ package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core
 
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_registries_Registry
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceKey
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_Registry
 
 /*
     net.minecraft.resources.ResourceKey key() -> d
@@ -31,7 +32,6 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_
     boolean containsKey(net.minecraft.resources.ResourceKey) -> d
     122:122:java.lang.Object register(net.minecraft.core.Registry,java.lang.String,java.lang.Object) -> a
     126:126:java.lang.Object register(net.minecraft.core.Registry,net.minecraft.resources.ResourceLocation,java.lang.Object) -> a
-    130:131:java.lang.Object register(net.minecraft.core.Registry,net.minecraft.resources.ResourceKey,java.lang.Object) -> a
     135:135:net.minecraft.core.Holder$Reference registerForHolder(net.minecraft.core.Registry,net.minecraft.resources.ResourceKey,java.lang.Object) -> b
     139:139:net.minecraft.core.Holder$Reference registerForHolder(net.minecraft.core.Registry,net.minecraft.resources.ResourceLocation,java.lang.Object) -> b
     net.minecraft.core.Registry freeze() -> m
@@ -68,8 +68,11 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_
  */
 abstract class Registry<T>(around: Any) : MimickedClass(around) {
 	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_core_registries_Registry
-		)
+		val clazz: Class<*> = loadClass(net_minecraft_core_Registry)
+
+		fun <V, T : V> register(registry: Registry<V>, resourceKey: ResourceKey<V>, `object`: T) {
+			clazz.getMethod("a", clazz, ResourceKey.clazz, Object::class.java)
+				.invoke(null, registry.around, arrayOf(resourceKey), `object`)
+		}
 	}
 }

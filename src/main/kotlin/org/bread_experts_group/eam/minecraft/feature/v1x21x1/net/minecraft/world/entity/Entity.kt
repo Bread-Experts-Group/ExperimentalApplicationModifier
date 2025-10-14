@@ -579,5 +579,6 @@ class Entity(around: Any) : MimickedClass(around) {
 			net_minecraft_world_entity_Entity
 		)
 		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(Entity::class.qualifiedName)
 	}
 }

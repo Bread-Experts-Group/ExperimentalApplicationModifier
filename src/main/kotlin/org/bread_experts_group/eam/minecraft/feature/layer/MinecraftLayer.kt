@@ -11,7 +11,7 @@ abstract class MinecraftLayer {
 
 	// todo 1.21 class...
 	abstract fun render(
-		self: Any,
-		guiGraphics: GuiGraphics, deltaTracker: DeltaTracker
+		guiGraphics: GuiGraphics,
+		deltaTracker: DeltaTracker
 	)
 }
