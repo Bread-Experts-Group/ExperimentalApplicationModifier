@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_blaze3d_vertex_VertexConsumer
 import java.lang.constant.ClassDesc
@@ -29,10 +31,9 @@ com.mojang.blaze3d.vertex.VertexConsumer -> fbm:
     134:135:com.mojang.blaze3d.vertex.VertexConsumer setNormal(com.mojang.blaze3d.vertex.PoseStack$Pose,float,float,float) -> b
  */
 class VertexConsumer(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			com_mojang_blaze3d_vertex_VertexConsumer
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(com_mojang_blaze3d_vertex_VertexConsumer)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = VertexConsumer::class.classDesc
 	}
 }

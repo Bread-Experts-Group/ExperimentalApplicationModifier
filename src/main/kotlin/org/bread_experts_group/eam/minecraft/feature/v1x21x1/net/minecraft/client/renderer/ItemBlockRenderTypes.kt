@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_renderer_ItemBlockRenderTypes
+import java.lang.constant.ClassDesc
 
 /*
 net.minecraft.client.renderer.ItemBlockRenderTypes -> geu:
@@ -23,10 +26,10 @@ net.minecraft.client.renderer.ItemBlockRenderTypes -> geu:
     22:365:void <clinit>() -> <clinit>
  */
 class ItemBlockRenderTypes(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_renderer_ItemBlockRenderTypes
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_ItemBlockRenderTypes)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ItemBlockRenderTypes::class.classDesc
 
 		fun getRenderType(stack: ItemStack, cull: Boolean): RenderType = RenderType(
 			clazz.getMethod("a", ItemStack.clazz, Boolean::class.java)

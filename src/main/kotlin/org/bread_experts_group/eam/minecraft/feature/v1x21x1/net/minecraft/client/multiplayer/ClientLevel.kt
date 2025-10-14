@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.multiplayer
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.Level
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_multiplayer_ClientLevel
 import java.lang.constant.ClassDesc
@@ -188,10 +190,9 @@ net.minecraft.client.multiplayer.ClientLevel$EntityCallbacks -> fzf$b:
     964:964:void onCreated(java.lang.Object) -> g
  */
 class ClientLevel(around: Any) : Level(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_multiplayer_ClientLevel
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_multiplayer_ClientLevel)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ClientLevel::class.classDesc
 	}
 }

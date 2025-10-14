@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.math
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_math_Axis
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.org.joml.Quaternionf
+import java.lang.constant.ClassDesc
 
 /*
 com.mojang.math.Axis -> a:
@@ -12,9 +15,10 @@ com.mojang.math.Axis -> a:
     17:17:org.joml.Quaternionf lambda$of$6(org.joml.Vector3f,float) -> a
  */
 class Axis(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> =
-			loadClass(com_mojang_math_Axis)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(com_mojang_math_Axis)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Axis::class.classDesc
 
 		val XN: Axis = Axis(clazz.getField("a").get(null))
 		val XP: Axis = Axis(clazz.getField("b").get(null))

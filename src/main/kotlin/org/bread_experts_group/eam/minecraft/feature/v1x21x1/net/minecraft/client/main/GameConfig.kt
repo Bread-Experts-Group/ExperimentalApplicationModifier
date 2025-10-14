@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.main
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_main_GameConfig
 import java.lang.constant.ClassDesc
@@ -54,10 +56,9 @@ net.minecraft.client.main.GameConfig$UserData -> fua$d:
     51:56:void <init>(net.minecraft.client.User,com.mojang.authlib.properties.PropertyMap,com.mojang.authlib.properties.PropertyMap,java.net.Proxy) -> <init>
  */
 class GameConfig(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_main_GameConfig
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_main_GameConfig)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = GameConfig::class.classDesc
 	}
 }

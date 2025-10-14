@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.entity
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.VertexConsumer
@@ -96,11 +98,10 @@ net.minecraft.client.renderer.entity.LivingEntityRenderer -> glk:
     31:31:void <clinit>() -> <clinit>
  */
 class ItemRenderer(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_renderer_entity_ItemRenderer
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_entity_ItemRenderer)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ItemRenderer::class.classDesc
 
 		fun getFoilBufferDirect(
 			bufferSource: MultiBufferSource,

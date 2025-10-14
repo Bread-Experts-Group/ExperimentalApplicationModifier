@@ -1,11 +1,14 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.registries
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.DefaultedRegistry
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.Item
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_registries_BuiltInRegistries
+import java.lang.constant.ClassDesc
 
 /*
     org.slf4j.Logger LOGGER -> aB
@@ -152,8 +155,10 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_
     132:218:void <clinit>() -> <clinit>
  */
 class BuiltInRegistries(around: Any) : MimickedClass(around) {
-	companion object {
-		private val clazz: Class<*> = loadClass(net_minecraft_core_registries_BuiltInRegistries)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_core_registries_BuiltInRegistries)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = BuiltInRegistries::class.classDesc
 
 		val BLOCK: DefaultedRegistry<Block>
 			get() = DefaultedRegistry(

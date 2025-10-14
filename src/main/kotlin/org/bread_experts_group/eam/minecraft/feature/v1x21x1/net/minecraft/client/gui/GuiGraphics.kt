@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
@@ -102,12 +104,10 @@ net.minecraft.client.gui.GuiGraphics -> fhz:
 */
 
 class GuiGraphics(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_gui_GuiGraphics
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-		val mimicClassDesc: ClassDesc = ClassDesc.of(GuiGraphics::class.qualifiedName)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_gui_GuiGraphics)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = GuiGraphics::class.classDesc
 	}
 
 	fun pose(): PoseStack =

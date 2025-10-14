@@ -1,11 +1,14 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core.IdMapper
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.block.state.StateDefinition
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_level_block_Block
+import java.lang.constant.ClassDesc
 
 /*
 net.minecraft.world.level.block.Block -> dfy:
@@ -103,10 +106,11 @@ net.minecraft.world.level.block.Block -> dfy:
     77:254:void <clinit>() -> <clinit>
  */
 class Block(around: Any) : BlockBehaviour(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_world_level_block_Block
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_Block)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Block::class.classDesc
+
 		val BLOCK_STATE_REGISTRY: IdMapper<BlockState>
 			get() = IdMapper(
 				clazz.getField("q").get(null)

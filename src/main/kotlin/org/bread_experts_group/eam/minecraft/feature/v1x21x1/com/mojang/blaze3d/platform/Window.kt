@@ -1,8 +1,11 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.platform
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_blaze3d_platform_Window
+import java.lang.constant.ClassDesc
 
 /*
     100:100:void <clinit>() -> <clinit>
@@ -84,10 +87,10 @@ com.mojang.blaze3d.platform.Window -> fam:
     474:475:void updateRawMouseInput(boolean) -> b
  */
 class Window(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			com_mojang_blaze3d_platform_Window
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(com_mojang_blaze3d_platform_Window)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Window::class.classDesc
 	}
 
 	fun setTitle(title: String) {

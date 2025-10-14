@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_item_Items
+import java.lang.constant.ClassDesc
 
 /*
     net.minecraft.world.item.Item STONE -> b
@@ -1363,10 +1366,10 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
 
  */
 class Items(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_world_item_Items
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_world_item_Items)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Items::class.classDesc
 
 		fun registerBlock(blockItem: BlockItem): Item = Item(
 			clazz.getMethod("a", BlockItem.clazz).invoke(null, blockItem.around)

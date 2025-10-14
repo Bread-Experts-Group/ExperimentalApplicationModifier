@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_resources_ResourceKey
 import java.lang.constant.ClassDesc
 
@@ -28,9 +30,9 @@ net.minecraft.resources.ResourceKey -> akq:
     20:20:void <clinit>() -> <clinit>
  */
 class ResourceKey<T> {
-	companion object {
-		val clazz: Class<*> = loadClass(net_minecraft_resources_ResourceKey)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-		val mimicClassDesc: ClassDesc = ClassDesc.of(ResourceKey::class.qualifiedName)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_resources_ResourceKey)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ResourceKey::class.classDesc
 	}
 }

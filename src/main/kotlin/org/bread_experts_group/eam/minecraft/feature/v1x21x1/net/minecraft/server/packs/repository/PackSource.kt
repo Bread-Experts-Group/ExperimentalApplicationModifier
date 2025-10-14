@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_server_packs_repository_PackSource
 import java.lang.constant.ClassDesc
@@ -22,11 +24,10 @@ net.minecraft.server.packs.repository.PackSource -> atq:
     9:18:void <clinit>() -> <clinit>
  */
 class PackSource(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_server_packs_repository_PackSource
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_PackSource)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = PackSource::class.classDesc
 
 		val DEFAULT: PackSource
 			get() = PackSource(clazz.getField("b").get(null))

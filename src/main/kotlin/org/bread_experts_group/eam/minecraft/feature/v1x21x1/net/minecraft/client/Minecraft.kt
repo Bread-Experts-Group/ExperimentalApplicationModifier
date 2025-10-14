@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.platform.Window
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui.Font
@@ -373,13 +375,11 @@ net.minecraft.client.Minecraft -> fgo:
     405:405:int lambda$new$0() -> bM
  */
 class Minecraft(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> by lazy {
-			loadClass(
-				net_minecraft_client_Minecraft
-			)
-		}
-		val classDesc: ClassDesc = ClassDesc.of(net_minecraft_client_Minecraft)
+	companion object : ClassInfo {
+		override val clazz: Class<*> by lazy { loadClass(net_minecraft_client_Minecraft) }
+		override val classDesc: ClassDesc = ClassDesc.of(net_minecraft_client_Minecraft)
+		override val mimicClassDesc: ClassDesc = Minecraft::class.classDesc
+
 		fun getInstance(): Minecraft = Minecraft(clazz.getMethod("Q").invoke(null))
 	}
 

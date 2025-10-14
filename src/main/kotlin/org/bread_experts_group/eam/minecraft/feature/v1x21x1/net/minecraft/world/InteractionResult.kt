@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_InteractionResult
 import java.lang.constant.ClassDesc
@@ -20,12 +22,10 @@ net.minecraft.world.InteractionResult -> bqr:
     3:9:void <clinit>() -> <clinit>
  */
 class InteractionResult(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_world_InteractionResult
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-		val mimicClassDesc: ClassDesc = ClassDesc.of(InteractionResult::class.qualifiedName)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_world_InteractionResult)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = InteractionResult::class.classDesc
 
 		val SUCCESS: InteractionResult
 			get() = InteractionResult(clazz.getField("a").get(null))

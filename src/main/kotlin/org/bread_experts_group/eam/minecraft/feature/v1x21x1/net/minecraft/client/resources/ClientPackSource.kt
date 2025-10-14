@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository.BuiltInPackSource
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.validation.DirectoryValidator
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_resources_ClientPackSource
+import java.lang.constant.ClassDesc
 import java.nio.file.Path
 
 /*
@@ -29,10 +32,10 @@ net.minecraft.client.resources.ClientPackSource -> grc:
     31:65:void <clinit>() -> <clinit>
  */
 class ClientPackSource(around: Any) : BuiltInPackSource(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_resources_ClientPackSource
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_resources_ClientPackSource)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ClientPackSource::class.classDesc
 	}
 
 	constructor(path: Path, validator: DirectoryValidator) : this(

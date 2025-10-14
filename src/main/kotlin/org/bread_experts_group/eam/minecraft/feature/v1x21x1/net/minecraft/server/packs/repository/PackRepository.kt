@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.server.packs.repository
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_server_packs_repository_PackRepository
 import java.lang.constant.ClassDesc
@@ -32,16 +34,15 @@ net.minecraft.server.packs.repository.PackRepository -> atp:
     31:31:java.lang.String lambda$displayPackList$0(net.minecraft.server.packs.repository.Pack) -> a
  */
 class PackRepository(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_server_packs_repository_PackRepository
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_PackRepository)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = PackRepository::class.classDesc
 	}
 
+	// EAM Added
 	fun addSources(sources: Collection<RepositorySource>) {
-		val aroundList = sources.map { it.around }
 		clazz.getMethod("addSources", Collection::class.java)
-			.invoke(around, aroundList)
+			.invoke(around, sources.map { it.around })
 	}
 }

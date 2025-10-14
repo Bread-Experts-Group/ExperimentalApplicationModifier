@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer.blockentity
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_renderer_blockentity_BlockEntityRenderDispatcher
 import java.lang.constant.ClassDesc
@@ -30,10 +32,9 @@ net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher -> ggy:
     79:79:void lambda$render$0(net.minecraft.client.renderer.blockentity.BlockEntityRenderer,net.minecraft.world.level.block.entity.BlockEntity,float,com.mojang.blaze3d.vertex.PoseStack,net.minecraft.client.renderer.MultiBufferSource) -> b
  */
 class BlockEntityRenderDispatcher(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_renderer_blockentity_BlockEntityRenderDispatcher
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_blockentity_BlockEntityRenderDispatcher)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = BlockEntityRenderDispatcher::class.classDesc
 	}
 }

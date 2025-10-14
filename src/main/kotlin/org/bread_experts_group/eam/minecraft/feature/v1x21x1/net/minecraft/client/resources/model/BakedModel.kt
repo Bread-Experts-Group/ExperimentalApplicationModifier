@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_resources_model_BakedModel
 import java.lang.constant.ClassDesc
@@ -18,11 +20,9 @@ net.minecraft.client.resources.model.BakedModel -> gsm:
     net.minecraft.client.renderer.block.model.ItemOverrides getOverrides() -> g
  */
 class BakedModel(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_resources_model_BakedModel
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-		val mimicClassDesc: ClassDesc = ClassDesc.of(BakedModel::class.qualifiedName)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_resources_model_BakedModel)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = BakedModel::class.classDesc
 	}
 }

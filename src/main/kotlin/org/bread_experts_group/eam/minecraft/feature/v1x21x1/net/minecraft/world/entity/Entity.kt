@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.entity
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_entity_Entity
 import java.lang.constant.ClassDesc
@@ -574,11 +576,9 @@ import java.lang.constant.ClassDesc
     138:250:void <clinit>() -> <clinit>
  */
 class Entity(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_world_entity_Entity
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-		val mimicClassDesc: ClassDesc = ClassDesc.of(Entity::class.qualifiedName)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_world_entity_Entity)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Entity::class.classDesc
 	}
 }

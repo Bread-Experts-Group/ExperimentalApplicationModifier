@@ -108,6 +108,7 @@ fun CodeBuilder.getMethodMimicry(method: Method): MethodRefEntry = this.constant
 //fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
 //	this.invokevirtual(this.getMethodMimicry(method))
 
+@Deprecated("replace with invokeStaticMethodWithLocalVars")
 fun CodeBuilder.invokeStaticMethodWithMimics(method: Method): CodeBuilder =
 	this.invokestatic(this.getMethodMimicry(method))
 

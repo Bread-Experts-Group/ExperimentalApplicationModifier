@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.food
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_food_FoodProperties
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_food_FoodProperties_Builder
+import java.lang.constant.ClassDesc
 
 /*
     java.util.Optional usingConvertsTo -> g
@@ -26,8 +29,10 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world
     28:43:void <clinit>() -> <clinit>
  */
 class FoodProperties(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(net_minecraft_world_food_FoodProperties)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_world_food_FoodProperties)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = FoodProperties::class.classDesc
 	}
 
 	val nutrition: Int

@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_Gui
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_Gui_layers
+import java.lang.constant.ClassDesc
 
 /*
 net.minecraft.client.gui.Gui -> fhy:
@@ -192,10 +195,10 @@ net.minecraft.client.gui.Gui$HeartType -> fhy$b:
     926:985:void <clinit>() -> <clinit>
  */
 class Gui(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_gui_Gui
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_gui_Gui)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Gui::class.classDesc
 	}
 
 	val layers: LayeredDraw

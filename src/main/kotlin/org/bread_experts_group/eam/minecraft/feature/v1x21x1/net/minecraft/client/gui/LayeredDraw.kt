@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_LayeredDraw
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_LayeredDraw_Layer
@@ -18,11 +20,10 @@ net.minecraft.client.gui.LayeredDraw -> fib:
     21:24:void lambda$add$0(java.util.function.BooleanSupplier,net.minecraft.client.gui.LayeredDraw,net.minecraft.client.gui.GuiGraphics,net.minecraft.client.DeltaTracker) -> a
  */
 class LayeredDraw(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_gui_LayeredDraw
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_gui_LayeredDraw)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = LayeredDraw::class.classDesc
 	}
 
 	fun add(layer: Layer) {
@@ -35,12 +36,10 @@ class LayeredDraw(around: Any) : MimickedClass(around) {
     void render(net.minecraft.client.gui.GuiGraphics,net.minecraft.client.DeltaTracker) -> render
 	 */
 	open class Layer(around: Any) : MimickedClass(around) {
-		companion object {
-			val clazz: Class<*> = loadClass(
-				net_minecraft_client_gui_LayeredDraw_Layer
-			)
-			val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-			val mimicClassDesc: ClassDesc = ClassDesc.of(Layer::class.qualifiedName)
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_client_gui_LayeredDraw_Layer)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = Layer::class.classDesc
 		}
 	}
 }

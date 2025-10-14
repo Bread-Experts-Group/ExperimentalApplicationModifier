@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_blaze3d_vertex_PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com_mojang_blaze3d_vertex_PoseStack_Pose
@@ -18,12 +20,10 @@ com.mojang.blaze3d.vertex.PoseStack -> fbi:
     15:18:void lambda$new$0(java.util.ArrayDeque) -> a
 */
 class PoseStack(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			com_mojang_blaze3d_vertex_PoseStack
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
-		val mimicClassDesc: ClassDesc = ClassDesc.of(PoseStack::class.qualifiedName)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(com_mojang_blaze3d_vertex_PoseStack)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = PoseStack::class.classDesc
 	}
 
 	constructor() : this(clazz.getConstructor().newInstance())
@@ -76,10 +76,10 @@ class PoseStack(around: Any) : MimickedClass(around) {
     137:137:com.mojang.blaze3d.vertex.PoseStack$Pose copy() -> c
 	*/
 	class Pose(around: Any) : MimickedClass(around) {
-		companion object {
-			val clazz: Class<*> = loadClass(
-				com_mojang_blaze3d_vertex_PoseStack_Pose
-			)
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(com_mojang_blaze3d_vertex_PoseStack_Pose)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = Pose::class.classDesc
 		}
 
 

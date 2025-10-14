@@ -1,8 +1,11 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.gui
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_gui_Font
+import java.lang.constant.ClassDesc
 
 /*
 net.minecraft.client.gui.Font -> fhx:
@@ -44,9 +47,9 @@ net.minecraft.client.gui.Font -> fhx:
     53:53:float lambda$new$0(int,net.minecraft.network.chat.Style) -> a
  */
 class Font(around: Any): MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_gui_Font
-		)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_gui_Font)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Font::class.classDesc
 	}
 }

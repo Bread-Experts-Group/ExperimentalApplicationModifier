@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.validation
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_world_level_validation_DirectoryValidator
 import java.lang.constant.ClassDesc
@@ -26,10 +28,9 @@ net.minecraft.world.level.validation.DirectoryValidator$1 -> ews$1:
     65:65:java.nio.file.FileVisitResult preVisitDirectory(java.lang.Object,java.nio.file.attribute.BasicFileAttributes) -> preVisitDirectory
  */
 class DirectoryValidator(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_world_level_validation_DirectoryValidator
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_world_level_validation_DirectoryValidator)
+		override val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+		override val mimicClassDesc: ClassDesc = DirectoryValidator::class.classDesc
 	}
 }

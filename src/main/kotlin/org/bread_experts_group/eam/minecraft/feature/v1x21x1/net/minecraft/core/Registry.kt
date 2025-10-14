@@ -1,9 +1,12 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.core
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceKey
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_Registry
+import java.lang.constant.ClassDesc
 
 /*
     net.minecraft.resources.ResourceKey key() -> d
@@ -67,12 +70,14 @@ import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_core_
     31:31:com.mojang.serialization.DataResult lambda$byNameCodec$0(java.lang.Object) -> g
  */
 abstract class Registry<T>(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(net_minecraft_core_Registry)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_core_Registry)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = Registry::class.classDesc
 
 		fun <V, T : V> register(registry: Registry<V>, resourceKey: ResourceKey<V>, `object`: T) {
 			clazz.getMethod("a", clazz, ResourceKey.clazz, Object::class.java)
-				.invoke(null, registry.around, arrayOf(resourceKey), `object`)
+				.invoke(null, registry.around, resourceKey, `object`)
 		}
 	}
 }

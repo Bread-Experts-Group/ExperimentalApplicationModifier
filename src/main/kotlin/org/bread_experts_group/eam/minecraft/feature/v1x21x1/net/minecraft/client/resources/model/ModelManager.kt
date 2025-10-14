@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_resources_model_ModelManager
 import java.lang.constant.ClassDesc
@@ -52,11 +54,10 @@ net.minecraft.client.resources.model.ModelManager -> gst:
     41:52:void <clinit>() -> <clinit>
  */
 class ModelManager(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_resources_model_ModelManager
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_resources_model_ModelManager)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ModelManager::class.classDesc
 	}
 
 	fun getModel(modelLocation: ModelResourceLocation): BakedModel = BakedModel(

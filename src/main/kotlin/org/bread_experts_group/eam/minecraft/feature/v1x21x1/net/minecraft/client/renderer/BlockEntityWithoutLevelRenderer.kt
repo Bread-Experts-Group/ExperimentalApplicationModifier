@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.renderer
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.model.geom.EntityModelSet
@@ -36,11 +38,10 @@ net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer -> gem:
     53:54:void <clinit>() -> <clinit>
  */
 open class BlockEntityWithoutLevelRenderer(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_BlockEntityWithoutLevelRenderer)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = BlockEntityWithoutLevelRenderer::class.classDesc
 	}
 
 	constructor(

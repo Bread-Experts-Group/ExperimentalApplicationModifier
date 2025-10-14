@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.client.resources.model
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net_minecraft_client_resources_model_ModelBakery
@@ -86,11 +88,10 @@ net.minecraft.client.resources.model.ModelBakery$TextureGetter -> gss$c:
     net.minecraft.client.renderer.texture.TextureAtlasSprite get(net.minecraft.client.resources.model.ModelResourceLocation,net.minecraft.client.resources.model.Material) -> get
  */
 class ModelBakery(around: Any) : MimickedClass(around) {
-	companion object {
-		val clazz: Class<*> = loadClass(
-			net_minecraft_client_resources_model_ModelBakery
-		)
-		val classDesc: ClassDesc = ClassDesc.of(clazz.name)
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_resources_model_ModelBakery)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = ModelBakery::class.classDesc
 	}
 
 	fun getModel(location: String): UnbakedModel =
