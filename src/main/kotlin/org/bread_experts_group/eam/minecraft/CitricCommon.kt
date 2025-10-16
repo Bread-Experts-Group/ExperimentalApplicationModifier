@@ -13,6 +13,9 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import kotlin.reflect.full.isSubclassOf
 
+// todo there is a minor edge case with getting the needed local var.
+//  if there's multiple matching types it will always use the first matching result,
+//  maybe implement some kind of mechanism to keep track of multiple matching vars and cycle to the next var if the first one is used
 fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List<LocalVariable>): CodeBuilder {
 	if (method == null) throw NullPointerException("Method is somehow null??")
 	val params = method.parameters

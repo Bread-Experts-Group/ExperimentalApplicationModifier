@@ -48,7 +48,6 @@ class BreadMod : MinecraftMod() {
 					slot: Int,
 					beingHeld: Boolean
 				) {
-					println(beingHeld)
 				}
 		})
 		items.add(Identifier("breadmod", "tool_gun"), object : MinecraftItem() {

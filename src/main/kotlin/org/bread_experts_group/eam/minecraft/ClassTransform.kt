@@ -38,7 +38,7 @@ abstract class ClassTransform(
 		}
 	}
 
-	abstract fun transform(): (ClassBuilder, ClassElement) -> Unit
+	protected abstract fun transform(): (ClassBuilder, ClassElement) -> Unit
 
 	fun invokeAtMethodReturns(
 		targetMethodName: String,

@@ -69,15 +69,16 @@ import java.lang.constant.ClassDesc
     37:37:net.minecraft.core.Holder lambda$holderByNameCodec$1(net.minecraft.core.Holder$Reference) -> c
     31:31:com.mojang.serialization.DataResult lambda$byNameCodec$0(java.lang.Object) -> g
  */
-abstract class Registry<T>(around: Any) : MimickedClass(around) {
+open class Registry<T>(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_core_Registry)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Registry::class.classDesc
 
-		fun <V, T : V> register(registry: Registry<V>, resourceKey: ResourceKey<V>, `object`: T) {
+		fun <V : MimickedClass, T : V> register(registry: Registry<V>, resourceKey: ResourceKey<V>, `object`: T): T {
 			clazz.getMethod("a", clazz, ResourceKey.clazz, Object::class.java)
-				.invoke(null, registry.around, resourceKey, `object`)
+				.invoke(null, registry.around, resourceKey.around, `object`.around)
+			return `object`
 		}
 	}
 }

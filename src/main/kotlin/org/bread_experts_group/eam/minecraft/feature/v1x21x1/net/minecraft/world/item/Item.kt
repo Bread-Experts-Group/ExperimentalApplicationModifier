@@ -126,11 +126,11 @@ class Item(around: Any) : MimickedClass(around) {
 
 		fun food(properties: FoodProperties): Properties = Properties(
 			clazz.getMethod("a", FoodProperties.clazz)
-				.invoke(this.around, properties.around)
+				.invoke(around, properties.around)
 		)
 
 		fun stacksTo(n: Int): Properties = Properties(
-			clazz.getMethod("a", Int::class.java).invoke(this.around, n)
+			clazz.getMethod("a", Int::class.java).invoke(around, n)
 		)
 	}
 }

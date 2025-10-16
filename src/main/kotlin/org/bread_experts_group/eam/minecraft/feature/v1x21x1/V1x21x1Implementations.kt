@@ -1,5 +1,6 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.BuiltInRegistriesTransform
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.GuiTransform
@@ -43,6 +44,14 @@ object V1x21x1Implementations : Implementations() {
 		ModelBakeryTransform(scanning, classFile).startTransform(true)
 		PackRepositoryTransform(scanning, classFile).startTransform(true)
 		TitleScreenTransform(scanning, classFile).startTransform(true)
+		// todo half working, throws some array index out of bounds error when opening the creative mode screen
+//		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
+	}
+
+	@JvmStatic
+	@Suppress("unused")
+	fun printDebugString(clazz: Object) {
+		println("DEBUG STRING TRIPPED OF DESC: ${clazz.`class`.classDesc}")
 	}
 
 	// todo temporary solution until i write adding layers directly into Gui itself
