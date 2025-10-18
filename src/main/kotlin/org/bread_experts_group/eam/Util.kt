@@ -1,7 +1,6 @@
 package org.bread_experts_group.eam
 
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import java.lang.classfile.CodeElement
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.instruction.LocalVariable
@@ -69,14 +68,6 @@ fun MethodBuilder.getLocalVariableInfo(code: CodeModel): List<LocalVariable> {
 		this.with(code)
 	}
 	return list
-}
-
-fun populateLocalVarList(code: CodeElement, destination: MutableList<LocalVariable>) {
-	if (code is LocalVariable) destination.add(code)
-}
-
-fun MethodBuilder.populateVariableList(code: CodeModel, destination: MutableList<LocalVariable>) {
-	destination.addAll(this.getLocalVariableInfo(code))
 }
 
 fun addToStaticArray(

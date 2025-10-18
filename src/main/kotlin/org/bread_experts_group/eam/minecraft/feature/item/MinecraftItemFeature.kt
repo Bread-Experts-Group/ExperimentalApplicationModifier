@@ -13,7 +13,7 @@ abstract class MinecraftItemFeature : MinecraftFeatureImplementation<MinecraftIt
 		id: Identifier,
 		item: MinecraftItem
 	): MinecraftItem {
-		EAMRegistries.items.add(id, item)
+		EAMRegistries.ITEMS.registerItem(id, item)
 		return register(id, item)
 	}
 

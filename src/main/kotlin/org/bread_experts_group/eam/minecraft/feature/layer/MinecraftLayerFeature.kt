@@ -13,7 +13,7 @@ abstract class MinecraftLayerFeature : MinecraftFeatureImplementation<MinecraftL
 		id: Identifier,
 		layer: MinecraftLayer
 	): MinecraftLayer {
-		EAMRegistries.layers.add(id, layer)
+		EAMRegistries.LAYERS.registerLayer(id, layer)
 		return register(id, layer)
 	}
 

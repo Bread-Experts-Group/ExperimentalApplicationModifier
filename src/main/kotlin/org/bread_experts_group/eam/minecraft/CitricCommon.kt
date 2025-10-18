@@ -13,32 +13,40 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import kotlin.reflect.full.isSubclassOf
 
-// todo there is a minor edge case with getting the needed local var.
-//  if there's multiple matching types it will always use the first matching result,
-//  maybe implement some kind of mechanism to keep track of multiple matching vars and cycle to the next var if the first one is used
 fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List<LocalVariable>): CodeBuilder {
 	if (method == null) throw NullPointerException("Method is somehow null??")
 	val params = method.parameters
+	val usedSlots = mutableListOf<Int>()
 	params.forEach { parameter ->
+		val filtered = localVars.filter { it.slot() !in usedSlots }
 		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
-			val native = localVars.getNativeLocalVariable(parameter.type.getAroundClassName())
+			val native = filtered.getNativeLocalVariable(parameter.type.getAroundClassName())
 			this.invokeSpecialNewMimicClass(
 				parameter.classDesc,
 				native.slot()
 			)
+			usedSlots.add(native.slot())
 		} else if (parameter.type.isPrimitive) {
 			when (val c = parameter.type) {
 				Boolean::class.java -> {
-					val variable = localVars.getNativeLocalVariable(c.name)
+					val variable = filtered.getNativeLocalVariable(c.name)
 					iload(variable.slot())
+					usedSlots.add(variable.slot())
 				}
 				Float::class.java -> {
-					val variable = localVars.getNativeLocalVariable(c.name)
+					val variable = filtered.getNativeLocalVariable(c.name)
 					fload(variable.slot())
+					usedSlots.add(variable.slot())
+				}
+				Double::class.java -> {
+					val variable = filtered.getNativeLocalVariable(c.name)
+					dload(variable.slot())
+					usedSlots.add(variable.slot())
 				}
 				Int::class.java -> {
-					val variable = localVars.getNativeLocalVariable(c.name)
+					val variable = filtered.getNativeLocalVariable(c.name)
 					iload(variable.slot())
+					usedSlots.add(variable.slot())
 				}
 			}
 		}
@@ -52,6 +60,7 @@ fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List
 				when (it.type) {
 					Int::class.java -> ConstantDescs.CD_int
 					Float::class.java -> ConstantDescs.CD_float
+					Double::class.java -> ConstantDescs.CD_Double
 					Boolean::class.java -> ConstantDescs.CD_boolean
 					else -> ConstantDescs.CD_Object
 				}

@@ -4,8 +4,8 @@ import org.bread_experts_group.coder.Mappable
 import org.bread_experts_group.command_line.Flag
 import org.bread_experts_group.command_line.readArgs
 import org.bread_experts_group.command_line.stringToBoolean
-import org.bread_experts_group.eam.minecraft.feature.v1x0x0.V1x0x0Implementations
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.V1x21x1Implementations
+import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1x0x0Implementations
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations
 import org.bread_experts_group.logging.ColoredHandler
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation

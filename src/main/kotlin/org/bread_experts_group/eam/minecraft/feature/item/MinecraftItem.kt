@@ -1,10 +1,10 @@
 package org.bread_experts_group.eam.minecraft.feature.item
 
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.InteractionResult
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.entity.Entity
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.ItemStack
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.item.context.UseOnContext
-import org.bread_experts_group.eam.minecraft.feature.v1x21x1.net.minecraft.world.level.Level
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.context.UseOnContext
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.Level
 import java.lang.constant.ClassDesc
 
 open class MinecraftItem {
