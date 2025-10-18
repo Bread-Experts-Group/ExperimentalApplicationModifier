@@ -113,6 +113,9 @@ class CreativeModeTabs(around: Any) : MimickedClass(around) {
 
 		private val BREADMOD: ResourceKey<CreativeModeTab> = createKey("breadmod", "breadmod")
 
+		fun tabs(): List<CreativeModeTab> =
+			(clazz.getMethod("c").invoke(null) as List<*>).map { CreativeModeTab(it!!) }
+
 		private fun createKey(namespace: String, key: String): ResourceKey<CreativeModeTab> =
 			ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.parse("$namespace:$key"))
 	}
@@ -121,7 +124,7 @@ class CreativeModeTabs(around: Any) : MimickedClass(around) {
 	object Temp {
 		@JvmStatic
 		fun registerTabs(registry: Registry<CreativeModeTab>) {
-			println("INVOKING????? (registerTabs)")
+			println("Registering creative tabs")
 			Registry.register(
 				registry,
 				BREADMOD,

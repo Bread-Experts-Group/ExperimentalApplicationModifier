@@ -1,8 +1,10 @@
 package org.bread_experts_group.eam.minecraft.feature.v1x21x1
 
-import org.bread_experts_group.eam.classDesc
+import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.BuiltInRegistriesTransform
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.CreativeModeScreenTransform
+import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.CreativeModeTabsTransform
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.GuiTransform
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.ItemRendererTransform
 import org.bread_experts_group.eam.minecraft.feature.v1x21x1.class_transforms.MinecraftTransform
@@ -45,13 +47,8 @@ object V1x21x1Implementations : Implementations() {
 		PackRepositoryTransform(scanning, classFile).startTransform(true)
 		TitleScreenTransform(scanning, classFile).startTransform(true)
 		// todo half working, throws some array index out of bounds error when opening the creative mode screen
-//		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
-	}
-
-	@JvmStatic
-	@Suppress("unused")
-	fun printDebugString(clazz: Object) {
-		println("DEBUG STRING TRIPPED OF DESC: ${clazz.`class`.classDesc}")
+		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
+		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
 	}
 
 	// todo temporary solution until i write adding layers directly into Gui itself
@@ -88,6 +85,8 @@ object V1x21x1Implementations : Implementations() {
 		self.registerModelAndLoadDependencies(ModelResourceLocation("breadmod:item/tool_gun/coil"), unbaked2)
 	}
 
+	var flag = false
+
 	@JvmStatic
 	@Suppress("unused")
 	fun renderBEWLR(
@@ -98,6 +97,23 @@ object V1x21x1Implementations : Implementations() {
 		packedLight: Int,
 		packedOverlay: Int
 	) {
+		// todo temp solution to add to the arrays until a better entrypoint is made
+		if (!flag) {
+			addToStaticArray(
+				net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
+				"G",
+				ResourceLocation.clazz,
+				ResourceLocation.parse("container/creative_inventory/tab_top_unselected_1")
+			)
+			addToStaticArray(
+				net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
+				"H",
+				ResourceLocation.clazz,
+				ResourceLocation.parse("container/creative_inventory/tab_top_selected_1")
+			)
+
+			flag = true
+		}
 		val minecraft = Minecraft.getInstance()
 		object : BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels()) {
 			val mainModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(

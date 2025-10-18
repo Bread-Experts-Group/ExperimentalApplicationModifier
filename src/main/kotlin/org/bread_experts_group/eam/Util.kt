@@ -79,6 +79,22 @@ fun MethodBuilder.populateVariableList(code: CodeModel, destination: MutableList
 	destination.addAll(this.getLocalVariableInfo(code))
 }
 
+fun addToStaticArray(
+	clazz: String,
+	fieldName: String,
+	arrayType: Class<*>,
+	vararg elements: Any
+) {
+	val clazz = loadClass(clazz)
+	val list = (clazz.getField(fieldName).get(null) as Array<*>).toMutableList()
+	elements.forEach { list.add(if (it is MimickedClass) it.around else it) }
+	val array = java.lang.reflect.Array.newInstance(arrayType, list.size)
+	repeat(list.size) {
+		java.lang.reflect.Array.set(array, it, list[it])
+	}
+	clazz.getField(fieldName).set(null, array)
+}
+
 val Parameter.classDesc: ClassDesc
 	get() = ClassDesc.of(this.type.name)
 

@@ -67,6 +67,10 @@ abstract class ClassTransform(
 		}
 	}
 
+	fun atLine(line: Int) {}
+
+	fun atInvoke(ordinal: Int) {}
+
 	fun modifyFieldAccess(
 		targetField: String,
 		newAccessFlags: Int
