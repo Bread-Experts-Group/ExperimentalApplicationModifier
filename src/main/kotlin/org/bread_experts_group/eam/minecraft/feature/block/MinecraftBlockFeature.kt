@@ -1,24 +1,21 @@
 package org.bread_experts_group.eam.minecraft.feature.block
 
 import org.bread_experts_group.api.FeatureExpression
+import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.Identifier
 
-abstract class MinecraftBlockFeature : MinecraftFeatureImplementation<MinecraftBlockFeature>() {
+abstract class MinecraftBlockFeature : MinecraftFeatureImplementation<MinecraftBlock, MinecraftBlockFeature>() {
+	override val source: ImplementationSource = ImplementationSource.JVM_NATIVE
 	override val expresses: FeatureExpression<MinecraftBlockFeature> = MinecraftFeatures.BLOCK
 
-	fun add(
+	override fun add(
 		id: Identifier,
-		block: MinecraftBlock
+		value: MinecraftBlock
 	): MinecraftBlock {
-		EAMRegistries.BLOCKS.registerBlock(id, block)
-		return register(id, block)
+		EAMRegistries.BLOCKS.registerBlock(id, value)
+		return register(id, value)
 	}
-
-	protected abstract fun register(
-		id: Identifier,
-		block: MinecraftBlock
-	): MinecraftBlock
 }

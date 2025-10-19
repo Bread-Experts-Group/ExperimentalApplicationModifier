@@ -1,24 +1,21 @@
 package org.bread_experts_group.eam.minecraft.feature.layer
 
 import org.bread_experts_group.api.FeatureExpression
+import org.bread_experts_group.api.ImplementationSource
 import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.Identifier
 
-abstract class MinecraftLayerFeature : MinecraftFeatureImplementation<MinecraftLayerFeature>() {
+abstract class MinecraftLayerFeature : MinecraftFeatureImplementation<MinecraftLayer, MinecraftLayerFeature>() {
+	override val source: ImplementationSource = ImplementationSource.JVM_NATIVE
 	override val expresses: FeatureExpression<MinecraftLayerFeature> = MinecraftFeatures.LAYER
 
-	fun add(
+	override fun add(
 		id: Identifier,
-		layer: MinecraftLayer
+		value: MinecraftLayer
 	): MinecraftLayer {
-		EAMRegistries.LAYERS.registerLayer(id, layer)
-		return register(id, layer)
+		EAMRegistries.LAYERS.registerLayer(id, value)
+		return register(id, value)
 	}
-
-	protected abstract fun register(
-		id: Identifier,
-		layer: MinecraftLayer
-	): MinecraftLayer
 }

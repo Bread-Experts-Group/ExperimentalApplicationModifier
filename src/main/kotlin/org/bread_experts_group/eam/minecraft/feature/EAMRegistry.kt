@@ -11,6 +11,7 @@ open class EAMRegistry<T>(val namespace: String) {
 	private val elements = mutableMapOf<String, MutableMap<String, T>>()
 	private val logger = ColoredHandler.newLogger("TMP logger EAM Registry")
 	private var locked = false
+
 	protected fun add(id: Identifier, o: T): T {
 		if (locked) throw IllegalStateException("Locked registry")
 		val last = elements.getOrPut(id.namespace) {

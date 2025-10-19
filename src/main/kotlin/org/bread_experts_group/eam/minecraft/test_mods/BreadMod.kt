@@ -32,10 +32,7 @@ class BreadMod : MinecraftMod() {
 	}
 
 	override fun addItems(items: MinecraftItemFeature) {
-		items.add(
-			Identifier("breadmod", "bread_2"),
-			MinecraftItem()
-		)
+		items.add(Identifier("breadmod", "bread_2"), MinecraftItem())
 		items.add(
 			Identifier(
 				"breadmod",
