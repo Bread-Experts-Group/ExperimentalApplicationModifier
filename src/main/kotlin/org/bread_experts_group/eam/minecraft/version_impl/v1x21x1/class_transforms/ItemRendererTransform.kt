@@ -18,7 +18,6 @@ import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
-import java.lang.classfile.instruction.LineNumber
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
@@ -59,10 +58,8 @@ class ItemRendererTransform(
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is CodeModel) {
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						codeBuilder.with(codeElement)
-						if (codeElement is LineNumber && codeElement.line() == 127)
-							codeBuilder.invokeStaticMethodWithLocalVars(::renderBEWLR.javaMethod, localVars)
+					methodBuilder.atLine(127, methodElement, true) { codeBuilder, codeElement ->
+						codeBuilder.invokeStaticMethodWithLocalVars(::renderBEWLR.javaMethod, localVars)
 					}
 				}
 			}

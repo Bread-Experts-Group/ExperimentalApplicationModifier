@@ -13,7 +13,6 @@ import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
-import java.lang.classfile.instruction.LineNumber
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
@@ -36,10 +35,8 @@ class TitleScreenTransform(
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is CodeModel) {
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						if (codeElement is LineNumber && codeElement.line() == 273)
-							codeBuilder.invokeStaticMethodWithLocalVars(::renderTitleScreen.javaMethod, localVars)
-						codeBuilder.with(codeElement)
+					methodBuilder.atLine(273, methodElement) { codeBuilder, codeElement ->
+						codeBuilder.invokeStaticMethodWithLocalVars(::renderTitleScreen.javaMethod, localVars)
 					}
 				}
 			}

@@ -11,7 +11,6 @@ import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
-import java.lang.classfile.instruction.LineNumber
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -24,6 +23,8 @@ class PackRepositoryTransform(
 	scanning: Scanning,
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_server_packs_repository_PackRepository, "PackRepository", scanning, classFile) {
+	// todo modifyMethod that works with withMethod
+	var methodAdded: Boolean = false
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		if (
 			classElement is MethodModel &&
@@ -31,39 +32,35 @@ class PackRepositoryTransform(
 		) {
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is CodeModel) {
-					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						if (
-							codeElement is LineNumber &&
-							codeElement.line() == 27
-						) {
-							codeBuilder
-								.aload(0)
-								.new_(ClassDesc.of(LinkedHashSet::class.java.name))
-								.dup()
-								.aload(1)
-								.invokestatic(
+					methodBuilder.atLine(27, methodElement) { codeBuilder, codeElement ->
+						codeBuilder
+							.aload(0)
+							.new_(ClassDesc.of(LinkedHashSet::class.java.name))
+							.dup()
+							.aload(1)
+							.invokestatic(
+								ClassDesc.of(List::class.java.name),
+								"of",
+								MethodTypeDesc.of(
 									ClassDesc.of(List::class.java.name),
-									"of",
-									MethodTypeDesc.of(
-										ClassDesc.of(List::class.java.name),
-										ConstantDescs.CD_Object.arrayType(1)
-									),
-									true
+									ConstantDescs.CD_Object.arrayType(1)
+								),
+								true
+							)
+							.invokespecial(
+								ClassDesc.of(LinkedHashSet::class.java.name),
+								"<init>",
+								MethodTypeDesc.of(
+									ConstantDescs.CD_void,
+									ClassDesc.of(Collection::class.java.name)
 								)
-								.invokespecial(
-									ClassDesc.of(LinkedHashSet::class.java.name),
-									"<init>",
-									MethodTypeDesc.of(
-										ConstantDescs.CD_void,
-										ClassDesc.of(Collection::class.java.name)
-									)
-								)
-								.putfield(
-									ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
-									"a",
-									ClassDesc.of(Set::class.java.name)
-								)
-								.aload(0)
+							)
+							.putfield(
+								ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
+								"a",
+								ClassDesc.of(Set::class.java.name)
+							)
+							.aload(0)
 //								.invokestatic(
 //									ClassDesc.of(V1x21x1Implementations::class.qualifiedName),
 //									"addPackSources",
@@ -72,41 +69,40 @@ class PackRepositoryTransform(
 //										PackRepository.classDesc
 //									)
 //								)
-								.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
-								.return_()
-						}
-						codeBuilder.with(codeElement)
+							.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
+							.return_()
 					}
 				}
 			}
-			classBuilder.withMethod(
-				"addSources",
-				MethodTypeDesc.of(
-					ConstantDescs.CD_void,
-					ClassDesc.of("java.util.Collection")
-				),
-				ACC_PUBLIC
-			) { methodBuilder ->
-				methodBuilder.withCode { codeBuilder ->
-					codeBuilder
-						.aload(0)
-						.getfield(
-							ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
-							"a",
-							ClassDesc.of("java.util.Set")
-						)
-						.aload(1)
-						.invokeinterface(
-							ClassDesc.of("java.util.Set"),
-							"addAll",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_boolean,
-								ClassDesc.of("java.util.Collection")
-							)
-						)
-						.return_()
-				}
-			}
 		} else classBuilder.with(classElement)
+		if (!methodAdded) classBuilder.withMethod(
+			"addSources",
+			MethodTypeDesc.of(
+				ConstantDescs.CD_void,
+				ClassDesc.of("java.util.Collection")
+			),
+			ACC_PUBLIC
+		) { methodBuilder ->
+			methodBuilder.withCode { codeBuilder ->
+				codeBuilder
+					.aload(0)
+					.getfield(
+						ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
+						"a",
+						ClassDesc.of("java.util.Set")
+					)
+					.aload(1)
+					.invokeinterface(
+						ClassDesc.of("java.util.Set"),
+						"addAll",
+						MethodTypeDesc.of(
+							ConstantDescs.CD_boolean,
+							ClassDesc.of("java.util.Collection")
+						)
+					)
+					.return_()
+			}
+			methodAdded = true
+		}
 	}
 }

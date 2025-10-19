@@ -12,8 +12,6 @@ import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeModel
-import java.lang.classfile.MethodModel
-import java.lang.classfile.instruction.LineNumber
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
 
@@ -22,27 +20,17 @@ class CreativeModeTabsTransform(
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_world_item_CreativeModeTabs, "CreativeModeTabs",  scanning, classFile) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
-		if (
-			classElement is MethodModel &&
-			classElement.methodName().equalsString("a") &&
-			classElement.methodTypeSymbol() == MethodTypeDesc.of(
-				CreativeModeTab.classDesc,
-				Registry.classDesc
-		)) {
-			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-				if (methodElement is CodeModel) {
-					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						if (
-							codeElement is LineNumber &&
-							codeElement.line() == 68
-						) {
-							codeBuilder.invokeStaticMethodWithLocalVars(::registerTabs.javaMethod, localVars)
-						}
-						codeBuilder.with(codeElement)
-					}
+		classBuilder.modifyMethod(
+			classElement,
+			"a",
+			MethodTypeDesc.of(CreativeModeTab.classDesc, Registry.classDesc)
+		) { methodBuilder, methodElement ->
+			if (methodElement is CodeModel) {
+				val localVars = methodBuilder.getLocalVariableInfo(methodElement)
+				methodBuilder.atLine(68, methodElement) { codeBuilder, codeElement ->
+					codeBuilder.invokeStaticMethodWithLocalVars(::registerTabs.javaMethod, localVars)
 				}
 			}
-		} else classBuilder.with(classElement)
+		}
 	}
 }

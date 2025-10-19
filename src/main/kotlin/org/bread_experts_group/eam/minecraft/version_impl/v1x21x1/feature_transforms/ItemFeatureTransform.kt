@@ -23,7 +23,7 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 		clazz.getConstructor(MinecraftItem::class.java).newInstance(input)
 
 	override fun startTransform(name: String): (ClassBuilder) -> Any = { classBuilder ->
-		classBuilder.withSuperclass(Item.Companion.classDesc)
+		classBuilder.withSuperclass(Item.classDesc)
 		input::class.java.declaredMethods.forEach {
 			when (it.name) {
 				"inventoryTick" -> {
@@ -31,29 +31,29 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 						net_minecraft_world_item_Item_inventoryTick,
 						MethodTypeDesc.of(
 							ConstantDescs.CD_void,
-							ItemStack.Companion.classDesc,
-							Level.Companion.classDesc,
-							Entity.Companion.classDesc,
+							ItemStack.classDesc,
+							Level.classDesc,
+							Entity.classDesc,
 							ConstantDescs.CD_int,
 							ConstantDescs.CD_boolean
 						),
 						ClassFile.ACC_PUBLIC or ClassFile.ACC_FINAL
 					) { codeBuilder ->
 						codeBuilder
-							.getReferenceField(name, MinecraftItem.Companion.mimicClassDesc)
-							.invokeSpecialNewMimicClass(ItemStack.Companion.mimicClassDesc, 1)
-							.invokeSpecialNewMimicClass(Level.Companion.mimicClassDesc, 2)
-							.invokeSpecialNewMimicClass(Entity.Companion.mimicClassDesc, 3)
+							.getReferenceField(name, MinecraftItem.mimicClassDesc)
+							.invokeSpecialNewMimicClass(ItemStack.mimicClassDesc, 1)
+							.invokeSpecialNewMimicClass(Level.mimicClassDesc, 2)
+							.invokeSpecialNewMimicClass(Entity.mimicClassDesc, 3)
 							.iload(4)
 							.iload(5)
 							.invokevirtual(
-								MinecraftItem.Companion.mimicClassDesc,
+								MinecraftItem.mimicClassDesc,
 								"inventoryTick",
 								MethodTypeDesc.of(
 									ConstantDescs.CD_void,
-									ItemStack.Companion.mimicClassDesc,
-									Level.Companion.mimicClassDesc,
-									Entity.Companion.mimicClassDesc,
+									ItemStack.mimicClassDesc,
+									Level.mimicClassDesc,
+									Entity.mimicClassDesc,
 									ConstantDescs.CD_int,
 									ConstantDescs.CD_boolean
 								)
@@ -64,18 +64,18 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 				"useOn" -> classBuilder.withMethodBody(
 					net_minecraft_world_item_Item_useOn,
 					MethodTypeDesc.of(
-						InteractionResult.Companion.classDesc,
-						UseOnContext.Companion.classDesc
+						InteractionResult.classDesc,
+						UseOnContext.classDesc
 					),
 					ClassFile.ACC_PUBLIC or ClassFile.ACC_FINAL
 				) { codeBuilder ->
 					codeBuilder
-						.getReferenceField(name, MinecraftItem.Companion.mimicClassDesc)
-						.new_(UseOnContext.Companion.mimicClassDesc)
+						.getReferenceField(name, MinecraftItem.mimicClassDesc)
+						.new_(UseOnContext.mimicClassDesc)
 						.dup()
 						.aload(1)
 						.invokespecial(
-							UseOnContext.Companion.mimicClassDesc,
+							UseOnContext.mimicClassDesc,
 							"<init>",
 							MethodTypeDesc.of(
 								ConstantDescs.CD_void,
@@ -84,42 +84,42 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 						)
 						.invokevirtual(
 							codeBuilder.constantPool().methodRefEntry(
-								MinecraftItem.Companion.mimicClassDesc,
+								MinecraftItem.mimicClassDesc,
 								"useOn",
 								MethodTypeDesc.of(
-									InteractionResult.Companion.mimicClassDesc,
-									UseOnContext.Companion.mimicClassDesc
+									InteractionResult.mimicClassDesc,
+									UseOnContext.mimicClassDesc
 								)
 							)
 						)
-						.getfield(InteractionResult.Companion.mimicClassDesc, "around", ConstantDescs.CD_Object)
-						.checkcast(InteractionResult.Companion.classDesc)
+						.getfield(InteractionResult.mimicClassDesc, "around", ConstantDescs.CD_Object)
+						.checkcast(InteractionResult.classDesc)
 						.areturn()
 				}
 			}
 		}
 		classBuilder.withMethodBody(
 			"<init>",
-			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftItem.Companion.mimicClassDesc),
+			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftItem.mimicClassDesc),
 			ClassFile.ACC_PUBLIC
 		) { codeBuilder ->
 			codeBuilder
 				.aload(0)
-				.new_(Item.Properties.Companion.mimicClassDesc)
+				.new_(Item.Properties.mimicClassDesc)
 				.dup()
 				.invokespecial(
-					Item.Properties.Companion.mimicClassDesc,
+					Item.Properties.mimicClassDesc,
 					"<init>",
 					MethodTypeDesc.of(ConstantDescs.CD_void),
 				)
 				.getfield(
-					Item.Properties.Companion.mimicClassDesc,
+					Item.Properties.mimicClassDesc,
 					"around",
 					ConstantDescs.CD_Object
 				)
 				.checkcast(Item.Properties.classDesc)
 				.invokespecial(
-					Item.Companion.classDesc,
+					Item.classDesc,
 					"<init>",
 					MethodTypeDesc.of(ConstantDescs.CD_void, Item.Properties.classDesc)
 				)
@@ -128,13 +128,13 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 				.putfield(
 					ClassDesc.of(name),
 					"reference",
-					MinecraftItem.Companion.mimicClassDesc
+					MinecraftItem.mimicClassDesc
 				)
 				.return_()
 		}
 		classBuilder.withField(
 			"reference",
-			MinecraftItem.Companion.mimicClassDesc,
+			MinecraftItem.mimicClassDesc,
 			ClassFile.ACC_FINAL or ClassFile.ACC_PRIVATE
 		)
 	}

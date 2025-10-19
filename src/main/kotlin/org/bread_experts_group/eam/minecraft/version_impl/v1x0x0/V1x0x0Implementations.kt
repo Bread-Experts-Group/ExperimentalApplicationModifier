@@ -1,10 +1,13 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0
 
+import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistry
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
+import org.bread_experts_group.logging.ColoredHandler
 import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PROTECTED
 import java.lang.classfile.ClassFile.ACC_PUBLIC
@@ -15,8 +18,14 @@ import java.lang.classfile.instruction.LineNumber
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
+import java.util.logging.Logger
 
 object V1x0x0Implementations : Implementations() {
+	override val logger: Logger = ColoredHandler.newLogger("V1x0x0 Impl")
+	override val supportedFeatures: SupportedMCFeatures = mutableMapOf(
+		MinecraftFeatures.BLOCK to mutableListOf(MinecraftBlockFeature1x0x0())
+	)
+
 	override fun start() {
 		scanning[net_minecraft_Block] = { _, _, _, data ->
 			val model = classFile.parse(data)
@@ -125,10 +134,11 @@ object V1x0x0Implementations : Implementations() {
 			}
 		}
 	}
-
 	@Suppress("unused")
 	@JvmStatic
 	fun registerBlocks() {
-		mods.forEach { it.addBlocks(MinecraftBlockFeature1x0x0()) }
+		mods.forEach {
+			it.addBlocks(this.get(MinecraftFeatures.BLOCK))
+		}
 	}
 }

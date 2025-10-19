@@ -18,7 +18,7 @@ class MinecraftBlockFeature1x21x1 : MinecraftBlockFeature() {
 	override fun register(id: Identifier, value: MinecraftBlock): MinecraftBlock {
 		val properties = BlockBehaviour.Properties.ofFullCopy(Blocks.Companion.HAY_BLOCK)
 		val mcBlock = Block(properties)
-		Blocks.Companion.register("${id.namespace}:${id.subject}", mcBlock)
+		Blocks.register("${id.namespace}:${id.subject}", mcBlock)
 		mcBlock.getStateDefinition().getPossibleStates().forEach { Block.Companion.BLOCK_STATE_REGISTRY.add(it) }
 		val itemProperties = Item.Properties()
 			.stacksTo(32)
@@ -28,7 +28,7 @@ class MinecraftBlockFeature1x21x1 : MinecraftBlockFeature() {
 					.build()
 			)
 		val blockItem = BlockItem(mcBlock, itemProperties)
-		Items.Companion.registerBlock(blockItem)
+		Items.registerBlock(blockItem)
 		return value
 	}
 }

@@ -1,5 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature
 
+import org.bread_experts_group.api.FeatureExpression
+import org.bread_experts_group.api.FeatureProvider
+import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
 import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeBuilder
 import java.lang.constant.ClassDesc
@@ -10,8 +13,9 @@ import java.security.ProtectionDomain
 import java.util.*
 
 typealias Scanning = MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
+typealias SupportedMCFeatures = MutableMap<FeatureExpression<out MinecraftFeatureImplementation<*, *>>, MutableList<MinecraftFeatureImplementation<*, *>>>
 
-abstract class Implementations {
+abstract class Implementations : FeatureProvider<MinecraftFeatureImplementation<*, *>> {
 	protected val classFile: ClassFile = ClassFile.of(
 		ClassFile.StackMapsOption.GENERATE_STACK_MAPS
 	)
@@ -19,6 +23,7 @@ abstract class Implementations {
 	private lateinit var instrumentation: Instrumentation
 	protected lateinit var scanning: Scanning
 	protected val mods: List<MinecraftMod> = ServiceLoader.load(MinecraftMod::class.java).toList()
+	override val features: MutableList<MinecraftFeatureImplementation<*, *>> = mutableListOf()
 
 	fun implement(
 		instrumentation: Instrumentation,

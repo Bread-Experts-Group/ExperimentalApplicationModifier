@@ -1,7 +1,9 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
 import org.bread_experts_group.eam.addToStaticArray
+import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.Implementations
+import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
@@ -12,7 +14,6 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfor
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.PackRepositoryTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.math.Axis
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Gui
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
@@ -32,13 +33,27 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
+import org.bread_experts_group.logging.ColoredHandler
 import java.awt.Color
 import java.net.URI
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
+import java.util.logging.Logger
 
 object V1x21x1Implementations : Implementations() {
+	override val logger: Logger = ColoredHandler.newLogger("V1x21x1 Impl")
+
+	// todo temporary solution until i write adding layers directly into Gui itself
+	val drawLayers: MutableList<LayeredDraw.Layer> = mutableListOf()
+
+	override val supportedFeatures: SupportedMCFeatures = mutableMapOf(
+		MinecraftFeatures.ITEM to mutableListOf(MinecraftItemFeature1x21x1()),
+		MinecraftFeatures.BLOCK to mutableListOf(MinecraftBlockFeature1x21x1()),
+		MinecraftFeatures.LAYER to mutableListOf(MinecraftLayerFeature1x21x1())
+	)
+
 	override fun start() {
+		println("Starting Transforms")
 		BuiltInRegistriesTransform(scanning, classFile).startTransform(true)
 		MinecraftTransform(scanning, classFile).startTransform(true)
 		GuiTransform(scanning, classFile).startTransform(true)
@@ -46,13 +61,9 @@ object V1x21x1Implementations : Implementations() {
 		ModelBakeryTransform(scanning, classFile).startTransform(true)
 		PackRepositoryTransform(scanning, classFile).startTransform(true)
 		TitleScreenTransform(scanning, classFile).startTransform(true)
-		// todo half working, throws some array index out of bounds error when opening the creative mode screen
 		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
 		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
 	}
-
-	// todo temporary solution until i write adding layers directly into Gui itself
-	val drawLayers: MutableList<LayeredDraw.Layer> = mutableListOf()
 
 	@JvmStatic
 	@Suppress("unused")
@@ -158,9 +169,11 @@ object V1x21x1Implementations : Implementations() {
 	@JvmStatic
 	@Suppress("unused")
 	fun afterCreateContents() {
-		mods.forEach { it.addBlocks(MinecraftBlockFeature1x21x1()) }
-		mods.forEach { it.addItems(MinecraftItemFeature1x21x1()) }
-		mods.forEach { it.addLayers(MinecraftLayerFeature1x21x1()) }
+		mods.forEach {
+			it.addBlocks(this.get(MinecraftFeatures.BLOCK))
+			it.addItems(this.get(MinecraftFeatures.ITEM))
+			it.addLayers(this.get(MinecraftFeatures.LAYER))
+		}
 	}
 
 	@JvmStatic
@@ -174,12 +187,10 @@ object V1x21x1Implementations : Implementations() {
 		poseStack.scale(2f, 2f, 2f)
 		guiGraphics.renderItem(BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:bread_block")).getDefaultInstance(), 0, 30)
 		poseStack.popPose()
-		poseStack.mulPose(Axis.ZP.rotationDegrees(25f))
 		guiGraphics.drawString(Minecraft.getInstance().font, "EAM on top", 0, 0, Color.WHITE.rgb)
-		guiGraphics.drawString(Minecraft.getInstance().font, "oh yeah also minecraft is very cool and nice you should play it :thumbsup:", 0, 10, Color.ORANGE.rgb)
+		guiGraphics.drawString(Minecraft.getInstance().font, "Version 1.0982317512309128e94", 0, 10, Color.ORANGE.rgb)
 		poseStack.popPose()
 	}
-
 	@JvmStatic
 	@Suppress("unused")
 	fun updateWindowTitle(self: Minecraft) {

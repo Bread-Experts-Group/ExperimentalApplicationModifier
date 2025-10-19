@@ -61,6 +61,9 @@ fun List<LocalVariable>.printLocalVarInfo() {
 	}
 }
 
+fun CodeModel.getParameterDescs(): List<ClassDesc> =
+	this.parent().get().methodTypeSymbol().parameterList()
+
 fun MethodBuilder.getLocalVariableInfo(code: CodeModel): List<LocalVariable> {
 	val list = mutableListOf<LocalVariable>()
 	this.transformCode(code) { codeBuilder, codeElement ->

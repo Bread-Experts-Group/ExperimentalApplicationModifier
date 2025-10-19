@@ -35,7 +35,7 @@ class LayeredDraw(around: Any) : MimickedClass(around) {
 	# {"fileName":"LayeredDraw.java","id":"sourceFile"}
     void render(net.minecraft.client.gui.GuiGraphics,net.minecraft.client.DeltaTracker) -> render
 	 */
-	open class Layer(around: Any) : MimickedClass(around) {
+	class Layer(around: Any) : MimickedClass(around) {
 		companion object : ClassInfo {
 			override val clazz: Class<*> = loadClass(net_minecraft_client_gui_LayeredDraw_Layer)
 			override val classDesc: ClassDesc = clazz.classDesc

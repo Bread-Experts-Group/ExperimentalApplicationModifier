@@ -18,7 +18,7 @@ class MinecraftItemFeature1x21x1 : MinecraftItemFeature() {
 				.stacksTo(64)
 				.food(FoodProperties.Builder().nutrition(20).build())
 		) else Item(getTransformer(value).build())
-		Items.Companion.registerItem(ResourceLocation.Companion.parse("${id.namespace}:${id.subject}"), mcItem)
+		Items.registerItem(ResourceLocation.parse("${id.namespace}:${id.subject}"), mcItem)
 		return value
 	}
 }
