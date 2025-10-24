@@ -58,8 +58,11 @@ class ItemRendererTransform(
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is CodeModel) {
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-					methodBuilder.atLine(127, methodElement, true) { codeBuilder, codeElement ->
-						codeBuilder.invokeStaticMethodWithLocalVars(::renderBEWLR.javaMethod, localVars)
+					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						codeBuilder.atLine(127, codeElement) { builder ->
+							builder.invokeStaticMethodWithLocalVars(::renderBEWLR.javaMethod, localVars)
+						}
+						.with(codeElement)
 					}
 				}
 			}

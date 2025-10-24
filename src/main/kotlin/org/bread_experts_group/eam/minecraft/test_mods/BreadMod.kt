@@ -52,6 +52,7 @@ class BreadMod : MinecraftMod() {
 				) {
 				}
 		})
+		// todo mouse and keyboard hooks
 		items.add(Identifier("breadmod", "tool_gun"), MinecraftItem())
 	}
 

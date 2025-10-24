@@ -9,6 +9,7 @@ import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.ClassFile.ACC_STATIC
 
+// todo overhaul the CreativeModeScreen to include creative tab pages
 class CreativeModeScreenTransform(
 	scanning: Scanning,
 	classFile: ClassFile

@@ -1,14 +1,14 @@
 package org.bread_experts_group.eam.minecraft.feature
 
 import org.bread_experts_group.eam.DefiningClassLoader
-import org.bread_experts_group.eam.minecraft.CodeTransformers
+import org.bread_experts_group.eam.minecraft.CodeTransformer
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.StackMapsOption
 import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 
-abstract class FeatureTransform<I>(val input: I) : CodeTransformers {
+abstract class FeatureTransform<I>(val input: I) : CodeTransformer {
 	private var c: Int = 0
 	private val cf: ClassFile = of(StackMapsOption.GENERATE_STACK_MAPS)
 	private val cl: DefiningClassLoader = DefiningClassLoader()

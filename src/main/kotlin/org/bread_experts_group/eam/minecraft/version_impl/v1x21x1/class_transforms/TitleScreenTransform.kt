@@ -35,8 +35,11 @@ class TitleScreenTransform(
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is CodeModel) {
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-					methodBuilder.atLine(273, methodElement) { codeBuilder, codeElement ->
-						codeBuilder.invokeStaticMethodWithLocalVars(::renderTitleScreen.javaMethod, localVars)
+					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						codeBuilder.atLine(273, codeElement) { builder ->
+							builder.invokeStaticMethodWithLocalVars(::renderTitleScreen.javaMethod, localVars)
+						}
+						.with(codeElement)
 					}
 				}
 			}

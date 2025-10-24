@@ -10,30 +10,21 @@ import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
-import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
-import java.util.Collection
-import java.util.List
-import java.util.Set
 import kotlin.reflect.jvm.javaMethod
 
 class PackRepositoryTransform(
 	scanning: Scanning,
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_server_packs_repository_PackRepository, "PackRepository", scanning, classFile) {
-	// todo modifyMethod that works with withMethod
-	var methodAdded: Boolean = false
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
-		if (
-			classElement is MethodModel &&
-			classElement.methodName().equalsString("<init>")
-		) {
-			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-				if (methodElement is CodeModel) {
-					methodBuilder.atLine(27, methodElement) { codeBuilder, codeElement ->
-						codeBuilder
+		classBuilder.modifyMethod(classElement, "<init>") { methodBuilder, methodElement ->
+			if (methodElement is CodeModel) {
+				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+					codeBuilder.atLine(27, codeElement) { builder ->
+						builder
 							.aload(0)
 							.new_(ClassDesc.of(LinkedHashSet::class.java.name))
 							.dup()
@@ -72,10 +63,11 @@ class PackRepositoryTransform(
 							.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
 							.return_()
 					}
+					.with(codeElement)
 				}
 			}
-		} else classBuilder.with(classElement)
-		if (!methodAdded) classBuilder.withMethod(
+		}
+		classBuilder.addMethod(
 			"addSources",
 			MethodTypeDesc.of(
 				ConstantDescs.CD_void,
@@ -102,7 +94,6 @@ class PackRepositoryTransform(
 					)
 					.return_()
 			}
-			methodAdded = true
 		}
 	}
 }

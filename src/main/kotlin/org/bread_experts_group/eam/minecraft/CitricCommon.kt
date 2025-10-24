@@ -13,7 +13,11 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import kotlin.reflect.full.isSubclassOf
 
-fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List<LocalVariable>): CodeBuilder {
+fun CodeBuilder.invokeStaticMethodWithLocalVars(
+	method: Method?,
+	localVars: List<LocalVariable>,
+	returnDesc: ClassDesc = ConstantDescs.CD_void
+): CodeBuilder {
 	if (method == null) throw NullPointerException("Method is somehow null??")
 	val params = method.parameters
 	val usedSlots = mutableListOf<Int>()
@@ -31,6 +35,11 @@ fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List
 				Boolean::class.java -> {
 					val variable = filtered.getNativeLocalVariable(c.name)
 					iload(variable.slot())
+					usedSlots.add(variable.slot())
+				}
+				Long::class.java -> {
+					val variable = filtered.getNativeLocalVariable(c.name)
+					lload(variable.slot())
 					usedSlots.add(variable.slot())
 				}
 				Float::class.java -> {
@@ -55,10 +64,11 @@ fun CodeBuilder.invokeStaticMethodWithLocalVars(method: Method?, localVars: List
 		ClassDesc.of(method.declaringClass.name),
 		method.name,
 		MethodTypeDesc.of(
-			ConstantDescs.CD_void,
+			returnDesc,
 			params.map { if (it.type.isPrimitive) {
 				when (it.type) {
 					Int::class.java -> ConstantDescs.CD_int
+					Long::class.java -> ConstantDescs.CD_long
 					Float::class.java -> ConstantDescs.CD_float
 					Double::class.java -> ConstantDescs.CD_Double
 					Boolean::class.java -> ConstantDescs.CD_boolean

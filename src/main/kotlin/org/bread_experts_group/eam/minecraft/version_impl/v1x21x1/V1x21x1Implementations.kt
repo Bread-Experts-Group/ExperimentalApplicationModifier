@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
+import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
@@ -11,6 +12,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfor
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ItemRendererTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MinecraftTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ModelBakeryTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MouseHandlerTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.PackRepositoryTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
@@ -53,7 +55,7 @@ object V1x21x1Implementations : Implementations() {
 	)
 
 	override fun start() {
-		println("Starting Transforms")
+		println("Starting Class Transforms")
 		BuiltInRegistriesTransform(scanning, classFile).startTransform(true)
 		MinecraftTransform(scanning, classFile).startTransform(true)
 		GuiTransform(scanning, classFile).startTransform(true)
@@ -63,8 +65,31 @@ object V1x21x1Implementations : Implementations() {
 		TitleScreenTransform(scanning, classFile).startTransform(true)
 		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
 		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
+		MouseHandlerTransform(scanning, classFile).startTransform(true)
+
+		EventSystem.addListener(EventSystem.MOUSE_INPUT_PRE) { button, action, _ ->
+			println("handling mouse input pre, $button, $action")
+			true
+		}
+
+		EventSystem.addListener(EventSystem.MOUSE_INPUT_POST) { button, action, _ ->
+			println("handling mouse input post, $button, $action")
+		}
 	}
 
+	@JvmStatic
+	@Suppress("unused")
+	fun handleMousePre(button: Int, action: Int, modifiers: Int): Boolean {
+		return EventSystem.MOUSE_INPUT_PRE.post(button, action, modifiers)
+	}
+
+	@JvmStatic
+	@Suppress("unused")
+	fun handleMousePost(windowPointer: Long, button: Int, action: Int, modifiers: Int) {
+		EventSystem.MOUSE_INPUT_POST.post(button, action, modifiers)
+	}
+
+	// todo built-in pack source that doesn't need to be manually enabled
 	@JvmStatic
 	@Suppress("unused")
 	fun addPackSources(self: PackRepository) {

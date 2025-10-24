@@ -27,8 +27,11 @@ class CreativeModeTabsTransform(
 		) { methodBuilder, methodElement ->
 			if (methodElement is CodeModel) {
 				val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-				methodBuilder.atLine(68, methodElement) { codeBuilder, codeElement ->
-					codeBuilder.invokeStaticMethodWithLocalVars(::registerTabs.javaMethod, localVars)
+				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+					codeBuilder.atLine(68, codeElement) { builder ->
+						builder.invokeStaticMethodWithLocalVars(::registerTabs.javaMethod, localVars)
+					}
+					.with(codeElement)
 				}
 			}
 		}

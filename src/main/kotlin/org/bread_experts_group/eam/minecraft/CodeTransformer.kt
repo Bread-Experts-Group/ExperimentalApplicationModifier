@@ -10,7 +10,6 @@ import java.lang.classfile.FieldModel
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.MethodElement
 import java.lang.classfile.MethodModel
-import java.lang.classfile.instruction.InvokeInstruction
 import java.lang.classfile.instruction.LineNumber
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.MethodTypeDesc
@@ -19,28 +18,23 @@ import java.lang.reflect.Method
 /**
  * Contains helper methods to aid in transforming code within classes and methods.
  */
-interface CodeTransformers {
-	/**
-	 * CodeElement#with is automatically called after [transform] is invoked.
-	 *
-	 * @param withBefore If true, places the CodeBuilder#with before the transform to place native code behind the modifications.
-	 * Defaults to false (puts modifications behind the native code)
-	 */
-	fun MethodBuilder.atLine(line: Int, codeModel: CodeModel, withBefore: Boolean = false, transform: (CodeBuilder, CodeElement) -> Unit) {
-		this.transformCode(codeModel) { codeBuilder, codeElement ->
-			if (withBefore) codeBuilder.with(codeElement)
-			if (codeElement is LineNumber && codeElement.line() == line) transform(codeBuilder, codeElement)
-			if (!withBefore) codeBuilder.with(codeElement)
-		}
+interface CodeTransformer {
+	fun CodeBuilder.atLine(
+		line: Int,
+		codeElement: CodeElement,
+		transform: (CodeBuilder) -> Unit
+	): CodeBuilder {
+		if (codeElement is LineNumber && codeElement.line() == line) transform(this)
+		return this
 	}
 
-	fun MethodBuilder.atInvoke(ordinal: Int, codeModel: CodeModel, transform: (CodeBuilder, CodeElement) -> Unit) {
-		var counter = 0
-		this.transformCode(codeModel) { codeBuilder, codeElement ->
-			if (codeElement is InvokeInstruction && counter == ordinal) transform(codeBuilder, codeElement)
-			else counter++
-			codeBuilder.with(codeElement)
-		}
+	// todo injects at every return in the targeted method, find a way to fix this
+	fun CodeBuilder.atReturn(
+		codeElement: CodeElement,
+		transform: (CodeBuilder) -> Unit
+	): CodeBuilder {
+		if (codeElement is ReturnInstruction) transform(this)
+		return this
 	}
 
 	fun ClassBuilder.modifyMethod(
@@ -52,7 +46,7 @@ interface CodeTransformers {
 		if (
 			classElement is MethodModel &&
 			classElement.methodName().equalsString(methodName) &&
-			classElement.methodTypeSymbol() == typeDesc
+			(classElement.methodTypeSymbol() == typeDesc || typeDesc == null)
 		) {
 			this.transformMethod(classElement) { methodBuilder, methodElement ->
 				transform(methodBuilder, methodElement)
