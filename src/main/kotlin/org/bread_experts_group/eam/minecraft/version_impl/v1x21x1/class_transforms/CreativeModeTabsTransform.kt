@@ -3,7 +3,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
-import org.bread_experts_group.eam.minecraft.invokeStaticMethodWithLocalVars
+import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Temp.registerTabs
@@ -29,7 +29,7 @@ class CreativeModeTabsTransform(
 				val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 					codeBuilder.atLine(68, codeElement) { builder ->
-						builder.invokeStaticMethodWithLocalVars(::registerTabs.javaMethod, localVars)
+						builder.invokeStaticWithLocalVars(::registerTabs.javaMethod, localVars)
 					}
 					.with(codeElement)
 				}

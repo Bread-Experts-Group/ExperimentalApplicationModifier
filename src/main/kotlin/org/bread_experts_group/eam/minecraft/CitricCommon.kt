@@ -1,7 +1,6 @@
 package org.bread_experts_group.eam.minecraft
 
 import org.bread_experts_group.eam.classDesc
-import org.bread_experts_group.eam.getAroundClassName
 import org.bread_experts_group.eam.getNativeLocalVariable
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import java.lang.classfile.CodeBuilder
@@ -11,9 +10,10 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
+import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
-fun CodeBuilder.invokeStaticMethodWithLocalVars(
+fun CodeBuilder.invokeStaticWithLocalVars(
 	method: Method?,
 	localVars: List<LocalVariable>,
 	returnDesc: ClassDesc = ConstantDescs.CD_void
@@ -24,7 +24,10 @@ fun CodeBuilder.invokeStaticMethodWithLocalVars(
 	params.forEach { parameter ->
 		val filtered = localVars.filter { it.slot() !in usedSlots }
 		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
-			val native = filtered.getNativeLocalVariable(parameter.type.getAroundClassName())
+			val kClass = parameter.type.kotlin
+			val companionInst = kClass.companionObjectInstance!!
+			val desc = companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
+			val native = filtered.getNativeLocalVariable(desc.displayName())
 			this.invokeSpecialNewMimicClass(
 				parameter.classDesc,
 				native.slot()
@@ -70,7 +73,7 @@ fun CodeBuilder.invokeStaticMethodWithLocalVars(
 					Int::class.java -> ConstantDescs.CD_int
 					Long::class.java -> ConstantDescs.CD_long
 					Float::class.java -> ConstantDescs.CD_float
-					Double::class.java -> ConstantDescs.CD_Double
+					Double::class.java -> ConstantDescs.CD_double
 					Boolean::class.java -> ConstantDescs.CD_boolean
 					else -> ConstantDescs.CD_Object
 				}

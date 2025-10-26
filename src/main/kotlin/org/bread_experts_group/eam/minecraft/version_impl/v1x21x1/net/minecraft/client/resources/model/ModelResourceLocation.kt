@@ -37,7 +37,5 @@ class ModelResourceLocation(around: Any) : MimickedClass(around) {
 			.newInstance(id.around, variant)
 	)
 
-	constructor(location: String) : this(
-		ResourceLocation.parse(location), "standalone"
-	)
+	constructor(location: String) : this(ResourceLocation.parse(location), "standalone")
 }

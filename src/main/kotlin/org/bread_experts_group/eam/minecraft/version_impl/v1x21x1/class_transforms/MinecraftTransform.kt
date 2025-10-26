@@ -2,7 +2,9 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations.postClientInit
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations.updateWindowTitle
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.main.GameConfig
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_Minecraft_updateTitle
 import java.lang.classfile.ClassBuilder
@@ -22,6 +24,16 @@ class MinecraftTransform(
 			MethodTypeDesc.of(ConstantDescs.CD_void),
 			::updateWindowTitle.javaMethod!!
 		)
-		if (!r.invoke(classBuilder, classElement)) classBuilder.with(classElement)
+		val r1 = invokeAtMethodReturns(
+			"<init>",
+			MethodTypeDesc.of(
+				ConstantDescs.CD_void,
+				GameConfig.classDesc
+			),
+			::postClientInit.javaMethod!!
+		)
+		if (
+			!(r.invoke(classBuilder, classElement) || r1.invoke(classBuilder, classElement))
+		) classBuilder.with(classElement)
 	}
 }

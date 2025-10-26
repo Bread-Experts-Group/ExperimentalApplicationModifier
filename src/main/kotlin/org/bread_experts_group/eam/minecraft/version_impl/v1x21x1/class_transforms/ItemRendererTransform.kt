@@ -3,7 +3,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
-import org.bread_experts_group.eam.minecraft.invokeStaticMethodWithLocalVars
+import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations.renderBEWLR
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.VertexConsumer
@@ -60,7 +60,7 @@ class ItemRendererTransform(
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 						codeBuilder.atLine(127, codeElement) { builder ->
-							builder.invokeStaticMethodWithLocalVars(::renderBEWLR.javaMethod, localVars)
+							builder.invokeStaticWithLocalVars(::renderBEWLR.javaMethod, localVars)
 						}
 						.with(codeElement)
 					}

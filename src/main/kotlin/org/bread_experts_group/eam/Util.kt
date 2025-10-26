@@ -1,29 +1,21 @@
 package org.bread_experts_group.eam
 
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations
+import java.lang.classfile.CodeBuilder
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
+import java.lang.constant.ConstantDescs
+import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
-import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
 fun loadClass(clazz: String): Class<*> = ClassLoader.getSystemClassLoader().loadClass(clazz)
 
-/**
- * @return The native class name of the wrapped class.
- * Returns an empty string if the class does not subclass [MimickedClass].
- */
-fun Class<*>.getAroundClassName(): String {
-	val kClass = this.kotlin
-	if (!kClass.isSubclassOf(MimickedClass::class)) return ""
-	val companionInst = kClass.companionObjectInstance ?: return ""
-	val clazz = companionInst.javaClass.getMethod("getClazz").invoke(companionInst)
-	return clazz.toString().substringAfterLast(' ')
-}
 /**
  * @return The parameters subclassing [MimickedClass].
  */
@@ -34,21 +26,16 @@ fun Method.getMimicParameters(): List<Parameter> =
 //	val mimicParams = this.getMimicParameters()
 //}
 
-/**
- * @return The wrapped native class names of each parameter subclassing [MimickedClass].
- */
-fun List<Parameter>.getMimicClassNames(): List<String> = this.map { it.type.getAroundClassName() }
+fun CodeBuilder.injectTestMethod(): CodeBuilder =
+	this.invokestatic(
+		V1x21x1Implementations::class.classDesc,
+		"test",
+		MethodTypeDesc.of(ConstantDescs.CD_void)
+	)
 
 fun List<Parameter>.printParameterInfo() {
 	this.forEach { method ->
 		println("Parameter[Name: ${method.name}, ClassDesc: ${method.classDesc}, Type: ${method.type}]")
-	}
-}
-
-fun List<Parameter>.printMatchingNativeLocalVars(localVars: List<LocalVariable>) {
-	this.forEach { param ->
-		val nativeName = param.type.getAroundClassName()
-		println("Mimic parameter ${param.classDesc.displayName()}[$nativeName] -> Native parameter ${localVars.getNativeLocalVariable(nativeName)}")
 	}
 }
 

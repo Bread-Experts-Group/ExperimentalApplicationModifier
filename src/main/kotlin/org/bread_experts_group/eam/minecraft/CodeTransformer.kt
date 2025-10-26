@@ -37,6 +37,7 @@ interface CodeTransformer {
 		return this
 	}
 
+	// todo retrofit to return a boolean
 	fun ClassBuilder.modifyMethod(
 		classElement: ClassElement,
 		methodName: String,

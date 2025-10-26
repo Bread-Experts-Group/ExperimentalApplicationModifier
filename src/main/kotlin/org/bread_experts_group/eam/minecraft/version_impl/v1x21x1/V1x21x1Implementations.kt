@@ -67,32 +67,22 @@ object V1x21x1Implementations : Implementations() {
 		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
 		MouseHandlerTransform(scanning, classFile).startTransform(true)
 
-		EventSystem.addListener(EventSystem.MOUSE_INPUT_PRE) { button, action, _ ->
-			println("handling mouse input pre, $button, $action")
-			true
+		EventSystem.addListener(EventSystem.MOUSE_BUTTON_PRE) { event, button, action, _ ->
 		}
 
-		EventSystem.addListener(EventSystem.MOUSE_INPUT_POST) { button, action, _ ->
-			println("handling mouse input post, $button, $action")
+		EventSystem.addListener(EventSystem.MOUSE_BUTTON_POST) { event, button, action, _ ->
 		}
-	}
 
-	@JvmStatic
-	@Suppress("unused")
-	fun handleMousePre(button: Int, action: Int, modifiers: Int): Boolean {
-		return EventSystem.MOUSE_INPUT_PRE.post(button, action, modifiers)
-	}
-
-	@JvmStatic
-	@Suppress("unused")
-	fun handleMousePost(windowPointer: Long, button: Int, action: Int, modifiers: Int) {
-		EventSystem.MOUSE_INPUT_POST.post(button, action, modifiers)
+		EventSystem.addListener(EventSystem.MOUSE_SCROLLED) { event, mouseHandler, scrollX, scrollY ->
+			event.setCanceled(true)
+		}
 	}
 
 	// todo built-in pack source that doesn't need to be manually enabled
 	@JvmStatic
 	@Suppress("unused")
 	fun addPackSources(self: PackRepository) {
+		println("[EAM Loader] Adding additional pack sources")
 		val validator = Minecraft.getInstance().directoryValidator()
 		val resourceLocation = this::class.java.getResource("/resources")?.toURI()
 		val env = hashMapOf<String, String>()
@@ -108,20 +98,27 @@ object V1x21x1Implementations : Implementations() {
 			FolderRepositorySource(path, PackType.CLIENT_RESOURCES, PackSource.DEFAULT, validator)
 		)
 		self.addSources(sources)
-		println("[EAM Loader] Adding additional pack sources")
 	}
 
 	@JvmStatic
 	@Suppress("unused")
 	fun registerAdditionalModels(self: ModelBakery) {
 		println("[EAM Loader] Registering additional models")
-		val unbaked = self.getModel("breadmod:item/tool_gun/item")
-		self.registerModelAndLoadDependencies(ModelResourceLocation("breadmod:item/tool_gun/item"), unbaked)
-		val unbaked2 = self.getModel("breadmod:item/tool_gun/coil")
-		self.registerModelAndLoadDependencies(ModelResourceLocation("breadmod:item/tool_gun/coil"), unbaked2)
+		val item = "breadmod:item/tool_gun/item"
+		val coil = "breadmod:item/tool_gun/coil"
+		val unbaked = self.getModel(item)
+		val unbaked2 = self.getModel(coil)
+		self.registerModelAndLoadDependencies(ModelResourceLocation(item), unbaked)
+		self.registerModelAndLoadDependencies(ModelResourceLocation(coil), unbaked2)
 	}
 
-	var flag = false
+	@JvmStatic
+	@Suppress("unused")
+	fun addLayers(self: Gui) {
+		println("[EAM Loader] Registering drawLayers")
+		val layers = self.layers
+		this.drawLayers.forEach { layers.add(it) }
+	}
 
 	@JvmStatic
 	@Suppress("unused")
@@ -133,23 +130,6 @@ object V1x21x1Implementations : Implementations() {
 		packedLight: Int,
 		packedOverlay: Int
 	) {
-		// todo temp solution to add to the arrays until a better entrypoint is made
-		if (!flag) {
-			addToStaticArray(
-				net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
-				"G",
-				ResourceLocation.clazz,
-				ResourceLocation.parse("container/creative_inventory/tab_top_unselected_1")
-			)
-			addToStaticArray(
-				net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
-				"H",
-				ResourceLocation.clazz,
-				ResourceLocation.parse("container/creative_inventory/tab_top_selected_1")
-			)
-
-			flag = true
-		}
 		val minecraft = Minecraft.getInstance()
 		object : BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels()) {
 			val mainModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(
@@ -185,20 +165,35 @@ object V1x21x1Implementations : Implementations() {
 
 	@JvmStatic
 	@Suppress("unused")
-	fun addLayers(self: Gui) {
-		println("[EAM Loader] Registering drawLayers")
-		val layers = self.layers
-		this.drawLayers.forEach { layers.add(it) }
-	}
-
-	@JvmStatic
-	@Suppress("unused")
 	fun afterCreateContents() {
 		mods.forEach {
 			it.addBlocks(this.get(MinecraftFeatures.BLOCK))
 			it.addItems(this.get(MinecraftFeatures.ITEM))
 			it.addLayers(this.get(MinecraftFeatures.LAYER))
 		}
+	}
+
+	@JvmStatic
+	fun test() {
+		println("test!")
+	}
+
+	@JvmStatic
+	@Suppress("unused")
+	fun postClientInit() {
+		// adding a 7th entry to the top creative tab texture arrays so it won't crash when trying to render the extra tab
+		addToStaticArray(
+			net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
+			"G",
+			ResourceLocation.clazz,
+			ResourceLocation.parse("container/creative_inventory/tab_top_unselected_1")
+		)
+		addToStaticArray(
+			net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
+			"H",
+			ResourceLocation.clazz,
+			ResourceLocation.parse("container/creative_inventory/tab_top_selected_1")
+		)
 	}
 
 	@JvmStatic

@@ -4,7 +4,7 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import org.bread_experts_group.eam.minecraft.invokeStaticMethodWithLocalVars
+import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
@@ -192,7 +192,7 @@ class CreativeModeTab(around: Any) : MimickedClass(around) {
 						)
 						codeBuilder
 							.aload(0)
-							.invokeStaticMethodWithLocalVars(::runGenerator.javaMethod, localVars)
+							.invokeStaticWithLocalVars(::runGenerator.javaMethod, localVars)
 							.return_()
 					}
 					classBuilder.withMethodBody(
