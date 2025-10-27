@@ -23,22 +23,29 @@ object EventSystem {
 	// MouseEvent
 	val MOUSE_BUTTON_PRE: MouseEvent.ButtonPre = MouseEvent.ButtonPre()
 	val MOUSE_BUTTON_POST: MouseEvent.ButtonPost = MouseEvent.ButtonPost()
+
 	val MOUSE_SCROLLED: MouseEvent.Scroll = MouseEvent.Scroll()
+
 	// ScreenEvent
 	val SCREEN_INPUT_PRESSED_PRE: ScreenEvent.MouseButtonPressedPre = ScreenEvent.MouseButtonPressedPre()
 	val SCREEN_INPUT_PRESSED_POST: ScreenEvent.MouseButtonPressedPost = ScreenEvent.MouseButtonPressedPost()
+
 	val SCREEN_INPUT_RELEASED_PRE: ScreenEvent.MouseButtonReleasedPre = ScreenEvent.MouseButtonReleasedPre()
 	val SCREEN_INPUT_RELEASED_POST: ScreenEvent.MouseButtonReleasedPost = ScreenEvent.MouseButtonReleasedPost()
+
 	val SCREEN_INPUT_SCROLL_PRE: ScreenEvent.MouseScrolledPre = ScreenEvent.MouseScrolledPre()
+	val SCREEN_INPUT_SCROLL_POST: ScreenEvent.MouseScrolledPost = ScreenEvent.MouseScrolledPost()
+
+	val SCREEN_INPUT_DRAGGED_PRE: ScreenEvent.MouseDraggedPre = ScreenEvent.MouseDraggedPre()
+	val SCREEN_INPUT_DRAGGED_POST: ScreenEvent.MouseDraggedPost = ScreenEvent.MouseDraggedPost()
 
 	fun <T> addListener(event: Event<T>, lambda: T) {
 		event.listeners.add(lambda)
 	}
 
 	@JvmStatic
-	fun handleMouseButtonPre(button: Int, action: Int, modifiers: Int): Boolean {
-		return MOUSE_BUTTON_PRE.post(button, action, modifiers)
-	}
+	fun handleMouseButtonPre(button: Int, action: Int, modifiers: Int): Boolean =
+		MOUSE_BUTTON_PRE.post(button, action, modifiers)
 
 	@JvmStatic
 	fun handleMouseButtonPost(button: Int, action: Int, modifiers: Int) {
@@ -46,14 +53,12 @@ object EventSystem {
 	}
 
 	@JvmStatic
-	fun handleMouseScroll(mouseHandler: MouseHandler, xOffset: Double, yOffset: Double): Boolean {
-		return MOUSE_SCROLLED.post(mouseHandler, xOffset, yOffset)
-	}
+	fun handleMouseScroll(mouseHandler: MouseHandler, xOffset: Double, yOffset: Double): Boolean =
+		MOUSE_SCROLLED.post(mouseHandler, xOffset, yOffset)
 
 	@JvmStatic
-	fun handleScreenMousePressedPre(screen: Screen, mouseX: Double, mouseY: Double, button: Int): Boolean {
-		return SCREEN_INPUT_PRESSED_PRE.post(screen, mouseX, mouseY, button)
-	}
+	fun handleScreenMousePressedPre(screen: Screen, mouseX: Double, mouseY: Double, button: Int): Boolean =
+		SCREEN_INPUT_PRESSED_PRE.post(screen, mouseX, mouseY, button)
 
 	@JvmStatic
 	fun handleScreenMousePressedPost(screen: Screen, mouseX: Double, mouseY: Double, button: Int) {
@@ -61,9 +66,8 @@ object EventSystem {
 	}
 
 	@JvmStatic
-	fun handleScreenMouseReleasedPre(screen: Screen, mouseX: Double, mouseY: Double, button: Int): Boolean {
-		return SCREEN_INPUT_RELEASED_PRE.post(screen, mouseX, mouseY, button)
-	}
+	fun handleScreenMouseReleasedPre(screen: Screen, mouseX: Double, mouseY: Double, button: Int): Boolean =
+		SCREEN_INPUT_RELEASED_PRE.post(screen, mouseX, mouseY, button)
 
 	@JvmStatic
 	fun handleScreenMouseReleasedPost(screen: Screen, mouseX: Double, mouseY: Double, button: Int) {
@@ -76,7 +80,37 @@ object EventSystem {
 		screen: Screen,
 		scrollDeltaX: Double,
 		scrollDeltaY: Double
-	): Boolean {
-		return SCREEN_INPUT_SCROLL_PRE.post(mouseHandler, screen, scrollDeltaX, scrollDeltaY)
+	): Boolean = SCREEN_INPUT_SCROLL_PRE.post(mouseHandler, screen, scrollDeltaX, scrollDeltaY)
+
+	@JvmStatic
+	fun handleScreenMouseScrolledPost(
+		mouseHandler: MouseHandler,
+		screen: Screen,
+		scrollDeltaX: Double,
+		scrollDeltaY: Double
+	) {
+		SCREEN_INPUT_SCROLL_POST.post(mouseHandler, screen, scrollDeltaX, scrollDeltaY)
+	}
+
+	@JvmStatic
+	fun handleScreenMouseDraggedPre(
+		screen: Screen,
+		mouseX: Double,
+		mouseY: Double,
+		mouseButton: Int,
+		dragX: Double,
+		dragY: Double
+	): Boolean = SCREEN_INPUT_DRAGGED_PRE.post(screen, mouseX, mouseY, mouseButton, dragX, dragY)
+
+	@JvmStatic
+	fun handleScreenMouseDraggedPost(
+		screen: Screen,
+		mouseX: Double,
+		mouseY: Double,
+		mouseButton: Int,
+		dragX: Double,
+		dragY: Double
+	) {
+		SCREEN_INPUT_DRAGGED_POST.post(screen, mouseX, mouseY, mouseButton, dragX, dragY)
 	}
 }

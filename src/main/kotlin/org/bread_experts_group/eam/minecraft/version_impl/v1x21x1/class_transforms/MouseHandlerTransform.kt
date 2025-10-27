@@ -2,7 +2,6 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getLocalVariableInfo
-import org.bread_experts_group.eam.injectTestMethod
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
@@ -24,8 +23,6 @@ import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.Opcode
-import java.lang.classfile.instruction.InvokeInstruction
-import java.lang.classfile.instruction.StackInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -35,7 +32,7 @@ class MouseHandlerTransform(
 	scanning: Scanning,
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_client_MouseHandler, "MouseHandler", scanning, classFile) {
-	private var passed: Boolean = false
+	private var onScrollCounter = 0
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		when (classElement) {
 			is MethodModel if classElement.methodName().equalsString("a") && classElement.methodTypeSymbol() == MethodTypeDesc.of(
@@ -179,7 +176,6 @@ class MouseHandlerTransform(
 			)                                                                                                           -> { // onScroll
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 					if (methodElement is CodeModel) {
-//						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 							val label = codeBuilder.newLabel()
 							codeBuilder
@@ -202,19 +198,7 @@ class MouseHandlerTransform(
 										.return_()
 										.labelBinding(label)
 								}
-							val label1 = codeBuilder.newLabel()
-							val label2 = codeBuilder.newLabel()
-							// todo figure out how to combine the two ifs here and figure out how to properly "delete" instructions
-							if (
-								codeElement is InvokeInstruction &&
-								codeElement.typeSymbol() == MethodTypeDesc.of(
-									ConstantDescs.CD_boolean,
-									ConstantDescs.CD_double,
-									ConstantDescs.CD_double,
-									ConstantDescs.CD_double,
-									ConstantDescs.CD_double
-								)
-							) {
+							if (onScrollCounter == 115) {
 								codeBuilder
 									.invokeSpecialNewMimicClass(MouseHandler::class.classDesc, 0)
 									.new_(Screen.mimicClassDesc)
@@ -251,22 +235,167 @@ class MouseHandlerTransform(
 											ConstantDescs.CD_double
 										)
 									)
-									.ifne(label1)
-									.injectTestMethod()
-									.labelBinding(label1)
+									.ifThen(Opcode.IFEQ) { builder ->
+										builder
+											.aload(0)
+											.getfield(
+												ClassDesc.of("fgp"),
+												"b",
+												Minecraft.classDesc
+											)
+											.getfield(
+												Minecraft.classDesc,
+												"y",
+												Screen.classDesc
+											)
+											.dload(14)
+											.dload(16)
+											.dload(10)
+											.dload(12)
+											.invokevirtual(
+												Screen.classDesc,
+												"a",
+												MethodTypeDesc.of(
+													ConstantDescs.CD_boolean,
+													ConstantDescs.CD_double,
+													ConstantDescs.CD_double,
+													ConstantDescs.CD_double,
+													ConstantDescs.CD_double
+												)
+											)
+											.ifThen(Opcode.IFEQ) { builder1 ->
+												builder1
+													.invokeSpecialNewMimicClass(MouseHandler::class.classDesc, 0)
+													.new_(Screen.mimicClassDesc)
+													.dup()
+													.aload(0)
+													.getfield(
+														ClassDesc.of("fgp"),
+														"b",
+														Minecraft.classDesc
+													)
+													.getfield(
+														Minecraft.classDesc,
+														"y",
+														Screen.classDesc
+													)
+													.invokespecial(
+														Screen.mimicClassDesc,
+														"<init>",
+														MethodTypeDesc.of(
+															ConstantDescs.CD_void,
+															ConstantDescs.CD_Object
+														)
+													)
+													.dload(8)
+													.dload(10)
+													.invokestatic(
+														EventSystem::class.classDesc,
+														"handleScreenMouseScrolledPost",
+														MethodTypeDesc.of(
+															ConstantDescs.CD_void,
+															MouseHandler::class.classDesc,
+															Screen.mimicClassDesc,
+															ConstantDescs.CD_double,
+															ConstantDescs.CD_double
+														)
+													)
+											}
+
+									}
 							}
-							if (
-								codeElement is StackInstruction &&
-								codeElement.opcode() == Opcode.POP &&
-								!passed
-							) {
-								codeBuilder
-									.ifne(label2)
-									.injectTestMethod()
-									.labelBinding(label2)
-								passed = true
-							} else codeBuilder.with(codeElement)
+							if (onScrollCounter !in 115 .. 123) codeBuilder.with(codeElement)
+							onScrollCounter++
 						}
+					}
+				}
+			}
+			is MethodModel if classElement.methodTypeSymbol() == MethodTypeDesc.of(
+				ConstantDescs.CD_void,
+				Screen.classDesc,
+				ConstantDescs.CD_double,
+				ConstantDescs.CD_double,
+				ConstantDescs.CD_double,
+				ConstantDescs.CD_double
+			)                                                                                                           -> {
+				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
+					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						codeBuilder
+							.lineNumber(254)
+							.invokeSpecialNewMimicClass(Screen.mimicClassDesc, 1)
+							.dload(2)
+							.dload(4)
+							.aload(0)
+							.getfield(
+								ClassDesc.of("fgp"),
+								"i",
+								ConstantDescs.CD_int
+							)
+							.dload(6)
+							.dload(8)
+							.invokestatic(
+								EventSystem::class.classDesc,
+								"handleScreenMouseDraggedPre",
+								MethodTypeDesc.of(
+									ConstantDescs.CD_boolean,
+									Screen.mimicClassDesc,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_int,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_double
+								)
+							)
+							.ifThen(Opcode.IFNE) { it.return_() }
+							.aload(1)
+							.dload(2)
+							.dload(4)
+							.aload(0)
+							.getfield(
+								ClassDesc.of("fgp"),
+								"i",
+								ConstantDescs.CD_int
+							)
+							.dload(6)
+							.dload(8)
+							.invokevirtual(
+								Screen.classDesc,
+								"a",
+								MethodTypeDesc.of(
+									ConstantDescs.CD_boolean,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_int,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_double
+								)
+							)
+							.ifThen(Opcode.IFNE) { it.return_() }
+							.invokeSpecialNewMimicClass(Screen.mimicClassDesc, 1)
+							.dload(2)
+							.dload(4)
+							.aload(0)
+							.getfield(
+								ClassDesc.of("fgp"),
+								"i",
+								ConstantDescs.CD_int
+							)
+							.dload(6)
+							.dload(8)
+							.invokestatic(
+								EventSystem::class.classDesc,
+								"handleScreenMouseDraggedPre",
+								MethodTypeDesc.of(
+									ConstantDescs.CD_boolean,
+									Screen.mimicClassDesc,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_int,
+									ConstantDescs.CD_double,
+									ConstantDescs.CD_double
+								)
+							)
+							.return_()
 					}
 				}
 			}

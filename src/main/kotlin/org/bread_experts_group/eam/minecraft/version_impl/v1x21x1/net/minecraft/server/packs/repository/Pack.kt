@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_Pack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_Pack_ResourcesSupplier
 import java.lang.constant.ClassDesc
 
 /*
@@ -61,15 +62,25 @@ net.minecraft.server.packs.repository.Pack$Position -> atm$b:
     198:198:net.minecraft.server.packs.repository.Pack$Position opposite() -> a
     163:163:net.minecraft.server.packs.repository.Pack$Position[] $values() -> b
     163:165:void <clinit>() -> <clinit>
-net.minecraft.server.packs.repository.Pack$ResourcesSupplier -> atm$c:
-# {"fileName":"Pack.java","id":"sourceFile"}
-    net.minecraft.server.packs.PackResources openPrimary(net.minecraft.server.packs.PackLocationInfo) -> a
-    net.minecraft.server.packs.PackResources openFull(net.minecraft.server.packs.PackLocationInfo,net.minecraft.server.packs.repository.Pack$Metadata) -> a
  */
 class Pack(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_Pack)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Pack::class.classDesc
+	}
+
+	/*
+	net.minecraft.server.packs.repository.Pack$ResourcesSupplier -> atm$c:
+# {"fileName":"Pack.java","id":"sourceFile"}
+    net.minecraft.server.packs.PackResources openPrimary(net.minecraft.server.packs.PackLocationInfo) -> a
+    net.minecraft.server.packs.PackResources openFull(net.minecraft.server.packs.PackLocationInfo,net.minecraft.server.packs.repository.Pack$Metadata) -> a
+	 */
+	class ResourcesSupplier(around: Any) : MimickedClass(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_Pack_ResourcesSupplier)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = ResourcesSupplier::class.classDesc
+		}
 	}
 }

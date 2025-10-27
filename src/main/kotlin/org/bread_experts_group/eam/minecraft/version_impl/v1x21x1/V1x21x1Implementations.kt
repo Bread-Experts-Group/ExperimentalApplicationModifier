@@ -74,7 +74,6 @@ object V1x21x1Implementations : Implementations() {
 		}
 
 		EventSystem.addListener(EventSystem.MOUSE_SCROLLED) { event, mouseHandler, scrollX, scrollY ->
-			event.setCanceled(true)
 		}
 	}
 
