@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.Registries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
@@ -130,7 +131,10 @@ class CreativeModeTabs(around: Any) : MimickedClass(around) {
 				BREADMOD,
 				CreativeModeTab.builder(CreativeModeTab.Row.TOP, 7)
 					.title(Component.literal("breadmod"))
-					.displayItems()
+					.displayItems { displayParameters, output ->
+						val stack = BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:bread_block")).getDefaultInstance()
+						output.accept(stack)
+					}
 					.build()
 			)
 		}

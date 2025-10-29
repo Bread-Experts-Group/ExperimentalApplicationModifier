@@ -83,4 +83,4 @@ val Class<*>.classDesc: ClassDesc
 	get() = ClassDesc.of(this.name)
 
 val KClass<*>.classDesc: ClassDesc
-	get() = ClassDesc.of(this.qualifiedName)
+	get() = ClassDesc.of(this.java.name)

@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.feature
 
 import java.lang.constant.ClassDesc
 
-abstract class MimickedClass(@JvmField val around: Any) {
+abstract class MimickedClass(@JvmField var around: Any) {
 	companion object {
 		val classDesc: ClassDesc = ClassDesc.of(MimickedClass::class.qualifiedName)
 	}
