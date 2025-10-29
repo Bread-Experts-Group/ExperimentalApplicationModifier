@@ -64,7 +64,7 @@ net.minecraft.client.MouseHandler -> fgp:
  */
 class MouseHandler(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
-		override val clazz: Class<*> by lazy { loadClass(net_minecraft_client_MouseHandler) }
+		override val clazz: Class<*> = loadClass(net_minecraft_client_MouseHandler)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = MouseHandler::class.classDesc
 	}

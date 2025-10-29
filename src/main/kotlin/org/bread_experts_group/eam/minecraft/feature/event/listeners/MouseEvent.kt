@@ -8,7 +8,7 @@ abstract class MouseEvent<T> : EventSystem.Event<T>() {
 	class ButtonPre : MouseEvent<(ButtonPre, Int, Int, Int) -> Unit>(), CancellableEvent {
 		fun post(button: Int, action: Int, modifiers: Int): Boolean {
 			this.listeners.forEach { it.invoke(this, button, action, modifiers) }
-			return this.getCanceled()
+			return this.getCanceledAndReset()
 		}
 	}
 
@@ -21,7 +21,7 @@ abstract class MouseEvent<T> : EventSystem.Event<T>() {
 	class Scroll : MouseEvent<(Scroll, MouseHandler, Double, Double) -> Unit>(), CancellableEvent {
 		fun post(mouseHandler: MouseHandler, xOffset: Double, yOffset: Double): Boolean {
 			this.listeners.forEach { it.invoke(this, mouseHandler, xOffset, yOffset) }
-			return this.getCanceled()
+			return this.getCanceledAndReset()
 		}
 	}
 }

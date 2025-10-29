@@ -44,7 +44,6 @@ import java.lang.constant.ClassDesc
     380:384:net.minecraft.world.level.material.FluidState getFluidState(net.minecraft.core.BlockPos) -> b_
     388:388:boolean isDay() -> R
     392:392:boolean isNight() -> S
-    397:398:void playSound(net.minecraft.world.entity.Entity,net.minecraft.core.BlockPos,net.minecraft.sounds.SoundEvent,net.minecraft.sounds.SoundSource,float,float) -> a
     403:404:void playSound(net.minecraft.world.entity.player.Player,net.minecraft.core.BlockPos,net.minecraft.sounds.SoundEvent,net.minecraft.sounds.SoundSource,float,float) -> a
     void playSeededSound(net.minecraft.world.entity.player.Player,double,double,double,net.minecraft.core.Holder,net.minecraft.sounds.SoundSource,float,float,long) -> a
     410:411:void playSeededSound(net.minecraft.world.entity.player.Player,double,double,double,net.minecraft.sounds.SoundEvent,net.minecraft.sounds.SoundSource,float,float,long) -> a
@@ -158,4 +157,8 @@ open class Level(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Level::class.classDesc
 	}
+
+	// todo implement after implementing BlockPos and Entity#blockPosition()
+	//  397:398:void playSound(net.minecraft.world.entity.Entity,net.minecraft.core.BlockPos,net.minecraft.sounds.SoundEvent,net.minecraft.sounds.SoundSource,float,float) -> a
+//	fun playSound()
 }

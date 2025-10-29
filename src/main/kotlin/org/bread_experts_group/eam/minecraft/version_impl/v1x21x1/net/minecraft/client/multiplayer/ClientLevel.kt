@@ -3,6 +3,8 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvent
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.Level
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_multiplayer_ClientLevel
 import java.lang.constant.ClassDesc
@@ -194,5 +196,31 @@ class ClientLevel(around: Any) : Level(around) {
 		override val clazz: Class<*> = loadClass(net_minecraft_client_multiplayer_ClientLevel)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = ClientLevel::class.classDesc
+	}
+
+	// todo remove after implementing playSound in Level
+	fun playSound(
+		x: Double,
+		y: Double,
+		z: Double,
+		soundEvent: SoundEvent,
+		soundSource: SoundSource,
+		volume: Float,
+		pitch: Float,
+		distanceDelay: Boolean,
+		seed: Long
+	) {
+		clazz.getMethod(
+			"a",
+			Double::class.java,
+			Double::class.java,
+			Double::class.java,
+			SoundEvent.clazz,
+			SoundSource.clazz,
+			Float::class.java,
+			Float::class.java,
+			Boolean::class.java,
+			Long::class.java
+		).invoke(around, x, y, z, soundEvent.around, soundSource.around, volume, pitch, distanceDelay, seed)
 	}
 }

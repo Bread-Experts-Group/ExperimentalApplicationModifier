@@ -10,7 +10,7 @@ abstract class ScreenEvent<T> : EventSystem.Event<T>() {
 	class MouseButtonPressedPre : ScreenEvent<(Screen, Double, Double, Int) -> Unit>(), CancellableEvent {
 		fun post(screen: Screen, mouseX: Double, mouseY: Double, button: Int): Boolean {
 			this.listeners.forEach { it.invoke(screen, mouseX, mouseY, button)  }
-			return this.getCanceled()
+			return this.getCanceledAndReset()
 		}
 	}
 
@@ -23,7 +23,7 @@ abstract class ScreenEvent<T> : EventSystem.Event<T>() {
 	class MouseButtonReleasedPre : ScreenEvent<(Screen, Double, Double, Int) -> Unit>(), CancellableEvent {
 		fun post(screen: Screen, mouseX: Double, mouseY: Double, button: Int): Boolean {
 			this.listeners.forEach { it.invoke(screen, mouseX, mouseY, button)  }
-			return this.getCanceled()
+			return this.getCanceledAndReset()
 		}
 	}
 
@@ -36,7 +36,7 @@ abstract class ScreenEvent<T> : EventSystem.Event<T>() {
 	class MouseScrolledPre : ScreenEvent<(MouseHandler, Screen, Double, Double) -> Unit>(), CancellableEvent {
 		fun post(mouseHandler: MouseHandler, screen: Screen, scrollDeltaX: Double, scrollDeltaY: Double): Boolean {
 			this.listeners.forEach { it.invoke(mouseHandler, screen, scrollDeltaX, scrollDeltaY) }
-			return this.getCanceled()
+			return this.getCanceledAndReset()
 		}
 	}
 
@@ -49,7 +49,7 @@ abstract class ScreenEvent<T> : EventSystem.Event<T>() {
 	class MouseDraggedPre : ScreenEvent<(Screen, Double, Double, Int, Double, Double) -> Unit>() {
 		fun post(screen: Screen, mouseX: Double, mouseY: Double, mouseButton: Int, dragX: Double, dragY: Double): Boolean {
 			this.listeners.forEach { it.invoke(screen, mouseX, mouseY, mouseButton, dragX, dragY) }
-			return this.getCanceled()
+			return this.getCanceledAndReset()
 		}
 	}
 

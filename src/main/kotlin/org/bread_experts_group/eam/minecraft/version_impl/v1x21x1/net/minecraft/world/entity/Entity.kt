@@ -515,16 +515,13 @@ import java.lang.constant.ClassDesc
     3527:3528:void addDeltaMovement(net.minecraft.world.phys.Vec3) -> j
     3531:3532:void setDeltaMovement(double,double,double) -> n
     3535:3535:int getBlockX() -> ds
-    3539:3539:double getX() -> dt
     3543:3543:double getX(double) -> c
     3547:3547:double getRandomX(double) -> d
     3551:3551:int getBlockY() -> du
-    3555:3555:double getY() -> dv
     3559:3559:double getY(double) -> e
     3563:3563:double getRandomY() -> dw
     3567:3567:double getEyeY() -> dx
     3571:3571:int getBlockZ() -> dy
-    3575:3575:double getZ() -> dz
     3579:3579:double getZ(double) -> f
     3583:3583:double getRandomZ(double) -> g
     3587:3602:void setPosRaw(double,double,double) -> o
@@ -575,10 +572,18 @@ import java.lang.constant.ClassDesc
     822:822:boolean lambda$move$0(net.minecraft.world.level.block.state.BlockState) -> e
     138:250:void <clinit>() -> <clinit>
  */
-class Entity(around: Any) : MimickedClass(around) {
+open class Entity(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_world_entity_Entity)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Entity::class.classDesc
 	}
+
+	fun getX(): Double = clazz.getMethod("dt").invoke(around) as Double
+
+	fun getY(): Double = clazz.getMethod("dv").invoke(around) as Double
+
+	fun getZ(): Double = clazz.getMethod("dz").invoke(around) as Double
+
+	fun isShiftKeyDown(): Boolean = clazz.getMethod("bW").invoke(this.around) as Boolean
 }

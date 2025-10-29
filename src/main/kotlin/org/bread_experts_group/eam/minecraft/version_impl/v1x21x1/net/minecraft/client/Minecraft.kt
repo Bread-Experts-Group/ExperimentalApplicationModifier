@@ -8,6 +8,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.bla
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Font
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.model.geom.EntityModelSet
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.multiplayer.ClientLevel
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.player.LocalPlayer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelManager
@@ -384,46 +385,35 @@ class Minecraft(around: Any) : MimickedClass(around) {
 	}
 
 	val font: Font
-		get() = Font(
-			clazz.getField(
-				"h"
-			).get(around)
-		)
+		get() = Font(clazz.getField("h").get(around))
+
 	val level: ClientLevel?
 		get() {
 			val level = clazz.getField("r").get(around) ?: return null
-			return ClientLevel(
-				level
-			)
+			return ClientLevel(level)
+		}
+
+	val player: LocalPlayer?
+		get() {
+			val player = clazz.getField("s").get(around) ?: return null
+			return LocalPlayer(player)
 		}
 
 	fun getBlockEntityRenderDispatcher(): BlockEntityRenderDispatcher =
-		BlockEntityRenderDispatcher(
-			clazz.getMethod("aq").invoke(around)
-		)
+		BlockEntityRenderDispatcher(clazz.getMethod("aq").invoke(around))
 
 	fun getEntityModels(): EntityModelSet =
-		EntityModelSet(
-			clazz.getMethod("aP").invoke(around)
-		)
+		EntityModelSet(clazz.getMethod("aP").invoke(around))
 
 	fun directoryValidator(): DirectoryValidator =
-		DirectoryValidator(
-			clazz.getMethod("bb").invoke(around)
-		)
+		DirectoryValidator(clazz.getMethod("bb").invoke(around))
 
 	fun getWindow(): Window =
-		Window(
-			clazz.getMethod("aM").invoke(around)
-		)
+		Window(clazz.getMethod("aM").invoke(around))
 
 	fun getModelManager(): ModelManager =
-		ModelManager(
-			clazz.getMethod("aC").invoke(around)
-		)
+		ModelManager(clazz.getMethod("aC").invoke(around))
 
 	fun getItemRenderer(): ItemRenderer =
-		ItemRenderer(
-			clazz.getMethod("ar").invoke(around)
-		)
+		ItemRenderer(clazz.getMethod("ar").invoke(around))
 }

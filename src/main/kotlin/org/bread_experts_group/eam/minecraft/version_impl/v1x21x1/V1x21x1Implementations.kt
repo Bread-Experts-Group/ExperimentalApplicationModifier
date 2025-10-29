@@ -6,6 +6,7 @@ import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GuiTransform
@@ -27,6 +28,8 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelBakery
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvents
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackType
@@ -66,6 +69,7 @@ object V1x21x1Implementations : Implementations() {
 		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
 		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
 		MouseHandlerTransform(scanning, classFile).startTransform(true)
+		ClientLevelTransform(scanning, classFile).startTransform(true)
 
 		EventSystem.addListener(EventSystem.MOUSE_BUTTON_PRE) { event, button, action, _ ->
 		}
@@ -74,6 +78,24 @@ object V1x21x1Implementations : Implementations() {
 		}
 
 		EventSystem.addListener(EventSystem.MOUSE_SCROLLED) { event, mouseHandler, scrollX, scrollY ->
+			val minecraft = Minecraft.getInstance()
+			val player = minecraft.player ?: return@addListener
+			val level = minecraft.level ?: return@addListener
+			val item = BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:tool_gun"))
+			if (player.isHolding(item) && player.isShiftKeyDown()) {
+				level.playSound(
+					player.getX(),
+					player.getY(),
+					player.getZ(),
+					SoundEvents.NOTE_BLOCK_PLING.value(),
+					SoundSource.AMBIENT,
+					1f,
+					1f,
+					false,
+					42L
+				)
+				event.setCanceled(true)
+			}
 		}
 	}
 

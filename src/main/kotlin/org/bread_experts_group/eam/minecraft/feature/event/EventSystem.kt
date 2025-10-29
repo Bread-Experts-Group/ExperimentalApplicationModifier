@@ -17,7 +17,7 @@ object EventSystem {
 			} else throw IllegalStateException("This event cannot be cancelled!")
 		}
 
-		fun getCanceled(): Boolean = this.isCanceled
+		fun getCanceledAndReset(): Boolean = this.isCanceled.also { if (it) this.isCanceled = false }
 	}
 
 	// MouseEvent
