@@ -18,7 +18,7 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftItem>(input) {
+class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftItem>(input, "MinecraftItem") {
 	override fun createInstance(clazz: Class<*>): Any =
 		clazz.getConstructor(MinecraftItem::class.java).newInstance(input)
 

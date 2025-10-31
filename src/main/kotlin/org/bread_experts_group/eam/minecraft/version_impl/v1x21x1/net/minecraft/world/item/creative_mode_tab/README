@@ -1,2 +1,0 @@
-this is just a temporary package until i figure out why providing nested classes as ClassDescs in the class builder causes them to throw
-And the test class is purely to hold the DisplayItemsGenerator (also find a better way to go about that..)

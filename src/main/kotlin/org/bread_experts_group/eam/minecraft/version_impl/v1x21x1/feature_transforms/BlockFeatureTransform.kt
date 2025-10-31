@@ -4,7 +4,7 @@ import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import java.lang.classfile.ClassBuilder
 
-class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftBlock>(input) {
+class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftBlock>(input, "MinecraftBlock") {
 	override fun createInstance(clazz: Class<*>): Any {
 		TODO("Not yet implemented")
 	}

@@ -20,6 +20,8 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 ): CodeBuilder {
 	if (method == null) throw NullPointerException("Method is somehow null??")
 	val params = method.parameters
+	val declaring = method.declaringClass
+	val className = if (declaring.kotlin.isCompanion) declaring.name.substringBefore('$') else declaring.name
 	val usedSlots = mutableListOf<Int>()
 	params.forEach { parameter ->
 		val filtered = localVars.filter { it.slot() !in usedSlots }
@@ -64,7 +66,7 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 		}
 	}
 	this.invokestatic(
-		ClassDesc.of(method.declaringClass.name),
+		ClassDesc.of(className),
 		method.name,
 		MethodTypeDesc.of(
 			returnDesc,

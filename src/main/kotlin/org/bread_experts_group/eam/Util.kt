@@ -83,4 +83,8 @@ val Class<*>.classDesc: ClassDesc
 	get() = ClassDesc.of(this.name)
 
 val KClass<*>.classDesc: ClassDesc
-	get() = ClassDesc.of(this.java.name)
+	get() {
+		val declaring = this.java.declaringClass
+		return if (declaring != null) ClassDesc.of(declaring.name + "$" + this.simpleName)
+		else ClassDesc.of(this.java.name)
+	}

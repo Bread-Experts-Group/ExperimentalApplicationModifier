@@ -13,7 +13,7 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftLayer>(input) {
+class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftLayer>(input, "MinecraftLayer") {
 	override fun createInstance(clazz: Class<*>): Any =
 		clazz.getConstructor(MinecraftLayer::class.java).newInstance(input)
 

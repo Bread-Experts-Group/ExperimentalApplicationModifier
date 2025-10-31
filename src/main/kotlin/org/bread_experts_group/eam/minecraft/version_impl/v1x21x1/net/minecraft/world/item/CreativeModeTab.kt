@@ -8,12 +8,11 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.creative_mode_tab.DisplayItemsGenerator
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.creative_mode_tab.ItemDisplayParameters
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.creative_mode_tab.Output
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.creative_mode_tab.Test
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_Builder
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_DisplayItemsGenerator
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_ItemDisplayParameters
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_Output
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_Row
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_Type
 import java.lang.classfile.ClassFile.ACC_FINAL
@@ -146,11 +145,11 @@ class CreativeModeTab(around: Any) : MimickedClass(around) {
 
 		private val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
 		private val cl = DefiningClassLoader()
-		private val name: String = Test::class.qualifiedName!!
+		private val name: String = "EAMGenerated_DisplayItemsGenerator"
 
 		private fun mixNativeIntoMimic(generator: (ItemDisplayParameters, Output) -> Unit): Any {
 			val itemsGenerator = object : DisplayItemsGenerator(0) {
-				override fun acceptInternal(displayParameters: ItemDisplayParameters, output: Output) =
+				override fun accept(displayParameters: ItemDisplayParameters, output: Output) =
 					generator.invoke(displayParameters, output)
 			} as DisplayItemsGenerator
 
@@ -173,7 +172,7 @@ class CreativeModeTab(around: Any) : MimickedClass(around) {
 							.invokeSpecialNewMimicClass(Output.mimicClassDesc, 2)
 							.invokevirtual(
 								DisplayItemsGenerator.mimicClassDesc,
-								"acceptInternal",
+								"accept",
 								MethodTypeDesc.of(
 									ConstantDescs.CD_void,
 									ItemDisplayParameters.mimicClassDesc,
@@ -209,7 +208,7 @@ class CreativeModeTab(around: Any) : MimickedClass(around) {
 						DisplayItemsGenerator.mimicClassDesc,
 						ACC_FINAL or ACC_PRIVATE
 					)
-				}.also { Files.write(Path("compiledClass.class"), it) }
+				}.also { Files.write(Path("$name.class"), it) }
 
 			).getConstructor(DisplayItemsGenerator::class.java).newInstance(itemsGenerator)
 		}
@@ -227,6 +226,69 @@ class CreativeModeTab(around: Any) : MimickedClass(around) {
 
 		fun build(): CreativeModeTab = CreativeModeTab(clazz.getMethod("d").invoke(around))
 	}
+
+	/*
+	net.minecraft.world.item.CreativeModeTab$DisplayItemsGenerator -> cta$b:
+	# {"fileName":"CreativeModeTab.java","id":"sourceFile"}
+	void accept(net.minecraft.world.item.CreativeModeTab$ItemDisplayParameters,net.minecraft.world.item.CreativeModeTab$Output) -> accept
+	 */
+	open class DisplayItemsGenerator(around: Any) : MimickedClass(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_world_item_CreativeModeTab_DisplayItemsGenerator)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = DisplayItemsGenerator::class.classDesc
+		}
+
+		open fun accept(displayParameters: ItemDisplayParameters, output: Output) {}
+	}
+
+	/*
+	net.minecraft.world.item.CreativeModeTab$Output -> cta$e:
+	# {"fileName":"CreativeModeTab.java","id":"sourceFile"}
+	void accept(net.minecraft.world.item.ItemStack,net.minecraft.world.item.CreativeModeTab$TabVisibility) -> a
+	268:269:void accept(net.minecraft.world.item.ItemStack) -> a
+	272:273:void accept(net.minecraft.world.level.ItemLike,net.minecraft.world.item.CreativeModeTab$TabVisibility) -> a
+	276:277:void accept(net.minecraft.world.level.ItemLike) -> a
+	280:281:void acceptAll(java.util.Collection,net.minecraft.world.item.CreativeModeTab$TabVisibility) -> a
+	284:285:void acceptAll(java.util.Collection) -> a
+	280:280:void lambda$acceptAll$0(net.minecraft.world.item.CreativeModeTab$TabVisibility,net.minecraft.world.item.ItemStack) -> a
+	 */
+	class Output(around: Any) : MimickedClass(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_world_item_CreativeModeTab_Output)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = Output::class.classDesc
+		}
+
+		fun accept(stack: ItemStack) {
+			clazz.getMethod("a", ItemStack.Companion.clazz)
+				.invoke(around, stack.around)
+		}
+	}
+
+	/*
+	net.minecraft.world.item.CreativeModeTab$ItemDisplayParameters -> cta$d:
+	# {"fileName":"CreativeModeTab.java","id":"sourceFile"}
+	net.minecraft.world.flag.FeatureFlagSet enabledFeatures -> a
+	boolean hasPermissions -> b
+	net.minecraft.core.HolderLookup$Provider holders -> c
+	122:122:void <init>(net.minecraft.world.flag.FeatureFlagSet,boolean,net.minecraft.core.HolderLookup$Provider) -> <init>
+	124:124:boolean needsUpdate(net.minecraft.world.flag.FeatureFlagSet,boolean,net.minecraft.core.HolderLookup$Provider) -> a
+	122:122:java.lang.String toString() -> toString
+	122:122:int hashCode() -> hashCode
+	122:122:boolean equals(java.lang.Object) -> equals
+	122:122:net.minecraft.world.flag.FeatureFlagSet enabledFeatures() -> a
+	122:122:boolean hasPermissions() -> b
+	122:122:net.minecraft.core.HolderLookup$Provider holders() -> c
+	 */
+	class ItemDisplayParameters(around: Any) : MimickedClass(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_world_item_CreativeModeTab_ItemDisplayParameters)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = ItemDisplayParameters::class.classDesc
+		}
+	}
+
 	/*
 	net.minecraft.world.item.CreativeModeTab$Row -> cta$f:
 # {"fileName":"CreativeModeTab.java","id":"sourceFile"}

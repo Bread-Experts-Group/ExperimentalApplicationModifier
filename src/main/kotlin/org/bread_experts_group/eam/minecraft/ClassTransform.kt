@@ -17,7 +17,6 @@ abstract class ClassTransform(
 	private val scanning: Scanning,
 	private val classFile: ClassFile
 ) : CodeTransformer {
-	// classBuilder.constantPool().forEach { println(it::class.qualifiedName) }
 	private val existingMethods: MutableList<String> = mutableListOf()
 
 	fun startTransform(writeModifiedFile: Boolean = false) {

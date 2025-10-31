@@ -42,8 +42,7 @@ class LoaderPackSource(
 			)
 	}
 
-	private var c: Int = 0
-	private val name = LoaderPackSource::class.qualifiedName ?: "eamInternal${c++}"
+	private val name = "EAMGenerated_LoaderPackSource"
 	private val cf: ClassFile = of(StackMapsOption.GENERATE_STACK_MAPS)
 	private val cl: DefiningClassLoader = DefiningClassLoader()
 
