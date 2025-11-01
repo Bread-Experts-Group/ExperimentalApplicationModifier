@@ -8,7 +8,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import java.lang.constant.ClassDesc
 
 // todo abstract variants of the method's parameters
-open class MinecraftItem {
+open class MinecraftItem(@JvmField val properties: MinecraftItemProperties) {
 	companion object {
 		val mimicClassDesc: ClassDesc = ClassDesc.of(MinecraftItem::class.java.name)
 	}

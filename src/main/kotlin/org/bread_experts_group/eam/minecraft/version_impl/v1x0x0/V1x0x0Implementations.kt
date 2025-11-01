@@ -71,7 +71,6 @@ object V1x0x0Implementations : Implementations() {
 						var added = true
 						if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 							if (codeElement is LineNumber && codeElement.line() == 51 && added) {
-								@Suppress("AssignedValueIsNeverRead")
 								added = false
 								val iterator = codeBuilder.allocateLocal(TypeKind.REFERENCE)
 								val iteratorClass =

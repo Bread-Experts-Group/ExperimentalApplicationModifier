@@ -3,7 +3,7 @@ package org.bread_experts_group.eam.minecraft.feature
 import org.bread_experts_group.logging.ColoredHandler
 import java.lang.constant.ClassDesc
 
-open class EAMRegistry<T>(val namespace: String) {
+open class EAMRegistry<T> {
 	companion object {
 		val classDesc: ClassDesc = ClassDesc.of(EAMRegistry::class.qualifiedName)
 	}
@@ -12,7 +12,10 @@ open class EAMRegistry<T>(val namespace: String) {
 	private val logger = ColoredHandler.newLogger("TMP logger EAM Registry")
 	private var locked = false
 
-	protected fun add(id: Identifier, o: T): T {
+	fun hasElement(identifier: Identifier): Boolean =
+		this.elements[identifier.namespace]?.get(identifier.subject) != null
+
+	fun add(id: Identifier, o: T): T {
 		if (locked) throw IllegalStateException("Locked registry")
 		val last = elements.getOrPut(id.namespace) {
 			logger.info("Creating new namespace sub-registry for \"${id.namespace}\"")
@@ -21,8 +24,6 @@ open class EAMRegistry<T>(val namespace: String) {
 		if (last != null) throw IllegalArgumentException("Overwriting $id with $o!")
 		return o
 	}
-
-	protected fun add(id: String, o: T): T = this.add(Identifier(this.namespace, id), o)
 
 	class EAMEntryIterator<T>(elements: MutableMap<String, MutableMap<String, T>>) : Iterator<Pair<Identifier, T>> {
 		private val base1 = elements.iterator()

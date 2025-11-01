@@ -15,7 +15,7 @@ abstract class MinecraftBlockFeature : MinecraftFeatureImplementation<MinecraftB
 		id: Identifier,
 		value: MinecraftBlock
 	): MinecraftBlock {
-		EAMRegistries.BLOCKS.registerBlock(id, value)
+		EAMRegistries.BLOCKS.add(id, value)
 		return register(id, value)
 	}
 }

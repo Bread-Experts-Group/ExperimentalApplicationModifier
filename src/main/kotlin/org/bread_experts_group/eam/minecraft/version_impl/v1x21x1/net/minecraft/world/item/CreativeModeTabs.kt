@@ -4,10 +4,7 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.Registries
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTabs
@@ -112,27 +109,10 @@ class CreativeModeTabs(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = ClassDesc.of(net_minecraft_world_item_CreativeModeTabs)
 		override val mimicClassDesc: ClassDesc = CreativeModeTabs::class.classDesc
 
-		private val BREADMOD: ResourceKey<CreativeModeTab> = createKey("breadmod", "breadmod")
-
-		@JvmStatic
-		fun registerTabs(registry: Registry<CreativeModeTab>) {
-			Registry.register(
-				registry,
-				BREADMOD,
-				CreativeModeTab.builder(CreativeModeTab.Row.TOP, 7)
-					.title(Component.literal("breadmod"))
-					.displayItems { displayParameters, output ->
-						val stack = BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:bread_block")).getDefaultInstance()
-						output.accept(stack)
-					}
-					.build()
-			)
-		}
-
 		fun tabs(): List<CreativeModeTab> =
 			(clazz.getMethod("c").invoke(null) as List<*>).map { CreativeModeTab(it!!) }
 
-		private fun createKey(namespace: String, key: String): ResourceKey<CreativeModeTab> =
+		fun createKey(namespace: String, key: String): ResourceKey<CreativeModeTab> =
 			ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.parse("$namespace:$key"))
 	}
 }

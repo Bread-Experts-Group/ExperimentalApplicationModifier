@@ -1,8 +1,9 @@
 package org.bread_experts_group.eam.minecraft.feature
 
-import org.bread_experts_group.eam.minecraft.feature.block.EAMBlockRegistry
-import org.bread_experts_group.eam.minecraft.feature.item.EAMItemRegistry
-import org.bread_experts_group.eam.minecraft.feature.layer.EAMLayerRegistry
+import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
+import org.bread_experts_group.eam.minecraft.feature.creative_tab.MinecraftCreativeTab
+import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
+import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayer
 import java.lang.constant.ClassDesc
 
 // todo need to figure out a "base" variant of blocks, items, and classes used in their methods (inventoryTick, useOn, etc)
@@ -12,11 +13,14 @@ object EAMRegistries {
 	val classDesc: ClassDesc = ClassDesc.of(this::class.qualifiedName)
 
 	@JvmField
-	val BLOCKS: EAMBlockRegistry = EAMBlockRegistry("breadmod")
+	val BLOCKS: EAMRegistry<MinecraftBlock> = EAMRegistry()
 
 	@JvmField
-	val ITEMS: EAMItemRegistry = EAMItemRegistry("breadmod")
+	val ITEMS: EAMRegistry<MinecraftItem> = EAMRegistry()
 
 	@JvmField
-	val LAYERS: EAMLayerRegistry = EAMLayerRegistry("breadmod")
+	val LAYERS: EAMRegistry<MinecraftLayer> = EAMRegistry()
+
+	@JvmField
+	val CREATIVE_TABS: EAMRegistry<MinecraftCreativeTab> = EAMRegistry()
 }

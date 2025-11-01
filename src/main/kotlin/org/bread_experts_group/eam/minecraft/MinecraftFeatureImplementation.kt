@@ -5,7 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.Identifier
 
 abstract class MinecraftFeatureImplementation<T, I : MinecraftFeatureImplementation<T, I>> : FeatureImplementation<I> {
-	abstract fun getTransformer(input: T): FeatureTransform<T>
+	open fun getTransformer(input: T): FeatureTransform<T> = throw UnsupportedOperationException()
 
 	abstract fun add(id: Identifier, value: T): T
 

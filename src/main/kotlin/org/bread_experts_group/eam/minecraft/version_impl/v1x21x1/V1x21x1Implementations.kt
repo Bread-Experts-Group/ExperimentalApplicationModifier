@@ -2,9 +2,9 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
 import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
+import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
-import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
@@ -28,14 +28,15 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelBakery
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvents
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.FolderRepositorySource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackSource
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.logging.ColoredHandler
@@ -54,7 +55,8 @@ object V1x21x1Implementations : Implementations() {
 	override val supportedFeatures: SupportedMCFeatures = mutableMapOf(
 		MinecraftFeatures.ITEM to mutableListOf(MinecraftItemFeature1x21x1()),
 		MinecraftFeatures.BLOCK to mutableListOf(MinecraftBlockFeature1x21x1()),
-		MinecraftFeatures.LAYER to mutableListOf(MinecraftLayerFeature1x21x1())
+		MinecraftFeatures.LAYER to mutableListOf(MinecraftLayerFeature1x21x1()),
+		MinecraftFeatures.CREATIVE_TAB to mutableListOf(MinecraftCreativeTabFeature1x21x1())
 	)
 
 	override fun start() {
@@ -71,31 +73,17 @@ object V1x21x1Implementations : Implementations() {
 		MouseHandlerTransform(scanning, classFile).startTransform(true)
 		ClientLevelTransform(scanning, classFile).startTransform(true)
 
-		EventSystem.addListener(EventSystem.MOUSE_BUTTON_PRE) { event, button, action, _ ->
-		}
+		this.mods.forEach { it.registerEvents() }
+	}
 
-		EventSystem.addListener(EventSystem.MOUSE_BUTTON_POST) { event, button, action, _ ->
-		}
+	@JvmStatic
+	fun registerTabs(registry: Registry<CreativeModeTab>) {
+		this.mods.forEach { it.addCreativeTabs(this.get(MinecraftFeatures.CREATIVE_TAB)) }
+		EAMRegistries.CREATIVE_TABS.entryIterator().forEach { (_, creativeTab) ->
+			val tab = CreativeModeTab(creativeTab.nativeTab.around)
+			val key = ResourceKey<CreativeModeTab>(creativeTab.nativeResourceKey.around)
 
-		EventSystem.addListener(EventSystem.MOUSE_SCROLLED) { event, mouseHandler, scrollX, scrollY ->
-			val minecraft = Minecraft.getInstance()
-			val player = minecraft.player ?: return@addListener
-			val level = minecraft.level ?: return@addListener
-			val item = BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:tool_gun"))
-			if (player.isHolding(item) && player.isShiftKeyDown()) {
-				level.playSound(
-					player.getX(),
-					player.getY(),
-					player.getZ(),
-					SoundEvents.NOTE_BLOCK_PLING.value(),
-					SoundSource.AMBIENT,
-					1f,
-					1f,
-					false,
-					42L
-				)
-				event.setCanceled(true)
-			}
+			Registry.register(registry, key, tab)
 		}
 	}
 

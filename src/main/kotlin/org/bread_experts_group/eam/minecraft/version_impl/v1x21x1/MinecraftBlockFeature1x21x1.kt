@@ -19,7 +19,7 @@ class MinecraftBlockFeature1x21x1 : MinecraftBlockFeature() {
 		val properties = BlockBehaviour.Properties.ofFullCopy(Blocks.Companion.HAY_BLOCK)
 		val mcBlock = Block(properties)
 		Blocks.register("${id.namespace}:${id.subject}", mcBlock)
-		mcBlock.getStateDefinition().getPossibleStates().forEach { Block.Companion.BLOCK_STATE_REGISTRY.add(it) }
+		mcBlock.getStateDefinition().getPossibleStates().forEach { Block.BLOCK_STATE_REGISTRY.add(it) }
 		val itemProperties = Item.Properties()
 			.stacksTo(32)
 			.food(

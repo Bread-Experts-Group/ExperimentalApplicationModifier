@@ -98,7 +98,7 @@ net.minecraft.world.item.Item$Properties -> cul$a:
     194:197:net.minecraft.core.component.DataComponentMap buildComponents() -> c
     127:127:void <clinit>() -> <clinit>
  */
-class Item(around: Any) : MimickedClass(around) {
+open class Item(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_world_item_Item)
 		override val classDesc: ClassDesc = clazz.classDesc

@@ -112,9 +112,7 @@ class Block(around: Any) : BlockBehaviour(around) {
 		override val mimicClassDesc: ClassDesc = Block::class.classDesc
 
 		val BLOCK_STATE_REGISTRY: IdMapper<BlockState>
-			get() = IdMapper(
-				clazz.getField("q").get(null)
-			)
+			get() = IdMapper(clazz.getField("q").get(null))
 	}
 
 	constructor(properties: Properties) : this(
@@ -122,8 +120,6 @@ class Block(around: Any) : BlockBehaviour(around) {
 	)
 
 	fun getStateDefinition(): StateDefinition {
-		return StateDefinition(
-			clazz.getMethod("l").invoke(around)
-		)
+		return StateDefinition(clazz.getMethod("l").invoke(around))
 	}
 }
