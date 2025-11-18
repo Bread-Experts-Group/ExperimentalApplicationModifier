@@ -18,26 +18,15 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvents
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.context.UseOnContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.Level
 import java.awt.Color
 
-class BreadMod : MinecraftMod() {
-//	companion object {
-//		val BREAD_BLOCK = EAMRegistries.BLOCKS.registerBlock("bread_block", MinecraftBlock())
-//		val TOOL_GUN = EAMRegistries.ITEMS.add("tool_gun", MinecraftItem())
-//	}
-
-	private val BREADMOD: ResourceKey<CreativeModeTab> = createKey("breadmod", "breadmod")
-
+class BreadMod : MinecraftMod("breadmod") {
 	override fun addBlocks(blocks: MinecraftBlockFeature) {
 		blocks.add(
 			Identifier("breadmod", "bread_block"),
@@ -54,7 +43,7 @@ class BreadMod : MinecraftMod() {
 			), object : MinecraftItem(MinecraftItemProperties()) {
 				override fun useOn(context: UseOnContext): InteractionResult {
 					println("useOn test??")
-					return InteractionResult.Companion.CONSUME
+					return InteractionResult.CONSUME
 				}
 
 				override fun inventoryTick(
@@ -79,16 +68,7 @@ class BreadMod : MinecraftMod() {
 	}
 
 	override fun addCreativeTabs(tabs: MinecraftCreativeTabFeature) {
-		tabs.add(Identifier("breadmod", "breadmod"), MinecraftCreativeTab(
-			CreativeModeTab.builder(CreativeModeTab.Row.TOP, 7)
-				.title(Component.literal("breadmod"))
-				.displayItems { displayParameters, output ->
-					val stack = BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:bread_block")).getDefaultInstance()
-					output.accept(stack)
-				}
-				.build(),
-			BREADMOD
-		))
+		tabs.add(Identifier("breadmod", "breadmod"), MinecraftCreativeTab())
 	}
 
 	override fun registerEvents() {

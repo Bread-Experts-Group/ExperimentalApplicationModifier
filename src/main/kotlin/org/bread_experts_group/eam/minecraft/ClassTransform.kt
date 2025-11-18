@@ -5,6 +5,7 @@ import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.MethodBuilder
+import java.lang.classfile.MethodModel
 import java.lang.constant.MethodTypeDesc
 import java.nio.file.Files
 import kotlin.io.path.Path
@@ -34,6 +35,29 @@ abstract class ClassTransform(
 					)
 				}
 			}
+		}
+	}
+	/**
+	 * Integrates a method from a [sourceClass] into the class transform.
+	 */
+	fun ClassBuilder.integrateMethod(
+		sourceClass: Class<*>,
+		methodName: String,
+		methodTypeDesc: MethodTypeDesc? = null
+	) {
+		val transformer = this@ClassTransform
+		val classData = transformer.readClassSource(sourceClass)
+		transformer.classFile.transformClass(transformer.classFile.parse(classData)) { builder, element ->
+			val method = if (
+				element is MethodModel &&
+				element.methodName().equalsString(methodName) &&
+				(element.methodTypeSymbol() == methodTypeDesc || methodTypeDesc == null)
+			) element else null
+			if (method != null && methodName !in transformer.existingMethods) {
+				transformer.existingMethods.add(methodName)
+				this.with(method)
+			}
+			builder.with(element)
 		}
 	}
 

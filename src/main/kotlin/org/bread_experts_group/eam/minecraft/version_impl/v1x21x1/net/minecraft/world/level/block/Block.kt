@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.IdMapper
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemLike
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.StateDefinition
@@ -105,7 +106,7 @@ net.minecraft.world.level.block.Block -> dfy:
     255:261:it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap lambda$static$0() -> y
     77:254:void <clinit>() -> <clinit>
  */
-class Block(around: Any) : BlockBehaviour(around) {
+class Block(around: Any) : BlockBehaviour(around), ItemLike {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_Block)
 		override val classDesc: ClassDesc = clazz.classDesc

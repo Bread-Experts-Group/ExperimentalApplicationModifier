@@ -1,6 +1,7 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
 import org.bread_experts_group.eam.minecraft.ClassTransform
+import org.bread_experts_group.eam.minecraft.Test
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvent
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
@@ -16,6 +17,7 @@ class ClientLevelTransform(
 	scanning: Scanning,
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_client_multiplayer_ClientLevel, "ClientLevel", scanning, classFile) {
+	var added: Boolean = false
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val f = modifyMethodAccess(
 			"a",
@@ -34,6 +36,8 @@ class ClientLevelTransform(
 			ACC_PUBLIC
 		)
 
+		classBuilder.integrateMethod(Test::class.java, "perspective")
+		classBuilder.integrateMethod(Test::class.java, "test")
 		if (!f.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 	}
 }

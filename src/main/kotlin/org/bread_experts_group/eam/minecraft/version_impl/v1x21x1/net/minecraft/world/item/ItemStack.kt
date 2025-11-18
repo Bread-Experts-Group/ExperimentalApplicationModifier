@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_ItemStack
 import java.lang.constant.ClassDesc
 
@@ -179,6 +180,10 @@ class ItemStack(around: Any) : MimickedClass(around) {
 
 	constructor(item: Item) : this(
 		clazz.getConstructor(Item.clazz).newInstance(item)
+	)
+
+	constructor(itemLike: Block) : this(
+		clazz.getConstructor(ItemLike.clazz).newInstance(itemLike.around)
 	)
 
 	fun getItem(): Item = Item(

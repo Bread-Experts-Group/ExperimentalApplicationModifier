@@ -30,13 +30,14 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.FolderRepositorySource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.logging.ColoredHandler
@@ -76,13 +77,28 @@ object V1x21x1Implementations : Implementations() {
 		this.mods.forEach { it.registerEvents() }
 	}
 
+	// todo refer to MinecraftCreativeTab
 	@JvmStatic
 	fun registerTabs(registry: Registry<CreativeModeTab>) {
+		var column = 7
 		this.mods.forEach { it.addCreativeTabs(this.get(MinecraftFeatures.CREATIVE_TAB)) }
-		EAMRegistries.CREATIVE_TABS.entryIterator().forEach { (_, creativeTab) ->
-			val tab = CreativeModeTab(creativeTab.nativeTab.around)
-			val key = ResourceKey<CreativeModeTab>(creativeTab.nativeResourceKey.around)
-
+		EAMRegistries.CREATIVE_TABS.entryIterator().forEach { (identifier, _) ->
+			val tab = CreativeModeTab.builder(CreativeModeTab.Row.TOP, column++)
+				.title(Component.literal(identifier.namespace))
+				.displayItems { _, output ->
+					EAMRegistries.ITEMS.entryIterator().forEach { (identifier, _) ->
+						val (namespace, subject) = identifier
+						val item = BuiltInRegistries.ITEM.get(ResourceLocation.parse("$namespace:$subject"))
+						output.accept(item.getDefaultInstance())
+					}
+					EAMRegistries.BLOCKS.entryIterator().forEach { (identifier, _) ->
+						val (namespace, subject) = identifier
+						val block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("$namespace:$subject"))
+						output.accept(ItemStack(block))
+					}
+				}
+				.build()
+			val key = createKey(identifier.namespace, identifier.subject)
 			Registry.register(registry, key, tab)
 		}
 	}

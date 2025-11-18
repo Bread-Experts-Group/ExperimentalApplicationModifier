@@ -14,11 +14,31 @@ import java.lang.classfile.instruction.LineNumber
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
+import java.net.URI
+import java.nio.file.FileSystems
+import java.nio.file.Files
 
 /**
  * Contains helper methods to aid in transforming code within classes and methods.
  */
 interface CodeTransformer {
+	fun readClassSource(clazz: Class<*>): ByteArray {
+		val fullPath = clazz.name.replace('.', '/')
+		val subStringPath = "/" + fullPath.substringBeforeLast('/')
+		val className = fullPath.substringAfterLast('/')
+		val location = this::class.java.getResource(subStringPath)?.toURI() ?: throw NullPointerException()
+		val env = hashMapOf<String, String>()
+		val array = location.toString().split("!")
+		val uri = URI.create(array[0])
+		val fs = try {
+			FileSystems.getFileSystem(uri)
+		} catch (_: Exception) {
+			FileSystems.newFileSystem(uri, env)
+		}
+		val path = fs.getPath(array[1] + "/" + className + ".class")
+		return Files.readAllBytes(path)
+	}
+
 	fun CodeBuilder.atLine(
 		line: Int,
 		codeElement: CodeElement,
