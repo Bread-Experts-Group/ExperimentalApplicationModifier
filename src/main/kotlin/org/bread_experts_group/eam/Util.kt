@@ -88,3 +88,9 @@ val KClass<*>.classDesc: ClassDesc
 		return if (declaring != null) ClassDesc.of(declaring.name + "$" + this.simpleName)
 		else ClassDesc.of(this.java.name)
 	}
+
+val ClassDesc.qualifiedName: String
+	get() = "${this.packageName()}.${this.displayName()}"
+
+val ClassDesc.clazz: Class<*>
+	get() = loadClass(this.qualifiedName)

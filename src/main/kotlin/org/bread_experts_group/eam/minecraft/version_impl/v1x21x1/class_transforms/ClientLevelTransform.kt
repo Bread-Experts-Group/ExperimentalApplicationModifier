@@ -17,7 +17,6 @@ class ClientLevelTransform(
 	scanning: Scanning,
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_client_multiplayer_ClientLevel, "ClientLevel", scanning, classFile) {
-	var added: Boolean = false
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val f = modifyMethodAccess(
 			"a",
@@ -38,6 +37,7 @@ class ClientLevelTransform(
 
 		classBuilder.integrateMethod(Test::class.java, "perspective")
 		classBuilder.integrateMethod(Test::class.java, "test")
+		classBuilder.integrateMethod(Test::class.java, "mimicTest", generateMimicMethod = true)
 		if (!f.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 	}
 }

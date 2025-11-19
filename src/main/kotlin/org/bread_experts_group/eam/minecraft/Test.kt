@@ -1,5 +1,7 @@
 package org.bread_experts_group.eam.minecraft
 
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.numeric.geometry.Matrix4F
 import org.bread_experts_group.numeric.geometry.Vector4F
 import kotlin.math.tan
@@ -21,5 +23,13 @@ class Test {
 			Vector4F(0f, 0f, (zFar + zNear) / (zNear - zFar), -1f),
 			Vector4F(0f, 0f, (2f * zFar * zNear) / (zNear - zFar), 0f)
 		)
+	}
+
+	fun mimicTest(minecraft: Minecraft, stack: ItemStack, bool: Boolean, longVar: Long) {
+		val item = stack.getItem()
+		val level = minecraft.level
+		if (longVar > 10) {
+			println(bool)
+		}
 	}
 }
