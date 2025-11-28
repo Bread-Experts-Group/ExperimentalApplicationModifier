@@ -142,7 +142,6 @@ class ItemRenderer(around: Any) : MimickedClass(around) {
 		).invoke(around, stack, displayContext, combinedLight, combinedOverlay, poseStack, bufferSource, level, seed)
 	}
 
-	// todo OVERRIDE ACCESS FLAGS ON NATIVE METHOD CAUSE THIS IS PRIVATE
 	fun renderModelLists(
 		model: BakedModel,
 		stack: ItemStack,

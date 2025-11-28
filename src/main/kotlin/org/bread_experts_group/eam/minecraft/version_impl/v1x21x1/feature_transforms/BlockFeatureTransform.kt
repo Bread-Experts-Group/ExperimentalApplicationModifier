@@ -5,19 +5,21 @@ import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
-import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
-import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
+import org.bread_experts_group.eam.minecraft.feature.block.MinecraftEntityBlock
+import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.EntityBlock
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_EntityBlock
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
+import kotlin.reflect.full.superclasses
 
 class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftBlock, MinecraftBlockFeature>(
 	input,
@@ -28,46 +30,38 @@ class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftB
 
 	override fun startTransform(name: String): (ClassBuilder) -> Any = { classBuilder ->
 		classBuilder.withSuperclass(Block.classDesc)
-		classBuilder.withInterfaceSymbols(ClassDesc.of(net_minecraft_world_level_block_EntityBlock))
-		classBuilder.withMethodBody(
-			"a",
-			MethodTypeDesc.of(
-				BlockEntity.classDesc,
-				BlockPos.classDesc,
-				BlockState.classDesc
-			),
-			ClassFile.ACC_PUBLIC or ClassFile.ACC_FINAL
-		) { codeBuilder ->
-			codeBuilder
-//				.new_(TestBlockEntity::class.classDesc)
-//				.dup()
-				.invokeSpecialNewMimicClass(BlockPos.mimicClassDesc, 1)
-				.invokeSpecialNewMimicClass(BlockState.mimicClassDesc, 2)
-//				.invokespecial(
-//					TestBlockEntity::class.classDesc,
-//					"<init>",
-//					MethodTypeDesc.of(
-//						ConstantDescs.CD_void,
-//						BlockPos.mimicClassDesc,
-//						BlockState.mimicClassDesc
-//					)
-//				)
-				.invokestatic(
-					TestBlockEntity::class.classDesc,
-					"nativeBlockEntity",
-					MethodTypeDesc.of(
-						ConstantDescs.CD_Object,
-						BlockPos.mimicClassDesc,
-						BlockState.mimicClassDesc
+		if (MinecraftEntityBlock::class in input::class.superclasses) {
+			classBuilder.withInterfaceSymbols(EntityBlock.classDesc)
+			classBuilder.withMethodBody(
+				"a",
+				MethodTypeDesc.of(
+					BlockEntity.classDesc,
+					BlockPos.classDesc,
+					BlockState.classDesc
+				),
+				ClassFile.ACC_PUBLIC or ClassFile.ACC_FINAL
+			) { codeBuilder ->
+				codeBuilder
+					.getReferenceField(name, MinecraftBlock.mimicClassDesc)
+					.invokeSpecialNewMimic(BlockPos.mimicClassDesc, 1)
+					.invokeSpecialNewMimic(BlockState.mimicClassDesc, 2)
+					.invokeinterface(
+						MinecraftEntityBlock::class.classDesc,
+						"newBlockEntity",
+						MethodTypeDesc.of(
+							BlockEntity.mimicClassDesc,
+							BlockPos.mimicClassDesc,
+							BlockState.mimicClassDesc
+						)
 					)
-				)
-//				.getfield(
-//					TestBlockEntity::class.classDesc,
-//					"around",
-//					ConstantDescs.CD_Object
-//				)
-				.checkcast(BlockEntity.classDesc)
-				.areturn()
+					.getfield(
+						BlockEntity.mimicClassDesc,
+						"around",
+						ConstantDescs.CD_Object
+					)
+					.checkcast(BlockEntity.classDesc)
+					.areturn()
+			}
 		}
 		classBuilder.withMethodBody(
 			"<init>",

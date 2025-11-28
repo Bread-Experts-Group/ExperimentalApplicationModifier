@@ -11,13 +11,18 @@ import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScr
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScreenMousePressedPre
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScreenMouseReleasedPost
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScreenMouseReleasedPre
-import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.screens.Screen
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_MouseHandler
-import java.lang.classfile.*
+import java.lang.classfile.ClassBuilder
+import java.lang.classfile.ClassElement
+import java.lang.classfile.ClassFile
+import java.lang.classfile.CodeModel
+import java.lang.classfile.MethodModel
+import java.lang.classfile.Opcode
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -180,7 +185,7 @@ class MouseHandlerTransform(
 							codeBuilder
 								.atLine(165, codeElement) { builder ->
 									builder
-										.invokeSpecialNewMimicClass(MouseHandler::class.classDesc, 0)
+										.invokeSpecialNewMimic(MouseHandler::class.classDesc, 0)
 										.dload(3)
 										.dload(5)
 										.invokestatic(
@@ -199,7 +204,7 @@ class MouseHandlerTransform(
 								}
 							if (onScrollCounter == 115) {
 								codeBuilder
-									.invokeSpecialNewMimicClass(MouseHandler::class.classDesc, 0)
+									.invokeSpecialNewMimic(MouseHandler::class.classDesc, 0)
 									.new_(Screen.mimicClassDesc)
 									.dup()
 									.aload(0)
@@ -264,7 +269,7 @@ class MouseHandlerTransform(
 											)
 											.ifThen(Opcode.IFEQ) { builder1 ->
 												builder1
-													.invokeSpecialNewMimicClass(MouseHandler::class.classDesc, 0)
+													.invokeSpecialNewMimic(MouseHandler::class.classDesc, 0)
 													.new_(Screen.mimicClassDesc)
 													.dup()
 													.aload(0)
@@ -321,7 +326,7 @@ class MouseHandlerTransform(
 					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, _ ->
 						codeBuilder
 							.lineNumber(254)
-							.invokeSpecialNewMimicClass(Screen.mimicClassDesc, 1)
+							.invokeSpecialNewMimic(Screen.mimicClassDesc, 1)
 							.dload(2)
 							.dload(4)
 							.aload(0)
@@ -370,7 +375,7 @@ class MouseHandlerTransform(
 								)
 							)
 							.ifThen(Opcode.IFNE) { it.return_() }
-							.invokeSpecialNewMimicClass(Screen.mimicClassDesc, 1)
+							.invokeSpecialNewMimic(Screen.mimicClassDesc, 1)
 							.dload(2)
 							.dload(4)
 							.aload(0)

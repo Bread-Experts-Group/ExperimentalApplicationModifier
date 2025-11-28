@@ -5,7 +5,7 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.getReferenceField
-import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.logger
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
@@ -13,7 +13,9 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType_BlockEntitySupplier
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType_Builder
-import java.lang.classfile.ClassFile.*
+import java.lang.classfile.ClassFile.ACC_FINAL
+import java.lang.classfile.ClassFile.ACC_PRIVATE
+import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -108,12 +110,12 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = BlockEntitySupplier::class.classDesc
 
-			fun <T : BlockEntity> implementNative(supplier: (BlockPos, BlockState) -> T): Any {
+			fun <T : BlockEntity> implementNative(supplier: (BlockPos, BlockState) -> T): BlockEntitySupplier<T> {
 				val entitySupplier = object : BlockEntitySupplier<T>() {
 					override fun create(pos: BlockPos, state: BlockState): T = supplier(pos, state)
 				}
 
-				return entitySupplier.implementNative(BlockEntitySupplier::class.java) { classBuilder, name ->
+				entitySupplier.around = entitySupplier.implementNative(BlockEntitySupplier::class.java) { classBuilder, name ->
 					classBuilder.withInterfaceSymbols(classDesc)
 					// todo figure out signatures
 //					classBuilder.with(SignatureAttribute.of { "<T:Ldqh;>Ljava/lang/Object;" })
@@ -131,8 +133,8 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 //						val blockState = "$staringPackage/world/level/block/state/BlockState;"
 						codeBuilder
 							.getReferenceField(name, mimicClassDesc)
-							.invokeSpecialNewMimicClass(BlockPos.mimicClassDesc, 1)
-							.invokeSpecialNewMimicClass(BlockState.mimicClassDesc, 2)
+							.invokeSpecialNewMimic(BlockPos.mimicClassDesc, 1)
+							.invokeSpecialNewMimic(BlockState.mimicClassDesc, 2)
 							.invokevirtual(
 								mimicClassDesc,
 								"create",
@@ -173,12 +175,13 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 							)
 							.return_()
 					}
-						classBuilder.withField(
-							"reference",
-							mimicClassDesc,
-							ACC_FINAL or ACC_PRIVATE
-						)
+					classBuilder.withField(
+						"reference",
+						mimicClassDesc,
+						ACC_FINAL or ACC_PRIVATE
+					)
 				}.newInstance(entitySupplier)
+				return entitySupplier
 			}
 		}
 
@@ -200,8 +203,7 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = Builder::class.classDesc
 
-			// todo the supplier parameter is Any because of the implementNative method in BlockEntitySupplier
-			fun of(supplier: Any, vararg blocks: Block): Builder {
+			fun <T : BlockEntity> of(supplier: BlockEntitySupplier<T>, vararg blocks: Block): Builder {
 				val array = java.lang.reflect.Array.newInstance(Block.clazz, blocks.size)
 				repeat(blocks.size) {
 					logger.info("BLOCKS FROM BUILDER: ${blocks[it].around}")
@@ -209,7 +211,7 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 				}
 				return Builder(
 					clazz.getMethod("a", BlockEntitySupplier.clazz, Block.clazz.arrayType())
-						.invoke(null, supplier, array)
+						.invoke(null, supplier.around, array)
 				)
 			}
 		}

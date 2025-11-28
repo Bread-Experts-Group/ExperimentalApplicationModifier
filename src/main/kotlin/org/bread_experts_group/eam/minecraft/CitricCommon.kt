@@ -30,7 +30,7 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 			val companionInst = kClass.companionObjectInstance!!
 			val desc = companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
 			val native = filtered.getNativeLocalVariable(desc.displayName())
-			this.invokeSpecialNewMimicClass(
+			this.invokeSpecialNewMimic(
 				parameter.classDesc,
 				native.slot()
 			)
@@ -147,7 +147,7 @@ fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuild
 			fieldType
 		)
 
-fun CodeBuilder.invokeSpecialNewMimicClass(
+fun CodeBuilder.invokeSpecialNewMimic(
 	classDesc: ClassDesc,
 	slot: Int
 ): CodeBuilder = this

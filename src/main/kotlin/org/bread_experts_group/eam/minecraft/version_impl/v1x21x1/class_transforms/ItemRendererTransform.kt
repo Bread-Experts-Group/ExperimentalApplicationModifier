@@ -1,5 +1,6 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
+import org.bread_experts_group.eam.asConstantDesc
 import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
@@ -15,9 +16,12 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_entity_ItemRenderer_render
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_entity_ItemRenderer_renderModelLists
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_ItemStack_getDescriptionId
-import java.lang.classfile.*
+import java.lang.classfile.ClassBuilder
+import java.lang.classfile.ClassElement
+import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
-import java.lang.constant.ConstantDesc
+import java.lang.classfile.CodeModel
+import java.lang.classfile.MethodModel
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
@@ -64,10 +68,6 @@ class ItemRendererTransform(
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 						codeBuilder.atLine(127, codeElement) { builder ->
-							/*
-							TODO: Hey Chris, say somethin' FUNNY!
-							 */
-							@Suppress("CAST_NEVER_SUCCEEDS")
 							builder
 								.aload(1)
 								.invokevirtual(
@@ -75,7 +75,7 @@ class ItemRendererTransform(
 									net_minecraft_world_item_ItemStack_getDescriptionId,
 									MethodTypeDesc.of(ConstantDescs.CD_String)
 								)
-								.loadConstant("item.breadmod.tool_gun" as ConstantDesc)
+								.loadConstant("item.breadmod.tool_gun".asConstantDesc())
 								.invokevirtual(
 									ConstantDescs.CD_String,
 									"equals",

@@ -5,6 +5,7 @@ import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
+import java.lang.constant.ConstantDesc
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 
@@ -88,3 +89,6 @@ val ClassDesc.qualifiedName: String
 
 val ClassDesc.clazz: Class<*>
 	get() = loadClass(this.qualifiedName)
+
+@Suppress("CAST_NEVER_SUCCEEDS")
+fun String.asConstantDesc(): ConstantDesc = this as ConstantDesc

@@ -4,8 +4,13 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntity
+import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.constant.ClassDesc
+import java.lang.constant.ConstantDescs
+import java.lang.constant.MethodTypeDesc
 
 /*
 net.minecraft.world.level.block.entity.BlockEntity -> dqh:
@@ -71,33 +76,47 @@ net.minecraft.world.level.block.entity.BlockEntity -> dqh:
     89:89:void lambda$loadWithComponents$0(java.lang.String) -> c
     36:36:void <clinit>() -> <clinit>
  */
-abstract class BlockEntity(around: Any) : MimickedClass(around) {
+abstract class BlockEntity(val type: BlockEntityType, around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_entity_BlockEntity)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockEntity::class.classDesc
 
-		// todo Caused by: java.lang.IllegalStateException: Invalid block entity breadmod:test_entity // EAM_NativeMimic_BlockEntity state at jd{x=170, y=69, z=550}, got Block{breadmod:bread_block}
-//		val TEST_ENTITY: BlockEntityType<TestBlockEntity> = BlockEntityType.register(
-//			"breadmod:test_entity",
-//			Builder.of(
-//				BlockEntitySupplier.implementNative { pos, state ->
-//					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
-//				},
-//				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
-//			)
-//		)
+		@JvmStatic
+		fun <T : BlockEntity> implementNative(pos: BlockPos, state: BlockState, blockEntity: T): T {
+			blockEntity.around = blockEntity.implementNative(BlockEntity::class.java) { classBuilder, _ ->
+				classBuilder.withSuperclass(classDesc)
+				classBuilder.withMethodBody(
+					"<init>",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void,
+						BlockEntityType.classDesc,
+						BlockPos.classDesc,
+						BlockState.classDesc
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
+					codeBuilder
+						.aload(0)
+						.aload(1)
+						.aload(2)
+						.aload(3)
+						.invokespecial(
+							classDesc,
+							"<init>",
+							MethodTypeDesc.of(
+								ConstantDescs.CD_void,
+								BlockEntityType.classDesc,
+								BlockPos.classDesc,
+								BlockState.classDesc
+							)
+						)
+						.return_()
+				}
 
-//		val TEST_ENTITY: BlockEntityType<TestBlockEntity> = Registry.register(
-//			BuiltInRegistries.BLOCK_ENTITY_TYPE,
-//			"breadmod:test_entity",
-//			Builder.of<TestBlockEntity>(
-//				BlockEntitySupplier.implementNative { pos, state ->
-//					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
-//				},
-//				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
-//			).build()
-//		)
+			}.newInstance(blockEntity.type.around, pos.around, state.around)
+			return blockEntity
+		}
 	}
 
 //	constructor(type: BlockEntityType<*>, pos: BlockPos, state: BlockState) : this(

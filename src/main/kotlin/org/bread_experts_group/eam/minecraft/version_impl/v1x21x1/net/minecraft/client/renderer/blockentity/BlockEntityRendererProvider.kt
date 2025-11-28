@@ -4,22 +4,98 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_blockentity_BlockEntityRendererProvider
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_blockentity_BlockEntityRendererProvider_Context
+import java.lang.classfile.ClassFile.ACC_FINAL
+import java.lang.classfile.ClassFile.ACC_PRIVATE
+import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.constant.ClassDesc
+import java.lang.constant.ConstantDescs
+import java.lang.constant.MethodTypeDesc
 
 /*
 net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider -> gha:
 # {"fileName":"BlockEntityRendererProvider.java","id":"sourceFile"}
     net.minecraft.client.renderer.blockentity.BlockEntityRenderer create(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider$Context) -> create
  */
-class BlockEntityRendererProvider<T : BlockEntity>(around: Any) : MimickedClass(around) {
+abstract class BlockEntityRendererProvider<T : BlockEntity>(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_blockentity_BlockEntityRendererProvider)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockEntityRendererProvider::class.classDesc
+
+		fun <T : BlockEntity> implementNative(rendererProvider: (Context) -> BlockEntityRenderer<T>): BlockEntityRendererProvider<T> {
+			val provider = object : BlockEntityRendererProvider<T>(0) {
+				override fun create(context: Context): BlockEntityRenderer<T> = rendererProvider(context)
+			}
+
+			provider.around =  provider.implementNative(BlockEntityRendererProvider::class.java) { classBuilder, name ->
+				classBuilder.withInterfaceSymbols(classDesc)
+				classBuilder.withMethodBody(
+					"create",
+					MethodTypeDesc.of(
+						BlockEntityRenderer.classDesc,
+						Context.classDesc
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
+					codeBuilder
+						.getReferenceField(name, mimicClassDesc)
+						.invokeSpecialNewMimic(Context.mimicClassDesc, 1)
+						.invokevirtual(
+							mimicClassDesc,
+							"create",
+							MethodTypeDesc.of(
+								BlockEntityRenderer.mimicClassDesc,
+								Context.mimicClassDesc
+							)
+						)
+						.getfield(
+							BlockEntityRenderer.mimicClassDesc,
+							"around",
+							ConstantDescs.CD_Object
+						)
+						.checkcast(BlockEntityRenderer.classDesc)
+						.areturn()
+				}
+				classBuilder.withMethodBody(
+					"<init>",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void, mimicClassDesc
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
+					codeBuilder
+						.aload(0)
+						.dup()
+						.invokespecial(
+							ConstantDescs.CD_Object,
+							"<init>",
+							MethodTypeDesc.of(ConstantDescs.CD_void)
+						)
+						.aload(1)
+						.putfield(
+							ClassDesc.of(name),
+							"reference",
+							mimicClassDesc
+						)
+						.return_()
+				}
+				classBuilder.withField(
+					"reference",
+					mimicClassDesc,
+					ACC_FINAL or ACC_PRIVATE
+				)
+			}.newInstance(provider)
+			return provider
+		}
 	}
+
+	abstract fun create(context: Context): BlockEntityRenderer<T>
 	/*
 	net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider$Context -> gha$a:
 # {"fileName":"BlockEntityRendererProvider.java","id":"sourceFile"}
@@ -44,5 +120,11 @@ class BlockEntityRendererProvider<T : BlockEntity>(around: Any) : MimickedClass(
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = Context::class.classDesc
 		}
+
+		fun getBlockEntityRenderDispatcher(): BlockEntityRenderDispatcher = BlockEntityRenderDispatcher(
+			clazz.getMethod("a").invoke(around)
+		)
+
+		fun getItemRenderer(): ItemRenderer = ItemRenderer(clazz.getMethod("d").invoke(around))
 	}
 }

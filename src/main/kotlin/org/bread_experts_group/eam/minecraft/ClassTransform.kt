@@ -5,8 +5,12 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
 import org.bread_experts_group.eam.minecraft.feature.Scanning
-import java.lang.classfile.*
+import java.lang.classfile.ClassBuilder
+import java.lang.classfile.ClassElement
+import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.MethodBuilder
+import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.MethodTypeDesc
 import java.nio.file.Files
@@ -91,7 +95,7 @@ abstract class ClassTransform(
 									"F" -> codeBuilder.fload(slot)
 									"J" -> codeBuilder.lload(slot)
 								}
-							} else codeBuilder.invokeSpecialNewMimicClass(desc, slot)
+							} else codeBuilder.invokeSpecialNewMimic(desc, slot)
 						}
 
 						codeBuilder

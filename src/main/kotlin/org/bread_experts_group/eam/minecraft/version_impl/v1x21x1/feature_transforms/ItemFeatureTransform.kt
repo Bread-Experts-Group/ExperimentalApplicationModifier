@@ -5,7 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
-import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.Item
@@ -46,9 +46,9 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 					) { codeBuilder ->
 						codeBuilder
 							.getReferenceField(name, MinecraftItem.mimicClassDesc)
-							.invokeSpecialNewMimicClass(ItemStack.mimicClassDesc, 1)
-							.invokeSpecialNewMimicClass(Level.mimicClassDesc, 2)
-							.invokeSpecialNewMimicClass(Entity.mimicClassDesc, 3)
+							.invokeSpecialNewMimic(ItemStack.mimicClassDesc, 1)
+							.invokeSpecialNewMimic(Level.mimicClassDesc, 2)
+							.invokeSpecialNewMimic(Entity.mimicClassDesc, 3)
 							.iload(4)
 							.iload(5)
 							.invokevirtual(

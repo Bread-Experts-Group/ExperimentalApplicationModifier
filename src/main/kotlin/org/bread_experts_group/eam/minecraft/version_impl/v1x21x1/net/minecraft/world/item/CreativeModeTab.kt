@@ -6,7 +6,7 @@ import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.feature.creative_tab.AbstractCreativeTab
 import org.bread_experts_group.eam.minecraft.getReferenceField
-import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTab_Builder
@@ -146,7 +146,7 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 
 		fun displayItems(generator: (ItemDisplayParameters, Output) -> Unit): Builder {
 			clazz.getMethod("a", loadClass($$"cta$b"))
-				.invoke(around, DisplayItemsGenerator.implementNative(generator))
+				.invoke(around, DisplayItemsGenerator.implementNative(generator).around)
 			return Builder(around)
 		}
 
@@ -164,13 +164,13 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = DisplayItemsGenerator::class.classDesc
 
-			fun implementNative(generator: (ItemDisplayParameters, Output) -> Unit): Any {
+			fun implementNative(generator: (ItemDisplayParameters, Output) -> Unit): DisplayItemsGenerator {
 				val itemsGenerator = object : DisplayItemsGenerator() {
 					override fun accept(displayParameters: ItemDisplayParameters, output: Output) =
 						generator.invoke(displayParameters, output)
 				}
 
-				return itemsGenerator.implementNative(DisplayItemsGenerator::class.java) { classBuilder, name ->
+				itemsGenerator.around = itemsGenerator.implementNative(DisplayItemsGenerator::class.java) { classBuilder, name ->
 					classBuilder.withInterfaceSymbols(classDesc)
 					classBuilder.withMethodBody(
 						"accept",
@@ -183,8 +183,8 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 					) { codeBuilder ->
 						codeBuilder
 							.getReferenceField(name, mimicClassDesc)
-							.invokeSpecialNewMimicClass(ItemDisplayParameters.mimicClassDesc, 1)
-							.invokeSpecialNewMimicClass(Output.mimicClassDesc, 2)
+							.invokeSpecialNewMimic(ItemDisplayParameters.mimicClassDesc, 1)
+							.invokeSpecialNewMimic(Output.mimicClassDesc, 2)
 							.invokevirtual(
 								mimicClassDesc,
 								"accept",
@@ -225,6 +225,7 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 						ACC_FINAL or ACC_PRIVATE
 					)
 				}.newInstance(itemsGenerator)
+				return itemsGenerator
 			}
 		}
 

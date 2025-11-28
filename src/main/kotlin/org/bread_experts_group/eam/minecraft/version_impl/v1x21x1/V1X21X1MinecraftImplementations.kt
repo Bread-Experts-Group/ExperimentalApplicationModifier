@@ -7,18 +7,34 @@ import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
+import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContent
+import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient.TEST_RENDERER
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.*
+import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntityRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CameraTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GuiTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ItemRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MinecraftTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ModelBakeryTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MouseHandlerTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.PackRepositoryTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Gui
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.LayeredDraw
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.ItemBlockRenderTypes
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.BakedModel
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelBakery
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
@@ -33,6 +49,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.Builder
 import org.bread_experts_group.logging.ColoredHandler
@@ -156,37 +173,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		packedLight: Int,
 		packedOverlay: Int
 	) {
-		val minecraft = Minecraft.getInstance()
-		object : BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels()) {
-			val mainModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(
-				ModelResourceLocation("breadmod:item/tool_gun/item")
-			)
-			val coilModel: BakedModel = Minecraft.getInstance().getModelManager().getModel(
-				ModelResourceLocation("breadmod:item/tool_gun/coil")
-			)
-			val itemRenderer = Minecraft.getInstance().getItemRenderer()
-
-			override fun renderByItem(
-				stack: ItemStack,
-				displayContext: ItemDisplayContext,
-				poseStack: PoseStack,
-				bufferSource: MultiBufferSource,
-				packedLight: Int,
-				packedOverlay: Int
-			) {
-				val consumer = ItemRenderer.getFoilBufferDirect(
-					bufferSource,
-					ItemBlockRenderTypes.getRenderType(stack, false),
-					true,
-					stack.hasFoil()
-				)
-
-				poseStack.pushPose()
-				itemRenderer.renderModelLists(mainModel, stack, packedLight, packedOverlay, poseStack, consumer)
-				itemRenderer.renderModelLists(coilModel, stack, packedLight, packedOverlay, poseStack, consumer)
-				poseStack.popPose()
-			}
-		}.renderByItem(stack, displayContext, poseStack, bufferSource, packedLight, packedOverlay)
+		TEST_RENDERER.renderByItem(stack, displayContext, poseStack, bufferSource, packedLight, packedOverlay)
 	}
 
 	@JvmStatic
@@ -197,13 +184,13 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 			it.addItems(this.get(MinecraftFeatures.ITEM))
 			it.addLayers(this.get(MinecraftFeatures.LAYER))
 		}
-		// todo move to registration in mods
-		Registry.register(
+
+		BMContent.TEST_ENTITY_TYPE = Registry.register(
 			BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			"breadmod:test_entity",
 			Builder.of(
 				BlockEntitySupplier.implementNative { pos, state ->
-					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
+					BlockEntity.implementNative(pos, state, TestBlockEntity(0))
 				},
 				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
 			).build()
@@ -230,6 +217,13 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 			"H",
 			ResourceLocation.clazz,
 			ResourceLocation.parse("container/creative_inventory/tab_top_selected_1")
+		)
+
+		BlockEntityRenderers.register(
+			BMContent.TEST_ENTITY_TYPE,
+			BlockEntityRendererProvider.implementNative { context ->
+				BlockEntityRenderer.implementNative(TestBlockEntityRenderer(context), TestBlockEntity::class.java)
+			}
 		)
 	}
 

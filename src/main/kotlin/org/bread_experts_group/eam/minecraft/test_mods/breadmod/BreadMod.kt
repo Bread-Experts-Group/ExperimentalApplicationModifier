@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.minecraft.feature.Identifier
 import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
+import org.bread_experts_group.eam.minecraft.feature.block.MinecraftEntityBlock
 import org.bread_experts_group.eam.minecraft.feature.creative_tab.MinecraftCreativeTab
 import org.bread_experts_group.eam.minecraft.feature.creative_tab.MinecraftCreativeTabFeature
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
@@ -17,6 +18,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvents
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
@@ -24,13 +26,19 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.context.UseOnContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.Level
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import java.awt.Color
 
 class BreadMod : MinecraftMod("breadmod") {
 	override fun addBlocks(blocks: MinecraftBlockFeature) {
 		blocks.add(
 			Identifier("breadmod", "bread_block"),
-			MinecraftBlock()
+			object : MinecraftBlock(), MinecraftEntityBlock {
+				// todo make abstract in the future
+				override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity =
+					BlockEntity.implementNative(pos, state, TestBlockEntity(0))
+			}
 		)
 	}
 

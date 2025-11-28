@@ -5,7 +5,7 @@ import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayer
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayerFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
-import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.DeltaTracker
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.LayeredDraw
@@ -35,8 +35,8 @@ class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftL
 		) { codeBuilder ->
 			codeBuilder
 				.getReferenceField(name, MinecraftLayer.mimicClassDesc)
-				.invokeSpecialNewMimicClass(GuiGraphics.mimicClassDesc, 1)
-				.invokeSpecialNewMimicClass(DeltaTracker.mimicClassDesc, 2)
+				.invokeSpecialNewMimic(GuiGraphics.mimicClassDesc, 1)
+				.invokeSpecialNewMimic(DeltaTracker.mimicClassDesc, 2)
 				.invokevirtual(
 					MinecraftLayer.mimicClassDesc,
 					"render",
