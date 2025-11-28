@@ -6,7 +6,7 @@ import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
-import org.bread_experts_group.eam.minecraft.test_mods.TestBlockEntity
+import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity

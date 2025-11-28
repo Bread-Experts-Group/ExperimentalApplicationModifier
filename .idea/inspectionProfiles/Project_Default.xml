@@ -17,6 +17,7 @@
         <list>
           <option value="unused" />
           <option value="AssignedValueIsNeverRead" />
+          <option value="CAST_NEVER_SUCCEEDS" />
         </list>
       </option>
     </inspection_tool>

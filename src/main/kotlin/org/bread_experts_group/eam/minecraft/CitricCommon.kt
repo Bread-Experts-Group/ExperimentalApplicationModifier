@@ -162,3 +162,34 @@ fun CodeBuilder.invokeSpecialNewMimicClass(
 			ConstantDescs.CD_Object
 		)
 	)
+
+fun CodeBuilder.debugPrint(p: ClassDesc = ConstantDescs.CD_Object): CodeBuilder = this
+	.dup()
+	.invokevirtual(
+		ClassDesc.of("java.lang.Object"),
+		"getClass",
+		MethodTypeDesc.of(ConstantDescs.CD_Class)
+	)
+	.getstatic(
+		ClassDesc.of("java.lang.System"),
+		"out",
+		ClassDesc.of("java.io.PrintStream")
+	)
+	.swap()
+	.invokevirtual(
+		ClassDesc.of("java.io.PrintStream"),
+		"println",
+		MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
+	)
+	.dup()
+	.getstatic(
+		ClassDesc.of("java.lang.System"),
+		"out",
+		ClassDesc.of("java.io.PrintStream")
+	)
+	.swap()
+	.invokevirtual(
+		ClassDesc.of("java.io.PrintStream"),
+		"println",
+		MethodTypeDesc.of(ConstantDescs.CD_void, p)
+	)

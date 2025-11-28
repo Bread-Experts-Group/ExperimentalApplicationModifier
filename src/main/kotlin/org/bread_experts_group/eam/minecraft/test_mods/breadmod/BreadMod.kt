@@ -1,4 +1,4 @@
-package org.bread_experts_group.eam.minecraft.test_mods
+package org.bread_experts_group.eam.minecraft.test_mods.breadmod
 
 import org.bread_experts_group.eam.minecraft.feature.Identifier
 import org.bread_experts_group.eam.minecraft.feature.MinecraftMod

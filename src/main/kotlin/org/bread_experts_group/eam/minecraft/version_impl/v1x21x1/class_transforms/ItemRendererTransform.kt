@@ -12,8 +12,12 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_entity_ItemRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_entity_ItemRenderer_render
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_entity_ItemRenderer_renderModelLists
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_ItemStack_getDescriptionId
 import java.lang.classfile.*
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.constant.ConstantDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
@@ -28,7 +32,7 @@ class ItemRendererTransform(
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val p = modifyMethodAccess(
-			"a",
+			net_minecraft_client_renderer_entity_ItemRenderer_renderModelLists,
 			MethodTypeDesc.of(
 				ConstantDescs.CD_void,
 				BakedModel.classDesc,
@@ -43,7 +47,7 @@ class ItemRendererTransform(
 
 		if (
 			classElement is MethodModel &&
-			classElement.methodName().equalsString("a") &&
+			classElement.methodName().equalsString(net_minecraft_client_renderer_entity_ItemRenderer_render) &&
 			classElement.methodTypeSymbol() == MethodTypeDesc.of(
 				ConstantDescs.CD_void,
 				ItemStack.classDesc,
@@ -60,7 +64,29 @@ class ItemRendererTransform(
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 						codeBuilder.atLine(127, codeElement) { builder ->
-							builder.invokeStaticWithLocalVars(::renderBEWLR.javaMethod, localVars)
+							/*
+							TODO: Hey Chris, say somethin' FUNNY!
+							 */
+							@Suppress("CAST_NEVER_SUCCEEDS")
+							builder
+								.aload(1)
+								.invokevirtual(
+									ItemStack.classDesc,
+									net_minecraft_world_item_ItemStack_getDescriptionId,
+									MethodTypeDesc.of(ConstantDescs.CD_String)
+								)
+								.loadConstant("item.breadmod.tool_gun" as ConstantDesc)
+								.invokevirtual(
+									ConstantDescs.CD_String,
+									"equals",
+									MethodTypeDesc.of(
+										ConstantDescs.CD_boolean,
+										ConstantDescs.CD_Object
+									)
+								)
+								.ifThen { equalBuilder ->
+									equalBuilder.invokeStaticWithLocalVars(::renderBEWLR.javaMethod, localVars)
+								}
 						}
 						.with(codeElement)
 					}

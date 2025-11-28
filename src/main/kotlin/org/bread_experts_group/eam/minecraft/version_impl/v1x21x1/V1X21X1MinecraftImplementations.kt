@@ -7,7 +7,7 @@ import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
-import org.bread_experts_group.eam.minecraft.test_mods.TestBlockEntity
+import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.*
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
