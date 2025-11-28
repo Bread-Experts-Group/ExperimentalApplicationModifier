@@ -5,7 +5,7 @@ import java.lang.constant.ClassDesc
 
 class MinecraftBlock {
 	companion object {
-		val classDesc: ClassDesc = ClassDesc.of(MinecraftBlock::class.qualifiedName)
+		val mimicClassDesc: ClassDesc = ClassDesc.of(MinecraftBlock::class.qualifiedName)
 	}
 
 	@JvmField

@@ -127,7 +127,7 @@ interface CodeTransformer {
 		if (
 			classElement is MethodModel &&
 			classElement.methodName().equalsString(targetMethod) &&
-			classElement.methodType().equalsString(targetMethodType.descriptorString())
+			classElement.methodTypeSymbol() == targetMethodType
 		) {
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is AccessFlags) methodBuilder.withFlags(newAccessFlags)

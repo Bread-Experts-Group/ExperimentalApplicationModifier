@@ -62,7 +62,7 @@ class BreadMod : MinecraftMod("breadmod") {
 	override fun addLayers(layers: MinecraftLayerFeature) {
 		layers.add(Identifier("breadmod", "test_layer"), object : MinecraftLayer() {
 			override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-				guiGraphics.drawString(Minecraft.Companion.getInstance().font, "I LOVE REGISTERED OVERLAYS", 0, 20, Color.WHITE.rgb)
+				guiGraphics.drawString(Minecraft.getInstance().font, "I LOVE REGISTERED OVERLAYS", 0, 20, Color.WHITE.rgb)
 			}
 		})
 	}
@@ -72,10 +72,10 @@ class BreadMod : MinecraftMod("breadmod") {
 	}
 
 	override fun registerEvents() {
-		EventSystem.addListener(EventSystem.MOUSE_BUTTON_PRE) { event, button, action, _ ->
+		EventSystem.addListener(EventSystem.MOUSE_BUTTON_PRE) { event, button, action, modifiers ->
 		}
 
-		EventSystem.addListener(EventSystem.MOUSE_BUTTON_POST) { event, button, action, _ ->
+		EventSystem.addListener(EventSystem.MOUSE_BUTTON_POST) { event, button, action, modifiers ->
 		}
 
 		EventSystem.addListener(EventSystem.MOUSE_SCROLLED) { event, mouseHandler, scrollX, scrollY ->

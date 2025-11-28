@@ -111,9 +111,9 @@ object V1x0x0Implementations : Implementations() {
 												"getSecond",
 												MethodTypeDesc.of(ConstantDescs.CD_Object)
 											)
-											.checkcast(MinecraftBlock.classDesc)
+											.checkcast(MinecraftBlock.mimicClassDesc)
 											.getfield(
-												MinecraftBlock.classDesc,
+												MinecraftBlock.mimicClassDesc,
 												"mimic",
 												MimickedClass.classDesc
 											)

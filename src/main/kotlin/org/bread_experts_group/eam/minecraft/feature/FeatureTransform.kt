@@ -9,6 +9,8 @@ import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.nio.file.Files
 import kotlin.io.path.Path
+import kotlin.io.path.createDirectory
+import kotlin.io.path.exists
 
 abstract class FeatureTransform<I>(val input: I, private val featureName: String) : CodeTransformer {
 	private val cf: ClassFile = of(StackMapsOption.GENERATE_STACK_MAPS)
@@ -23,7 +25,11 @@ abstract class FeatureTransform<I>(val input: I, private val featureName: String
 			name,
 			cf.build(ClassDesc.of(name)) { classBuilder ->
 				this.startTransform(name).invoke(classBuilder)
-			}.also { Files.write(Path("$name.class"), it) }
+			}.also {
+				val folder = Path("transformed_features")
+				if (!folder.exists()) folder.createDirectory()
+				Files.write(Path("transformed_features/$name.class"), it)
+			}
 		))
 	}
 }

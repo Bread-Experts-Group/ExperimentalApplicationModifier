@@ -177,10 +177,10 @@ abstract class BlockBehaviour(around: Any) : MimickedClass(around) {
     450:450:void <clinit>() -> <clinit>
 	 */
 	class Properties(around: Any) : MimickedClass(around) {
-		companion object {
-			val clazz: Class<*> = loadClass(
-				net_minecraft_world_level_block_state_BlockBehaviour_Properties
-			)
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_state_BlockBehaviour_Properties)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = Properties::class.classDesc
 
 			fun of(): Properties = Properties(
 				clazz.getMethod("a").invoke(null)

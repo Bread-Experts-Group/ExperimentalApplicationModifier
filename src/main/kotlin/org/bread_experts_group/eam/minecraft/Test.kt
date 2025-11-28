@@ -29,7 +29,17 @@ class Test {
 		val item = stack.getItem()
 		val level = minecraft.level
 		if (longVar > 10) {
+			println(item)
+			println(level)
 			println(bool)
 		}
+	}
+
+	fun lambdaTest(lambda: () -> Unit) {
+		lambda.invoke()
+	}
+
+	fun lambdaExecuteTest() {
+		lambdaTest { println("test") }
 	}
 }

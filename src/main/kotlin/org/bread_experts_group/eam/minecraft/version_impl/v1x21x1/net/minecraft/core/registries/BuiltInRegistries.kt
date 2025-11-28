@@ -7,6 +7,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.DefaultedRegistry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.Item
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_core_registries_BuiltInRegistries
 import java.lang.constant.ClassDesc
 
@@ -169,6 +170,11 @@ class BuiltInRegistries(around: Any) : MimickedClass(around) {
 			get() = DefaultedRegistry(
 				Item::class.java,
 				clazz.getField("g").get(null)
+			)
+		val BLOCK_ENTITY_TYPE: DefaultedRegistry<BlockEntityType<*>>
+			get() = DefaultedRegistry(
+				BlockEntityType::class.java,
+				clazz.getField("j").get(null)
 			)
 	}
 }

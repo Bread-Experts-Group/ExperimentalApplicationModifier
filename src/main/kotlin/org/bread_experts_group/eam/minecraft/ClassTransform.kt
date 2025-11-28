@@ -43,6 +43,7 @@ abstract class ClassTransform(
 			}
 		}
 	}
+
 	/**
 	 * Integrates a method from a [sourceClass] into the class transform.
 	 *

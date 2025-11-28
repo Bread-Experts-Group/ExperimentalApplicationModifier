@@ -1,6 +1,5 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item
 
-import org.bread_experts_group.eam.DefiningClassLoader
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
@@ -19,13 +18,9 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_
 import java.lang.classfile.ClassFile.ACC_FINAL
 import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PUBLIC
-import java.lang.classfile.ClassFile.StackMapsOption
-import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
-import java.nio.file.Files
-import kotlin.io.path.Path
 
 /*
 net.minecraft.world.item.CreativeModeTab -> cta:
@@ -163,79 +158,73 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 	# {"fileName":"CreativeModeTab.java","id":"sourceFile"}
 	void accept(net.minecraft.world.item.CreativeModeTab$ItemDisplayParameters,net.minecraft.world.item.CreativeModeTab$Output) -> accept
 	 */
-	open class DisplayItemsGenerator(around: Any) : MimickedClass(around) {
+	open class DisplayItemsGenerator : MimickedClass(0) {
 		companion object : ClassInfo {
 			override val clazz: Class<*> = loadClass(net_minecraft_world_item_CreativeModeTab_DisplayItemsGenerator)
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = DisplayItemsGenerator::class.classDesc
 
 			fun implementNative(generator: (ItemDisplayParameters, Output) -> Unit): Any {
-				val itemsGenerator = object : DisplayItemsGenerator(0) {
+				val itemsGenerator = object : DisplayItemsGenerator() {
 					override fun accept(displayParameters: ItemDisplayParameters, output: Output) =
 						generator.invoke(displayParameters, output)
 				}
-				val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
-				val cl = DefiningClassLoader()
-				val name = "EAMGenerated_DisplayItemsGenerator"
 
-				return cl.define(
-					name,
-					cf.build(ClassDesc.of(name)) { classBuilder ->
-						classBuilder.withInterfaceSymbols(classDesc)
-						classBuilder.withMethodBody(
-							"accept",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_void,
-								ItemDisplayParameters.classDesc,
-								Output.classDesc
-							),
-							ACC_PUBLIC or ACC_FINAL
-						) { codeBuilder ->
-							codeBuilder
-								.getReferenceField(name, mimicClassDesc)
-								.invokeSpecialNewMimicClass(ItemDisplayParameters.mimicClassDesc, 1)
-								.invokeSpecialNewMimicClass(Output.mimicClassDesc, 2)
-								.invokevirtual(
-									mimicClassDesc,
-									"accept",
-									MethodTypeDesc.of(
-										ConstantDescs.CD_void,
-										ItemDisplayParameters.mimicClassDesc,
-										Output.mimicClassDesc
-									)
+				return itemsGenerator.implementNative(DisplayItemsGenerator::class.java) { classBuilder, name ->
+					classBuilder.withInterfaceSymbols(classDesc)
+					classBuilder.withMethodBody(
+						"accept",
+						MethodTypeDesc.of(
+							ConstantDescs.CD_void,
+							ItemDisplayParameters.classDesc,
+							Output.classDesc
+						),
+						ACC_PUBLIC or ACC_FINAL
+					) { codeBuilder ->
+						codeBuilder
+							.getReferenceField(name, mimicClassDesc)
+							.invokeSpecialNewMimicClass(ItemDisplayParameters.mimicClassDesc, 1)
+							.invokeSpecialNewMimicClass(Output.mimicClassDesc, 2)
+							.invokevirtual(
+								mimicClassDesc,
+								"accept",
+								MethodTypeDesc.of(
+									ConstantDescs.CD_void,
+									ItemDisplayParameters.mimicClassDesc,
+									Output.mimicClassDesc
 								)
-								.return_()
-						}
-						classBuilder.withMethodBody(
-							"<init>",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_void, mimicClassDesc),
-							ACC_PUBLIC
-						) { codeBuilder ->
-							codeBuilder
-								.aload(0)
-								.dup()
-								.invokespecial(
-									ConstantDescs.CD_Object,
-									"<init>",
-									MethodTypeDesc.of(ConstantDescs.CD_void)
-								)
-								.aload(1)
-								.putfield(
-									ClassDesc.of(name),
-									"reference",
-									mimicClassDesc
-								)
-								.return_()
-						}
-						classBuilder.withField(
-							"reference",
-							mimicClassDesc,
-							ACC_FINAL or ACC_PRIVATE
-						)
-					}.also { Files.write(Path("$name.class"), it) }
-
-				).getConstructor(DisplayItemsGenerator::class.java).newInstance(itemsGenerator)
+							)
+							.return_()
+					}
+					classBuilder.withMethodBody(
+						"<init>",
+						MethodTypeDesc.of(
+							ConstantDescs.CD_void, mimicClassDesc
+						),
+						ACC_PUBLIC
+					) { codeBuilder ->
+						codeBuilder
+							.aload(0)
+							.dup()
+							.invokespecial(
+								ConstantDescs.CD_Object,
+								"<init>",
+								MethodTypeDesc.of(ConstantDescs.CD_void)
+							)
+							.aload(1)
+							.putfield(
+								ClassDesc.of(name),
+								"reference",
+								mimicClassDesc
+							)
+							.return_()
+					}
+					classBuilder.withField(
+						"reference",
+						mimicClassDesc,
+						ACC_FINAL or ACC_PRIVATE
+					)
+				}.newInstance(itemsGenerator)
 			}
 		}
 

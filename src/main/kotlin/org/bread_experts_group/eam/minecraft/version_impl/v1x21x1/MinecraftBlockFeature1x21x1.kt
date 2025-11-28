@@ -10,14 +10,14 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.Items
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Blocks
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 
 class MinecraftBlockFeature1x21x1 : MinecraftBlockFeature() {
 	override fun getTransformer(input: MinecraftBlock): BlockFeatureTransform = BlockFeatureTransform(input)
 
 	override fun register(id: Identifier, value: MinecraftBlock): MinecraftBlock {
-		val properties = BlockBehaviour.Properties.ofFullCopy(Blocks.Companion.HAY_BLOCK)
-		val mcBlock = Block(properties)
+//		val properties = BlockBehaviour.Properties.ofFullCopy(Blocks.HAY_BLOCK)
+//		val mcBlock = Block(properties)
+		val mcBlock = Block(getTransformer(value).build())
 		Blocks.register("${id.namespace}:${id.subject}", mcBlock)
 		mcBlock.getStateDefinition().getPossibleStates().forEach { Block.BLOCK_STATE_REGISTRY.add(it) }
 		val itemProperties = Item.Properties()

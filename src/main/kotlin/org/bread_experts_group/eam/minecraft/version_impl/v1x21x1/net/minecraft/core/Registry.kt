@@ -80,5 +80,11 @@ open class Registry<T>(around: Any) : MimickedClass(around) {
 				.invoke(null, registry.around, resourceKey.around, `object`.around)
 			return `object`
 		}
+
+		fun <V : MimickedClass, T : V> register(registry: Registry<V>, string: String, `object`: T): T {
+			clazz.getMethod("a", clazz, String::class.java, Object::class.java)
+				.invoke(null, registry.around, string, `object`.around)
+			return `object`
+		}
 	}
 }

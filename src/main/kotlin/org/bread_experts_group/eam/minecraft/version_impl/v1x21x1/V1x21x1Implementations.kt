@@ -5,7 +5,11 @@ import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CameraTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
@@ -40,6 +44,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
 import org.bread_experts_group.logging.ColoredHandler
 import java.awt.Color
 import java.net.URI
@@ -73,6 +78,10 @@ object V1x21x1Implementations : Implementations() {
 		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
 		MouseHandlerTransform(scanning, classFile).startTransform(true)
 		ClientLevelTransform(scanning, classFile).startTransform(true)
+		CameraTransform(scanning, classFile).startTransform(true)
+		BlockEntityRenderersTransform(scanning, classFile).startTransform(true)
+		BlockEntityTypeTransform(scanning, classFile).startTransform(true)
+		BlockEntitySupplierTransform(scanning, classFile).startTransform(true)
 
 		this.mods.forEach { it.registerEvents() }
 	}
@@ -196,6 +205,7 @@ object V1x21x1Implementations : Implementations() {
 			it.addItems(this.get(MinecraftFeatures.ITEM))
 			it.addLayers(this.get(MinecraftFeatures.LAYER))
 		}
+		BlockEntity.TEST_ENTITY
 	}
 
 	@JvmStatic
