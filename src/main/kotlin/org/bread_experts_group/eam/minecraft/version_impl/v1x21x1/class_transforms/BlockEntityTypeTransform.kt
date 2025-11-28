@@ -26,8 +26,9 @@ class BlockEntityTypeTransform(
 			),
 			ACC_PUBLIC or ACC_STATIC
 		)
+		val v = modifyFieldAccess("U", ACC_PUBLIC)
 
 
-		if (!r(classBuilder, classElement)) classBuilder.with(classElement)
+		if (!(r(classBuilder, classElement) || v(classBuilder, classElement))) classBuilder.with(classElement)
 	}
 }

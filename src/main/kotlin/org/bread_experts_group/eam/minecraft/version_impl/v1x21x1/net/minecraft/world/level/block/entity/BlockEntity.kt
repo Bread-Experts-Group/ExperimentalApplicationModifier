@@ -4,12 +4,6 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import org.bread_experts_group.eam.minecraft.test_mods.TestBlockEntity
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.Builder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntity
 import java.lang.constant.ClassDesc
 
@@ -94,16 +88,16 @@ abstract class BlockEntity(around: Any) : MimickedClass(around) {
 //			)
 //		)
 
-		val TEST_ENTITY: BlockEntityType<TestBlockEntity> = Registry.register(
-			BuiltInRegistries.BLOCK_ENTITY_TYPE,
-			"breadmod:test_entity",
-			Builder.of<TestBlockEntity>(
-				BlockEntitySupplier.implementNative { pos, state ->
-					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
-				},
-				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
-			).build()
-		)
+//		val TEST_ENTITY: BlockEntityType<TestBlockEntity> = Registry.register(
+//			BuiltInRegistries.BLOCK_ENTITY_TYPE,
+//			"breadmod:test_entity",
+//			Builder.of<TestBlockEntity>(
+//				BlockEntitySupplier.implementNative { pos, state ->
+//					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
+//				},
+//				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
+//			).build()
+//		)
 	}
 
 //	constructor(type: BlockEntityType<*>, pos: BlockPos, state: BlockState) : this(

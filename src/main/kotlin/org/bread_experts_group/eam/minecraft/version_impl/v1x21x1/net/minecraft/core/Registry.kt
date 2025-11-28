@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_core_Registry
 import java.lang.constant.ClassDesc
 
@@ -69,7 +70,7 @@ import java.lang.constant.ClassDesc
     37:37:net.minecraft.core.Holder lambda$holderByNameCodec$1(net.minecraft.core.Holder$Reference) -> c
     31:31:com.mojang.serialization.DataResult lambda$byNameCodec$0(java.lang.Object) -> g
  */
-open class Registry<T>(around: Any) : MimickedClass(around) {
+open class Registry<T>(private val mimics: Class<T>, around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_core_Registry)
 		override val classDesc: ClassDesc = clazz.classDesc
@@ -87,4 +88,13 @@ open class Registry<T>(around: Any) : MimickedClass(around) {
 			return `object`
 		}
 	}
+
+	fun getKey(o: T): ResourceLocation = TODO("Not yet implemented, b")
+	fun getDefaultKey(): ResourceLocation = TODO("Not yet implemented, b")
+	fun get(r: ResourceLocation): T = mimics.getConstructor(Object::class.java).newInstance(
+		clazz
+			.getMethod("a", ResourceLocation.clazz)
+			.invoke(around, r.around)
+	)
+	fun byId(id: Int): T = TODO("Not yet implemented, a")
 }

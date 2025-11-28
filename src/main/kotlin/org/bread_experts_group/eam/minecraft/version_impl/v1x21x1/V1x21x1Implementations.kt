@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.Implementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
+import org.bread_experts_group.eam.minecraft.test_mods.TestBlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
@@ -44,7 +45,8 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.Builder
 import org.bread_experts_group.logging.ColoredHandler
 import java.awt.Color
 import java.net.URI
@@ -52,6 +54,7 @@ import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
 import java.util.logging.Logger
 
+@Suppress("unused")
 object V1x21x1Implementations : Implementations() {
 	override val logger: Logger = ColoredHandler.newLogger("V1x21x1 Impl")
 
@@ -88,7 +91,8 @@ object V1x21x1Implementations : Implementations() {
 
 	// todo refer to MinecraftCreativeTab
 	@JvmStatic
-	fun registerTabs(registry: Registry<CreativeModeTab>) {
+	fun registerTabs(around: Any) {
+		val registry = Registry(CreativeModeTab::class.java, around)
 		var column = 7
 		this.mods.forEach { it.addCreativeTabs(this.get(MinecraftFeatures.CREATIVE_TAB)) }
 		EAMRegistries.CREATIVE_TABS.entryIterator().forEach { (identifier, _) ->
@@ -205,7 +209,17 @@ object V1x21x1Implementations : Implementations() {
 			it.addItems(this.get(MinecraftFeatures.ITEM))
 			it.addLayers(this.get(MinecraftFeatures.LAYER))
 		}
-		BlockEntity.TEST_ENTITY
+		// todo move to registration in mods
+		Registry.register(
+			BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			"breadmod:test_entity",
+			Builder.of<TestBlockEntity>(
+				BlockEntitySupplier.implementNative { pos, state ->
+					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
+				},
+				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
+			).build()
+		)
 	}
 
 	@JvmStatic

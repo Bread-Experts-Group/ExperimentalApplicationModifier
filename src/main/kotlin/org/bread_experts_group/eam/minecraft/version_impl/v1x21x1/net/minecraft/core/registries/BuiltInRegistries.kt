@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.DefaultedRegistry
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.Item
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType
@@ -22,7 +23,6 @@ import java.lang.constant.ClassDesc
     net.minecraft.core.DefaultedRegistry ENTITY_TYPE -> f
     net.minecraft.core.Registry POTION -> h
     net.minecraft.core.Registry PARTICLE_TYPE -> i
-    net.minecraft.core.Registry BLOCK_ENTITY_TYPE -> j
     net.minecraft.core.Registry CUSTOM_STAT -> k
     net.minecraft.core.DefaultedRegistry CHUNK_STATUS -> l
     net.minecraft.core.Registry RULE_TEST -> m
@@ -171,8 +171,8 @@ class BuiltInRegistries(around: Any) : MimickedClass(around) {
 				Item::class.java,
 				clazz.getField("g").get(null)
 			)
-		val BLOCK_ENTITY_TYPE: DefaultedRegistry<BlockEntityType<*>>
-			get() = DefaultedRegistry(
+		val BLOCK_ENTITY_TYPE: Registry<BlockEntityType<*>>
+			get() = Registry(
 				BlockEntityType::class.java,
 				clazz.getField("j").get(null)
 			)

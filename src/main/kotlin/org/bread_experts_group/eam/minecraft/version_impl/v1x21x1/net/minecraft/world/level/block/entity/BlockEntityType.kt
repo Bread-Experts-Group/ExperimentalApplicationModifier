@@ -92,6 +92,12 @@ class BlockEntityType<T : BlockEntity>(around: Any) : MimickedClass(around) {
 			)
 	}
 
+	val validBlocks: Set<Block>
+		get() {
+			val set = clazz.getField("U").get(around) as Set<*>
+			return set.map { Block(it!!) }.toSet()
+		}
+
 	/*
 	net.minecraft.world.level.block.entity.BlockEntityType$BlockEntitySupplier -> dqj$a:
 # {"fileName":"BlockEntityType.java","id":"sourceFile"}
@@ -199,6 +205,7 @@ class BlockEntityType<T : BlockEntity>(around: Any) : MimickedClass(around) {
 			fun <T : BlockEntity> of(supplier: Any, vararg blocks: Block): Builder<T> {
 				val array = java.lang.reflect.Array.newInstance(Block.clazz, blocks.size)
 				repeat(blocks.size) {
+					println("BLOCKS FROM BUILDER: ${blocks[it].around}")
 					java.lang.reflect.Array.set(array, it, blocks[it].around)
 				}
 				return Builder(
