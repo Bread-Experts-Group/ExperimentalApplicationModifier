@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0
 
-import org.bread_experts_group.api.ImplementationSource
+import org.bread_experts_group.api.feature.ImplementationSource
 import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.Identifier
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
@@ -11,7 +11,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.net.minecraft.M
 // TODO: Add namespaces to 1.0.0
 class MinecraftBlockFeature1x0x0 : MinecraftBlockFeature() {
 	override val source: ImplementationSource = ImplementationSource.JVM_NATIVE
-	override fun getTransformer(input: MinecraftBlock): FeatureTransform<MinecraftBlock> {
+	override fun getTransformer(input: MinecraftBlock): FeatureTransform<MinecraftBlock, MinecraftBlockFeature> {
 		TODO("Not yet implemented")
 	}
 

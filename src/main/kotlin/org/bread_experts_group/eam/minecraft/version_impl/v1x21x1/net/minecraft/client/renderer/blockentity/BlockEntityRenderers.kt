@@ -25,7 +25,7 @@ class BlockEntityRenderers(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockEntityRenderers::class.classDesc
 
-		fun <T : BlockEntity> register(type: BlockEntityType<T>, provider: BlockEntityRendererProvider<T>) {
+		fun <T : BlockEntity> register(type: BlockEntityType, provider: BlockEntityRendererProvider<T>) {
 			clazz.getMethod("a", BlockEntityType.clazz, BlockEntityRendererProvider.clazz)
 				.invoke(null, type.around, provider.around)
 		}

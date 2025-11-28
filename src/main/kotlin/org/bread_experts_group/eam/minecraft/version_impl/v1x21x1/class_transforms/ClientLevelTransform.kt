@@ -16,7 +16,11 @@ import java.lang.constant.MethodTypeDesc
 class ClientLevelTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_client_multiplayer_ClientLevel, "ClientLevel", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_client_multiplayer_ClientLevel,
+	"ClientLevel",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val f = modifyMethodAccess(
 			"a",

@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.coder.Mappable.Companion.id
+import org.bread_experts_group.Mappable.Companion.id
 import org.bread_experts_group.command_line.Flag
 import org.bread_experts_group.command_line.readArgs
 import org.bread_experts_group.logging.ColoredHandler

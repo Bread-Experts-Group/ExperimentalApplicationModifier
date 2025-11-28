@@ -15,8 +15,7 @@ class BlockEntitySupplierTransform(
 ) : ClassTransform(
 	net_minecraft_world_level_block_entity_BlockEntityType_BlockEntitySupplier,
 	"BlockEntitySupplier",
-	scanning,
-	classFile
+	scanning, classFile
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		// Signature { "<T:Ldqh;>Ljava/lang/Object;" }

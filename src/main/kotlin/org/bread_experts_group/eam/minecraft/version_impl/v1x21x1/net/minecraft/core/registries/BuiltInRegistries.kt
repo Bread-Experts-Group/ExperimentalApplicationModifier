@@ -171,7 +171,7 @@ class BuiltInRegistries(around: Any) : MimickedClass(around) {
 				Item::class.java,
 				clazz.getField("g").get(null)
 			)
-		val BLOCK_ENTITY_TYPE: Registry<BlockEntityType<*>>
+		val BLOCK_ENTITY_TYPE: Registry<BlockEntityType>
 			get() = Registry(
 				BlockEntityType::class.java,
 				clazz.getField("j").get(null)

@@ -1,7 +1,9 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.feature_transforms
 
+import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayer
+import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayerFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.DeltaTracker
@@ -13,7 +15,10 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftLayer>(input, "MinecraftLayer") {
+class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftLayer, MinecraftLayerFeature>(
+	input,
+	MinecraftFeatures.LAYER
+) {
 	override fun createInstance(clazz: Class<*>): Any =
 		clazz.getConstructor(MinecraftLayer::class.java).newInstance(input)
 
@@ -23,29 +28,29 @@ class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftL
 			"render",
 			MethodTypeDesc.of(
 				ConstantDescs.CD_void,
-				GuiGraphics.Companion.classDesc,
-				DeltaTracker.Companion.classDesc
+				GuiGraphics.classDesc,
+				DeltaTracker.classDesc
 			),
 			ClassFile.ACC_PUBLIC
 		) { codeBuilder ->
 			codeBuilder
-				.getReferenceField(name, MinecraftLayer.Companion.mimicClassDesc)
-				.invokeSpecialNewMimicClass(GuiGraphics.Companion.mimicClassDesc, 1)
-				.invokeSpecialNewMimicClass(DeltaTracker.Companion.mimicClassDesc, 2)
+				.getReferenceField(name, MinecraftLayer.mimicClassDesc)
+				.invokeSpecialNewMimicClass(GuiGraphics.mimicClassDesc, 1)
+				.invokeSpecialNewMimicClass(DeltaTracker.mimicClassDesc, 2)
 				.invokevirtual(
-					MinecraftLayer.Companion.mimicClassDesc,
+					MinecraftLayer.mimicClassDesc,
 					"render",
 					MethodTypeDesc.of(
 						ConstantDescs.CD_void,
-						GuiGraphics.Companion.mimicClassDesc,
-						DeltaTracker.Companion.mimicClassDesc
+						GuiGraphics.mimicClassDesc,
+						DeltaTracker.mimicClassDesc
 					)
 				)
 				.return_()
 		}
 		classBuilder.withMethodBody(
 			"<init>",
-			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftLayer.Companion.mimicClassDesc),
+			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftLayer.mimicClassDesc),
 			ClassFile.ACC_PUBLIC
 		) { codeBuilder ->
 			codeBuilder
@@ -60,13 +65,13 @@ class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftL
 				.putfield(
 					ClassDesc.of(name),
 					"reference",
-					MinecraftLayer.Companion.mimicClassDesc
+					MinecraftLayer.mimicClassDesc
 				)
 				.return_()
 		}
 		classBuilder.withField(
 			"reference",
-			MinecraftLayer.Companion.mimicClassDesc,
+			MinecraftLayer.mimicClassDesc,
 			ClassFile.ACC_FINAL or ClassFile.ACC_PRIVATE
 		)
 	}

@@ -4,7 +4,7 @@ import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations.renderBEWLR
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.renderBEWLR
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.VertexConsumer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
@@ -12,12 +12,8 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_entity_ItemRenderer
-import java.lang.classfile.ClassBuilder
-import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
+import java.lang.classfile.*
 import java.lang.classfile.ClassFile.ACC_PUBLIC
-import java.lang.classfile.CodeModel
-import java.lang.classfile.MethodModel
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
@@ -25,7 +21,11 @@ import kotlin.reflect.jvm.javaMethod
 class ItemRendererTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_client_renderer_entity_ItemRenderer, "ItemRenderer", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_client_renderer_entity_ItemRenderer,
+	"ItemRenderer",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val p = modifyMethodAccess(
 			"a",

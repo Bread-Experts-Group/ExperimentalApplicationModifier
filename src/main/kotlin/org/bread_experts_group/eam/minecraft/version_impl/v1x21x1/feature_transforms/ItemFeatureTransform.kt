@@ -1,7 +1,9 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.feature_transforms
 
+import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
+import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
@@ -18,7 +20,10 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftItem>(input, "MinecraftItem") {
+class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftItem, MinecraftItemFeature>(
+	input,
+	MinecraftFeatures.ITEM
+) {
 	override fun createInstance(clazz: Class<*>): Any =
 		clazz.getConstructor(MinecraftItem::class.java).newInstance(input)
 

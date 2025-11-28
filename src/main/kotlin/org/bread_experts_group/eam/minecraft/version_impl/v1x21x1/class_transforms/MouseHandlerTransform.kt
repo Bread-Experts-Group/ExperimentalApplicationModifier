@@ -17,12 +17,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.screens.Screen
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_MouseHandler
-import java.lang.classfile.ClassBuilder
-import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
-import java.lang.classfile.CodeModel
-import java.lang.classfile.MethodModel
-import java.lang.classfile.Opcode
+import java.lang.classfile.*
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -31,7 +26,11 @@ import kotlin.reflect.jvm.javaMethod
 class MouseHandlerTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_client_MouseHandler, "MouseHandler", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_client_MouseHandler,
+	"MouseHandler",
+	scanning, classFile
+) {
 	private var onScrollCounter = 0
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		when (classElement) {
@@ -71,7 +70,7 @@ class MouseHandlerTransform(
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 					if (methodElement is CodeModel) {
 						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						methodBuilder.transformCode(methodElement) { codeBuilder, _ ->
 							codeBuilder
 								.aload(0)
 								.iconst_0()
@@ -125,7 +124,7 @@ class MouseHandlerTransform(
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 					if (methodElement is CodeModel) {
 						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
-						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						methodBuilder.transformCode(methodElement) { codeBuilder, _ ->
 							codeBuilder
 								.aload(0)
 								.iconst_0()
@@ -319,7 +318,7 @@ class MouseHandlerTransform(
 				ConstantDescs.CD_double
 			)                                                                                                           -> {
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, _ ->
 						codeBuilder
 							.lineNumber(254)
 							.invokeSpecialNewMimicClass(Screen.mimicClassDesc, 1)

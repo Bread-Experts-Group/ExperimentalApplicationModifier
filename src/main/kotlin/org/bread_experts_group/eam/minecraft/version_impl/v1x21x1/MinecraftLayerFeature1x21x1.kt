@@ -11,7 +11,7 @@ class MinecraftLayerFeature1x21x1 : MinecraftLayerFeature() {
 
 	override fun register(id: Identifier, value: MinecraftLayer): MinecraftLayer {
 		val drawLayer = LayeredDraw.Layer(getTransformer(value).build())
-		V1x21x1Implementations.drawLayers.add(drawLayer)
+		V1X21X1MinecraftImplementations.drawLayers.add(drawLayer)
 		return value
 	}
 }

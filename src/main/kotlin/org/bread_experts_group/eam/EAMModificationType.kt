@@ -1,11 +1,15 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.coder.Mappable
+import org.bread_experts_group.Mappable
 import org.bread_experts_group.command_line.Flag
 import org.bread_experts_group.command_line.readArgs
-import org.bread_experts_group.command_line.stringToBoolean
-import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1x0x0Implementations
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.logAllLoadsFlag
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeMimics
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedFeatures
+import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1X0X0MinecraftImplementations
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
 import org.bread_experts_group.logging.ColoredHandler
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
@@ -25,23 +29,21 @@ enum class EAMModificationType(
 				required = 1,
 				conv = {
 					when (it) {
-						"1.0", "1.0.0" -> V1x0x0Implementations
-						"1.21.1" -> V1x21x1Implementations
+						"1.0", "1.0.0" -> V1X0X0MinecraftImplementations
+						"1.21.1" -> V1X21X1MinecraftImplementations
 						else -> throw IllegalArgumentException("Cannot modify for unknown version $it")
 					}
 				}
 			)
-			val logAllLoadsFlag = Flag(
-				"log_all_class_loads",
-				"Loads all class loads.",
-				conv = ::stringToBoolean
-			)
-			val args = readArgs(
+			val arguments = readArgs(
 				args,
 				"BEG EAM Minecraft modification",
-				"TODO write usage",
+				"EAM for Minecraft Modding.",
 				versionFlag,
-				logAllLoadsFlag
+				logAllLoadsFlag,
+				writeTransformedClasses,
+				writeTransformedFeatures,
+				writeMimics
 			)
 			val logger = ColoredHandler.newLogger("TMP logger EAM")
 			instrumentation.addTransformer(object : ClassFileTransformer {
@@ -53,7 +55,7 @@ enum class EAMModificationType(
 					protectionDomain: ProtectionDomain,
 					classfileBuffer: ByteArray
 				): ByteArray? {
-					if (args.get(logAllLoadsFlag) == true) logger.info(
+					if (arguments.get(logAllLoadsFlag) == true) logger.info(
 						"Loading class $className [$classBeingRedefined, $module] Data#${classfileBuffer.size}"
 					)
 					return runCatching {
@@ -66,7 +68,8 @@ enum class EAMModificationType(
 					}.getOrNull()
 				}
 			}, false)
-			args.getRequired(versionFlag).implement(instrumentation, scanning)
+			arguments.getRequired(versionFlag).implement(instrumentation, scanning)
+			MinecraftImplementations.arguments = arguments
 		}
 	);
 

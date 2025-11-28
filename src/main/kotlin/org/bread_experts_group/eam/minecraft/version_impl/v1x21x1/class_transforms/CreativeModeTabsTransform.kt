@@ -3,7 +3,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTabs
@@ -17,7 +17,11 @@ import java.lang.constant.MethodTypeDesc
 class CreativeModeTabsTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_world_item_CreativeModeTabs, "CreativeModeTabs",  scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_world_item_CreativeModeTabs,
+	"CreativeModeTabs",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		classBuilder.modifyMethod(
 			classElement,
@@ -30,7 +34,7 @@ class CreativeModeTabsTransform(
 						builder
 							.aload(0)
 							.invokestatic(
-								V1x21x1Implementations::class.classDesc,
+								V1X21X1MinecraftImplementations::class.classDesc,
 								"registerTabs",
 								MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
 							)

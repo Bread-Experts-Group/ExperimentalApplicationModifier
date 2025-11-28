@@ -16,8 +16,7 @@ class CreativeModeScreenTransform(
 ) : ClassTransform(
 	net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
 	"CreativeModeInventoryScreen",
-	scanning,
-	classFile
+	scanning, classFile
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val f = modifyFieldAccess("H", ACC_PUBLIC or ACC_STATIC)

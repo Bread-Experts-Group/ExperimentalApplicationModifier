@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations.registerAdditionalModels
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.registerAdditionalModels
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.UnbakedModel
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
@@ -19,7 +19,11 @@ import kotlin.reflect.jvm.javaMethod
 class ModelBakeryTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_client_resources_model_ModelBakery, "ModelBakery", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_client_resources_model_ModelBakery,
+	"ModelBakery",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val regModelAccess = modifyMethodAccess(
 			"a",

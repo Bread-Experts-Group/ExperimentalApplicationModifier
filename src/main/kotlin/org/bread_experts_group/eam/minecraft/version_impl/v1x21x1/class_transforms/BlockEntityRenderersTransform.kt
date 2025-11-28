@@ -16,7 +16,11 @@ import java.lang.constant.MethodTypeDesc
 class BlockEntityRenderersTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_client_renderer_blockentity_BlockEntityRenderers, "BlockEntityRenderers", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_client_renderer_blockentity_BlockEntityRenderers,
+	"BlockEntityRenderers",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val r = modifyMethodAccess(
 			"a",

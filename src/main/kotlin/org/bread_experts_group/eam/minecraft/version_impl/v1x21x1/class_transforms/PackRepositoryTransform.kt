@@ -3,7 +3,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeStaticMethodWithMimics
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1x21x1Implementations.addPackSources
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.addPackSources
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_PackRepository
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -18,7 +18,11 @@ import kotlin.reflect.jvm.javaMethod
 class PackRepositoryTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_server_packs_repository_PackRepository, "PackRepository", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_server_packs_repository_PackRepository,
+	"PackRepository",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		classBuilder.modifyMethod(classElement, "<init>") { methodBuilder, methodElement ->
 			if (methodElement is CodeModel) {

@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.minecraft
 
-import org.bread_experts_group.api.FeatureExpression
+import org.bread_experts_group.api.feature.FeatureExpression
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
 import org.bread_experts_group.eam.minecraft.feature.creative_tab.MinecraftCreativeTabFeature
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature

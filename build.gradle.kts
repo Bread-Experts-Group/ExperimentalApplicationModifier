@@ -1,9 +1,9 @@
 plugins {
-	kotlin("jvm") version "2.2.20"
+	kotlin("jvm") version "2.2.21"
 }
 
 group = "org.bread_experts_group"
-version = "D0F0P0"
+version = "D0F1P0"
 // Bread Experts Group Versioning System, revision 1 (natives/libraries unauthorized outside of Bread Server Library)
 //                          Pertains to the ...
 // Dx ... Design x       //  entire architecture of the project
@@ -20,7 +20,7 @@ repositories {
 dependencies {
 	testImplementation(kotlin("test"))
 	implementation(kotlin("reflect"))
-	implementation("org.bread_experts_group:bread_server_lib-code:D0F0N0P0")
+	implementation("org.bread_experts_group:bread_server_lib-code:D0F1N1P3")
 }
 
 kotlin {

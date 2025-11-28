@@ -1,26 +1,14 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
+import org.bread_experts_group.bslBuildDate
+import org.bread_experts_group.bslVersion
 import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
-import org.bread_experts_group.eam.minecraft.feature.Implementations
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.test_mods.TestBlockEntity
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CameraTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GuiTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ItemRendererTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MinecraftTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ModelBakeryTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MouseHandlerTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.PackRepositoryTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.*
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Gui
@@ -55,7 +43,7 @@ import java.nio.file.FileSystems
 import java.util.logging.Logger
 
 @Suppress("unused")
-object V1x21x1Implementations : Implementations() {
+object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	override val logger: Logger = ColoredHandler.newLogger("V1x21x1 Impl")
 
 	// todo temporary solution until i write adding layers directly into Gui itself
@@ -69,22 +57,22 @@ object V1x21x1Implementations : Implementations() {
 	)
 
 	override fun start() {
-		println("Starting Class Transforms")
-		BuiltInRegistriesTransform(scanning, classFile).startTransform(true)
-		MinecraftTransform(scanning, classFile).startTransform(true)
-		GuiTransform(scanning, classFile).startTransform(true)
-		ItemRendererTransform(scanning, classFile).startTransform(true)
-		ModelBakeryTransform(scanning, classFile).startTransform(true)
-		PackRepositoryTransform(scanning, classFile).startTransform(true)
-		TitleScreenTransform(scanning, classFile).startTransform(true)
-		CreativeModeTabsTransform(scanning, classFile).startTransform(true)
-		CreativeModeScreenTransform(scanning, classFile).startTransform(true)
-		MouseHandlerTransform(scanning, classFile).startTransform(true)
-		ClientLevelTransform(scanning, classFile).startTransform(true)
-		CameraTransform(scanning, classFile).startTransform(true)
-		BlockEntityRenderersTransform(scanning, classFile).startTransform(true)
-		BlockEntityTypeTransform(scanning, classFile).startTransform(true)
-		BlockEntitySupplierTransform(scanning, classFile).startTransform(true)
+		logger.info("Starting Class Transforms")
+		BuiltInRegistriesTransform(scanning, classFile).startTransform()
+		MinecraftTransform(scanning, classFile).startTransform()
+		GuiTransform(scanning, classFile).startTransform()
+		ItemRendererTransform(scanning, classFile).startTransform()
+		ModelBakeryTransform(scanning, classFile).startTransform()
+		PackRepositoryTransform(scanning, classFile).startTransform()
+		TitleScreenTransform(scanning, classFile).startTransform()
+		CreativeModeTabsTransform(scanning, classFile).startTransform()
+		CreativeModeScreenTransform(scanning, classFile).startTransform()
+		MouseHandlerTransform(scanning, classFile).startTransform()
+		ClientLevelTransform(scanning, classFile).startTransform()
+		CameraTransform(scanning, classFile).startTransform()
+		BlockEntityRenderersTransform(scanning, classFile).startTransform()
+		BlockEntityTypeTransform(scanning, classFile).startTransform()
+		BlockEntitySupplierTransform(scanning, classFile).startTransform()
 
 		this.mods.forEach { it.registerEvents() }
 	}
@@ -120,7 +108,7 @@ object V1x21x1Implementations : Implementations() {
 	@JvmStatic
 	@Suppress("unused")
 	fun addPackSources(self: PackRepository) {
-		println("[EAM Loader] Adding additional pack sources")
+		logger.info("[EAM Loader] Adding additional pack sources")
 		val validator = Minecraft.getInstance().directoryValidator()
 		val resourceLocation = this::class.java.getResource("/resources")?.toURI()
 		val env = hashMapOf<String, String>()
@@ -141,7 +129,7 @@ object V1x21x1Implementations : Implementations() {
 	@JvmStatic
 	@Suppress("unused")
 	fun registerAdditionalModels(self: ModelBakery) {
-		println("[EAM Loader] Registering additional models")
+		logger.info("[EAM Loader] Registering additional models")
 		val item = "breadmod:item/tool_gun/item"
 		val coil = "breadmod:item/tool_gun/coil"
 		val unbaked = self.getModel(item)
@@ -153,7 +141,7 @@ object V1x21x1Implementations : Implementations() {
 	@JvmStatic
 	@Suppress("unused")
 	fun addLayers(self: Gui) {
-		println("[EAM Loader] Registering drawLayers")
+		logger.info("[EAM Loader] Registering drawLayers")
 		val layers = self.layers
 		this.drawLayers.forEach { layers.add(it) }
 	}
@@ -213,7 +201,7 @@ object V1x21x1Implementations : Implementations() {
 		Registry.register(
 			BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			"breadmod:test_entity",
-			Builder.of<TestBlockEntity>(
+			Builder.of(
 				BlockEntitySupplier.implementNative { pos, state ->
 					TestBlockEntity(TestBlockEntity.nativeBlockEntity(pos, state))
 				},
@@ -224,7 +212,7 @@ object V1x21x1Implementations : Implementations() {
 
 	@JvmStatic
 	fun test() {
-		println("test!")
+		logger.info("test!")
 	}
 
 	@JvmStatic
@@ -257,7 +245,13 @@ object V1x21x1Implementations : Implementations() {
 		guiGraphics.renderItem(BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:bread_block")).getDefaultInstance(), 0, 30)
 		poseStack.popPose()
 		guiGraphics.drawString(Minecraft.getInstance().font, "EAM on top", 0, 0, Color.WHITE.rgb)
-		guiGraphics.drawString(Minecraft.getInstance().font, "Version 1.0982317512309128e94", 0, 10, Color.ORANGE.rgb)
+		guiGraphics.drawString(
+			Minecraft.getInstance().font,
+			"BSL ${bslVersion()} @ ${bslBuildDate()}",
+			0,
+			10,
+			Color.ORANGE.rgb
+		)
 		poseStack.popPose()
 	}
 	@JvmStatic

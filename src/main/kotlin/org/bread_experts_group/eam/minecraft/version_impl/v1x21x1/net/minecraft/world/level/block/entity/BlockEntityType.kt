@@ -6,15 +6,14 @@ import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimicClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.logger
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType_BlockEntitySupplier
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType_Builder
-import java.lang.classfile.ClassFile.ACC_FINAL
-import java.lang.classfile.ClassFile.ACC_PRIVATE
-import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFile.*
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
@@ -80,23 +79,23 @@ net.minecraft.world.level.block.entity.BlockEntityType -> dqj:
     140:144:net.minecraft.world.level.block.entity.BlockEntity getBlockEntity(net.minecraft.world.level.BlockGetter,net.minecraft.core.BlockPos) -> a
     25:75:void <clinit>() -> <clinit>
  */
-class BlockEntityType<T : BlockEntity>(around: Any) : MimickedClass(around) {
+class BlockEntityType(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_entity_BlockEntityType)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockEntityType::class.classDesc
 
-		fun <T : BlockEntity> register(name: String, builder: Builder<T>): BlockEntityType<T> =
+		fun register(name: String, builder: Builder): BlockEntityType =
 			BlockEntityType(clazz.getMethod("a", String::class.java, Builder.clazz)
 				.invoke(null, name, builder.around)
 			)
 	}
 
-	val validBlocks: Set<Block>
-		get() {
-			val set = clazz.getField("U").get(around) as Set<*>
-			return set.map { Block(it!!) }.toSet()
-		}
+//	val validBlocks: Set<Block>
+//		get() {
+//			val set = clazz.getField("U").get(around) as Set<*>
+//			return set.map { Block(it!!) }.toSet()
+//		}
 
 	/*
 	net.minecraft.world.level.block.entity.BlockEntityType$BlockEntitySupplier -> dqj$a:
@@ -114,7 +113,7 @@ class BlockEntityType<T : BlockEntity>(around: Any) : MimickedClass(around) {
 					override fun create(pos: BlockPos, state: BlockState): T = supplier(pos, state)
 				}
 
-				return entitySupplier.implementNative(BlockEntitySupplier::class.java, true) { classBuilder, name ->
+				return entitySupplier.implementNative(BlockEntitySupplier::class.java) { classBuilder, name ->
 					classBuilder.withInterfaceSymbols(classDesc)
 					// todo figure out signatures
 //					classBuilder.with(SignatureAttribute.of { "<T:Ldqh;>Ljava/lang/Object;" })
@@ -195,17 +194,17 @@ class BlockEntityType<T : BlockEntity>(around: Any) : MimickedClass(around) {
     129:129:net.minecraft.world.level.block.entity.BlockEntityType$Builder of(net.minecraft.world.level.block.entity.BlockEntityType$BlockEntitySupplier,net.minecraft.world.level.block.Block[]) -> a
     133:133:net.minecraft.world.level.block.entity.BlockEntityType build(com.mojang.datafixers.types.Type) -> a
 	 */
-	class Builder<T : BlockEntity>(around: Any) : MimickedClass(around) {
+	class Builder(around: Any) : MimickedClass(around) {
 		companion object : ClassInfo {
 			override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_entity_BlockEntityType_Builder)
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = Builder::class.classDesc
 
 			// todo the supplier parameter is Any because of the implementNative method in BlockEntitySupplier
-			fun <T : BlockEntity> of(supplier: Any, vararg blocks: Block): Builder<T> {
+			fun of(supplier: Any, vararg blocks: Block): Builder {
 				val array = java.lang.reflect.Array.newInstance(Block.clazz, blocks.size)
 				repeat(blocks.size) {
-					println("BLOCKS FROM BUILDER: ${blocks[it].around}")
+					logger.info("BLOCKS FROM BUILDER: ${blocks[it].around}")
 					java.lang.reflect.Array.set(array, it, blocks[it].around)
 				}
 				return Builder(
@@ -215,7 +214,7 @@ class BlockEntityType<T : BlockEntity>(around: Any) : MimickedClass(around) {
 			}
 		}
 
-		fun build(): BlockEntityType<T> = BlockEntityType(
+		fun build(): BlockEntityType = BlockEntityType(
 			clazz.getMethod("a", loadClass("com.mojang.datafixers.types.Type"))
 				.invoke(around, null)
 		)

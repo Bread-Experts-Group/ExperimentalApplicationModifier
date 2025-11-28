@@ -15,7 +15,11 @@ import java.lang.constant.MethodTypeDesc
 class BlockEntityTypeTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_world_level_block_entity_BlockEntityType, "BlockEntityType", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_world_level_block_entity_BlockEntityType,
+	"BlockEntityType",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val r = modifyMethodAccess(
 			"a",

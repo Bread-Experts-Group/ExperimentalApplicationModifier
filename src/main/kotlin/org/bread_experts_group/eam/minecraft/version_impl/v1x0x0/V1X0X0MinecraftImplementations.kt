@@ -1,16 +1,10 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0
 
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
-import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
-import org.bread_experts_group.eam.minecraft.feature.EAMRegistry
-import org.bread_experts_group.eam.minecraft.feature.Implementations
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
-import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
+import org.bread_experts_group.eam.minecraft.feature.*
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.logging.ColoredHandler
-import java.lang.classfile.ClassFile.ACC_PRIVATE
-import java.lang.classfile.ClassFile.ACC_PROTECTED
-import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFile.*
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.TypeKind
@@ -20,7 +14,7 @@ import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.util.logging.Logger
 
-object V1x0x0Implementations : Implementations() {
+object V1X0X0MinecraftImplementations : MinecraftImplementations() {
 	override val logger: Logger = ColoredHandler.newLogger("V1x0x0 Impl")
 	override val supportedFeatures: SupportedMCFeatures = mutableMapOf(
 		MinecraftFeatures.BLOCK to mutableListOf(MinecraftBlockFeature1x0x0())
@@ -71,6 +65,7 @@ object V1x0x0Implementations : Implementations() {
 						var added = true
 						if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 							if (codeElement is LineNumber && codeElement.line() == 51 && added) {
+								@Suppress("AssignedValueIsNeverRead")
 								added = false
 								val iterator = codeBuilder.allocateLocal(TypeKind.REFERENCE)
 								val iteratorClass =

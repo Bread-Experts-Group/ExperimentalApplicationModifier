@@ -16,7 +16,7 @@ class TestBlockEntity(around: Any) : BlockEntity(around) {
 		fun nativeBlockEntity(pos: BlockPos, state: BlockState): Any {
 			val type = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(ResourceLocation.parse("breadmod:test_entity"))
 			val entity = TestBlockEntity(0)
-			return entity.implementNative(BlockEntity::class.java, true) { classBuilder, name ->
+			return entity.implementNative(BlockEntity::class.java) { classBuilder, _ ->
 				classBuilder.withSuperclass(classDesc)
 				classBuilder.withMethodBody(
 					"<init>",

@@ -13,7 +13,11 @@ import java.lang.constant.MethodTypeDesc
 class CameraTransform(
 	scanning: Scanning,
 	classFile: ClassFile
-) : ClassTransform(net_minecraft_client_Camera, "Camera", scanning, classFile) {
+) : ClassTransform(
+	net_minecraft_client_Camera,
+	"Camera",
+	scanning, classFile
+) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val r = modifyMethodAccess(
 			"a",
