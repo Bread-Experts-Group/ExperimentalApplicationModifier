@@ -2,6 +2,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.afterCreateContents
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_core_registries_BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_core_registries_BuiltInRegistries_createContents
@@ -22,6 +23,7 @@ class BuiltInRegistriesTransform(
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val r = invokeAtMethodReturns(
+			MimicLookup1x21x1,
 			net_minecraft_core_registries_BuiltInRegistries_createContents,
 			MethodTypeDesc.of(ConstantDescs.CD_void),
 			::afterCreateContents.javaMethod!!

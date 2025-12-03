@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.transform
 
 import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
+import org.bread_experts_group.eam.minecraft.mimic.MimicLookup
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -79,6 +79,7 @@ interface CodeTransformer {
 	}
 
 	fun invokeAtMethodReturns(
+		lookup: MimicLookup,
 		targetMethodName: String,
 		targetMethodType: MethodTypeDesc,
 		method: Method
@@ -97,7 +98,7 @@ interface CodeTransformer {
 						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 							if (codeElement is ReturnInstruction)
-								codeBuilder.invokeStaticWithLocalVars(MimicLookup1x21x1, method, localVars)
+								codeBuilder.invokeStaticWithLocalVars(lookup, method, localVars)
 							codeBuilder.with(codeElement)
 						}
 					}

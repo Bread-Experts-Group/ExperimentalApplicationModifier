@@ -22,7 +22,7 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	localVars: List<LocalVariable>,
 	returnDesc: ClassDesc = ConstantDescs.CD_void
 ): CodeBuilder {
-	if (method == null) throw NullPointerException("Method is somehow null??")
+	if (method == null) throw NullPointerException("Method cannot be resolved as a java method")
 	val params = method.parameters
 	val declaring = method.declaringClass
 	val className = if (declaring.kotlin.isCompanion) declaring.name.substringBefore('$') else declaring.name
@@ -30,7 +30,7 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	params.forEach { parameter ->
 		val filtered = localVars.filter { it.slot() !in usedSlots }
 		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
-			val localVariable = lookup.findNativeInLocalVars(parameter, localVars)
+			val localVariable = lookup.findNativeInLocalVars(parameter, filtered)
 			this.invokeSpecialNewMimic(parameter.classDesc, localVariable.slot())
 			usedSlots.add(localVariable.slot())
 		} else if (parameter.type.isPrimitive) {

@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.renderTitleScreen
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_gui_screens_TitleScreen
@@ -41,7 +42,7 @@ class TitleScreenTransform(
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 						codeBuilder.atLine(273, codeElement) { builder ->
-							builder.invokeStaticWithLocalVars(::renderTitleScreen.javaMethod, localVars)
+							builder.invokeStaticWithLocalVars(MimicLookup1x21x1, ::renderTitleScreen.javaMethod, localVars)
 						}
 						.with(codeElement)
 					}
