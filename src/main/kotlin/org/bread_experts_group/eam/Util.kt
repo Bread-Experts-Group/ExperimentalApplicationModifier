@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.instruction.LocalVariable

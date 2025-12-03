@@ -1,6 +1,7 @@
-package org.bread_experts_group.eam.minecraft
+package org.bread_experts_group.eam.minecraft.transform
 
 import org.bread_experts_group.eam.getLocalVariableInfo
+import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder

@@ -2,7 +2,6 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getLocalVariableInfo
-import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleMouseButtonPost
@@ -13,6 +12,7 @@ import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScr
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScreenMouseReleasedPre
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
+import org.bread_experts_group.eam.minecraft.transform.ClassTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.screens.Screen

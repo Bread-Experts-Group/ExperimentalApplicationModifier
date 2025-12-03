@@ -1,6 +1,5 @@
-package org.bread_experts_group.eam.minecraft
+package org.bread_experts_group.eam.minecraft.mimic
 
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
 import java.lang.reflect.Parameter
@@ -10,7 +9,7 @@ import kotlin.reflect.full.isSubclassOf
 /**
  * Provides a "translation" layer to retrieve native class names from supplied mimic classes.
  * 
- * - Primarily used in edge cases where [invokeStaticWithLocalVars]
+ * - Primarily used in edge cases where [org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars]
  * attempts to load a duplicate class definition, causing a LinkageError.
  */
 abstract class MimicLookup {

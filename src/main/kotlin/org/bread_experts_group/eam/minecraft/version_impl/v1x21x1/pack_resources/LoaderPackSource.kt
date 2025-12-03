@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resource
 
 import org.bread_experts_group.eam.DefiningClassLoader
 import org.bread_experts_group.eam.classDesc
-import org.bread_experts_group.eam.minecraft.CodeTransformer
+import org.bread_experts_group.eam.minecraft.transform.CodeTransformer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackResources

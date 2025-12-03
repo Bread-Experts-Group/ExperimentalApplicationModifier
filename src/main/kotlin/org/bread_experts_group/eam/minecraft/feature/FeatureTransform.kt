@@ -3,8 +3,8 @@ package org.bread_experts_group.eam.minecraft.feature
 import org.bread_experts_group.api.feature.FeatureExpression
 import org.bread_experts_group.api.feature.FeatureImplementation
 import org.bread_experts_group.eam.DefiningClassLoader
-import org.bread_experts_group.eam.minecraft.CodeTransformer
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedFeatures
+import org.bread_experts_group.eam.minecraft.transform.CodeTransformer
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.StackMapsOption

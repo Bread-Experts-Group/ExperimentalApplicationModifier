@@ -2,7 +2,8 @@ package org.bread_experts_group.eam.minecraft
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getNativeLocalVariable
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.mimic.MimicLookup
+import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeBuilder

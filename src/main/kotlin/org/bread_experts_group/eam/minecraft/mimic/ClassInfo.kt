@@ -1,4 +1,4 @@
-package org.bread_experts_group.eam.minecraft
+package org.bread_experts_group.eam.minecraft.mimic
 
 import java.lang.constant.ClassDesc
 

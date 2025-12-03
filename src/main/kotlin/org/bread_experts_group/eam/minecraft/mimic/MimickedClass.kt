@@ -1,6 +1,7 @@
-package org.bread_experts_group.eam.minecraft.feature
+package org.bread_experts_group.eam.minecraft.mimic
 
 import org.bread_experts_group.eam.DefiningClassLoader
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeMimics
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile.StackMapsOption
@@ -33,7 +34,7 @@ abstract class MimickedClass(
 		val name = "EAM_NativeMimic_${mimicClass.simpleName}"
 		val built = cf.build(ClassDesc.of(name)) { builder(it, name) }
 
-		val path = MinecraftImplementations.arguments.get(writeMimics)
+		val path = MinecraftImplementations.Companion.arguments.get(writeMimics)
 		if (path != null) Files.write(
 			Path(path)
 				.resolve("$name.class")

@@ -2,8 +2,8 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.bl
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
-import org.bread_experts_group.eam.minecraft.ClassInfo
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
+import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_blaze3d_vertex_PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_blaze3d_vertex_PoseStack_Pose
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Quaternionf

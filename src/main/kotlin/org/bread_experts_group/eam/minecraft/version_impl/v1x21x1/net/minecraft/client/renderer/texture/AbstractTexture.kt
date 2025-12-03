@@ -2,10 +2,10 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
-import org.bread_experts_group.eam.minecraft.ClassInfo
 import org.bread_experts_group.eam.minecraft.DEFAULT_VOID
-import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
+import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.putReferenceField
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.resources.ResourceManager
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_texture_AbstractTexture
@@ -159,7 +159,7 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 			clazz.getField("b").set(around, value)
 		}
 
-	// declaration clash...
+	// todo declaration clash...
 //	open fun getId(): Int = clazz.getMethod("a").invoke(around) as Int
 
 	open fun releaseId() {

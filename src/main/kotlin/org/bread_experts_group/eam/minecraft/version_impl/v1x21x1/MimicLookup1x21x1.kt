@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
-import org.bread_experts_group.eam.minecraft.MimicLookup
+import org.bread_experts_group.eam.minecraft.mimic.MimicLookup
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Camera
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.DeltaTracker
