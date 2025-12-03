@@ -32,11 +32,23 @@ class CreativeModeTabsTransform(
 				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 					codeBuilder.atLine(68, codeElement) { builder ->
 						builder
+							.new_(Registry.mimicClassDesc)
+							.dup()
+							.loadConstant(CreativeModeTab.mimicClassDesc)
 							.aload(0)
+							.invokespecial(
+								Registry.mimicClassDesc,
+								ConstantDescs.INIT_NAME,
+								MethodTypeDesc.of(
+									ConstantDescs.CD_void,
+									ConstantDescs.CD_Class,
+									ConstantDescs.CD_Object
+								)
+							)
 							.invokestatic(
 								V1X21X1MinecraftImplementations::class.classDesc,
 								"registerTabs",
-								MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
+								MethodTypeDesc.of(ConstantDescs.CD_void, Registry.mimicClassDesc)
 							)
 					}
 					.with(codeElement)

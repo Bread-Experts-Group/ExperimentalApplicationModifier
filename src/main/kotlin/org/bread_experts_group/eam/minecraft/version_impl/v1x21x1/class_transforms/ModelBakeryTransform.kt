@@ -45,13 +45,13 @@ class ModelBakeryTransform(
 		)
 		val returnInvoke = invokeAtMethodReturns(
 			MimicLookup1x21x1,
-			"<init>",
+			ConstantDescs.INIT_NAME,
 			MethodTypeDesc.of(
 				ConstantDescs.CD_void,
 				ClassDesc.of("fhq"), // BlockColors
 				ClassDesc.of("bnf"), // ProfileFiller,
-				ClassDesc.of(Map::class.java.name),
-				ClassDesc.of(Map::class.java.name)
+				ConstantDescs.CD_Map,
+				ConstantDescs.CD_Map
 			),
 			::registerAdditionalModels.javaMethod!!
 		)

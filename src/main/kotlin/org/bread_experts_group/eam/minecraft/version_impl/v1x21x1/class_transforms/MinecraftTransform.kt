@@ -32,11 +32,8 @@ class MinecraftTransform(
 		)
 		val r1 = invokeAtMethodReturns(
 			MimicLookup1x21x1,
-			"<init>",
-			MethodTypeDesc.of(
-				ConstantDescs.CD_void,
-				GameConfig.classDesc
-			),
+			ConstantDescs.INIT_NAME,
+			MethodTypeDesc.of(ConstantDescs.CD_void, GameConfig.classDesc),
 			::postClientInit.javaMethod!!
 		)
 		if (

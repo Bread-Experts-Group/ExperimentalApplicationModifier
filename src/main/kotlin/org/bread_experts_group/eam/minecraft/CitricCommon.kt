@@ -104,6 +104,16 @@ fun CodeBuilder.putReferenceField(name: String, type: ClassDesc): CodeBuilder =
 		"reference",
 		type
 	)
+/**
+ * Calls the default super constructor for [Object].
+ */
+fun CodeBuilder.invokeDefaultSuper(): CodeBuilder = this
+	.dup()
+	.invokespecial(
+		ConstantDescs.CD_Object,
+		ConstantDescs.INIT_NAME,
+		MethodTypeDesc.of(ConstantDescs.CD_void)
+	)
 
 fun CodeBuilder.invokeSpecialNewMimic(
 	classDesc: ClassDesc,
@@ -114,12 +124,20 @@ fun CodeBuilder.invokeSpecialNewMimic(
 	.aload(slot)
 	.invokespecial(
 		classDesc,
-		"<init>",
+		ConstantDescs.INIT_NAME,
 		MethodTypeDesc.of(
 			ConstantDescs.CD_void,
 			ConstantDescs.CD_Object
 		)
 	)
+
+/**
+ * Use this to instantiate mimic classes that don't require their native counterpart.
+ */
+fun CodeBuilder.invokeSpecialNewMimic(classDesc: ClassDesc): CodeBuilder = this
+	.new_(classDesc)
+	.dup()
+	.invokespecial(classDesc, ConstantDescs.INIT_NAME, DEFAULT_VOID)
 
 fun CodeBuilder.debugPrint(p: ClassDesc = ConstantDescs.CD_Object): CodeBuilder = this
 	.dup()

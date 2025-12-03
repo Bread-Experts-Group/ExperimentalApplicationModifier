@@ -22,10 +22,9 @@ import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.full.superclasses
 
-class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftBlock, MinecraftBlockFeature>(
-	input,
-	MinecraftFeatures.BLOCK
-) {
+class BlockFeatureTransform(
+	input: MinecraftBlock
+) : FeatureTransform<MinecraftBlock, MinecraftBlockFeature>(input, MinecraftFeatures.BLOCK) {
 	override fun createInstance(clazz: Class<*>): Any =
 		clazz.getConstructor(MinecraftBlock::class.java).newInstance(input)
 
@@ -64,20 +63,14 @@ class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftB
 					.areturn()
 			}
 		}
+		// todo implement block properties into MinecraftBlock, then pass into here
 		classBuilder.withMethodBody(
-			"<init>",
+			ConstantDescs.INIT_NAME,
 			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftBlock.mimicClassDesc),
 			ClassFile.ACC_PUBLIC
 		) { codeBuilder ->
 			codeBuilder
 				.aload(0)
-/*				.invokestatic(
-					BlockBehaviour.Properties.classDesc,
-					"a",
-					MethodTypeDesc.of(BlockBehaviour.Properties.classDesc)
-				)
- */
-				// todo maybe this'll work now that it's annotated with JvmStatic
 				.invokestatic(
 					BlockBehaviour.Properties.mimicClassDesc,
 					"of",
@@ -91,7 +84,7 @@ class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftB
 				.checkcast(BlockBehaviour.Properties.classDesc)
 				.invokespecial(
 					Block.classDesc,
-					"<init>",
+					ConstantDescs.INIT_NAME,
 					MethodTypeDesc.of(ConstantDescs.CD_void, BlockBehaviour.Properties.classDesc)
 				)
 				.aload(0)

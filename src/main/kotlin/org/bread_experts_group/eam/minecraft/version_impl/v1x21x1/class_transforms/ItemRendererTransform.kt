@@ -64,6 +64,7 @@ class ItemRendererTransform(
 				ConstantDescs.CD_int,
 				BakedModel.classDesc
 			)) {
+			// todo move the BEWLR rendering to a system of registered renderers that get iterated through
 			classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 				if (methodElement is CodeModel) {
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)

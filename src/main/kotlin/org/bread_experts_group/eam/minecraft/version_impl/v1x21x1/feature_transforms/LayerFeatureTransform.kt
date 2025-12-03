@@ -5,13 +5,15 @@ import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayer
 import org.bread_experts_group.eam.minecraft.feature.layer.MinecraftLayerFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.invokeDefaultSuper
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
+import org.bread_experts_group.eam.minecraft.putReferenceField
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.DeltaTracker
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.LayeredDraw
+import org.bread_experts_group.eam.minecraft.withReferenceField
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
-import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
@@ -49,30 +51,17 @@ class LayerFeatureTransform(input: MinecraftLayer) : FeatureTransform<MinecraftL
 				.return_()
 		}
 		classBuilder.withMethodBody(
-			"<init>",
+			ConstantDescs.INIT_NAME,
 			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftLayer.mimicClassDesc),
 			ClassFile.ACC_PUBLIC
 		) { codeBuilder ->
 			codeBuilder
 				.aload(0)
-				.dup()
-				.invokespecial(
-					ConstantDescs.CD_Object,
-					"<init>",
-					MethodTypeDesc.of(ConstantDescs.CD_void)
-				)
+				.invokeDefaultSuper()
 				.aload(1)
-				.putfield(
-					ClassDesc.of(name),
-					"reference",
-					MinecraftLayer.mimicClassDesc
-				)
+				.putReferenceField(name, MinecraftLayer.mimicClassDesc)
 				.return_()
 		}
-		classBuilder.withField(
-			"reference",
-			MinecraftLayer.mimicClassDesc,
-			ClassFile.ACC_FINAL or ClassFile.ACC_PRIVATE
-		)
+		classBuilder.withReferenceField(MinecraftLayer.mimicClassDesc)
 	}
 }

@@ -6,6 +6,7 @@ import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
+import org.bread_experts_group.eam.minecraft.putReferenceField
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.Item
@@ -14,9 +15,9 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.Level
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_Item_inventoryTick
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_Item_useOn
+import org.bread_experts_group.eam.minecraft.withReferenceField
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
-import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
@@ -76,17 +77,7 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 				) { codeBuilder ->
 					codeBuilder
 						.getReferenceField(name, MinecraftItem.mimicClassDesc)
-						.new_(UseOnContext.mimicClassDesc)
-						.dup()
-						.aload(1)
-						.invokespecial(
-							UseOnContext.mimicClassDesc,
-							"<init>",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_void,
-								ConstantDescs.CD_Object
-							)
-						)
+						.invokeSpecialNewMimic(UseOnContext.mimicClassDesc, 1)
 						.invokevirtual(
 							codeBuilder.constantPool().methodRefEntry(
 								MinecraftItem.mimicClassDesc,
@@ -103,20 +94,15 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 				}
 			}
 		}
+		// todo implement item properties into MinecraftItem, then pass into here
 		classBuilder.withMethodBody(
-			"<init>",
+			ConstantDescs.INIT_NAME,
 			MethodTypeDesc.of(ConstantDescs.CD_void, MinecraftItem.mimicClassDesc),
 			ClassFile.ACC_PUBLIC
 		) { codeBuilder ->
 			codeBuilder
 				.aload(0)
-				.new_(Item.Properties.mimicClassDesc)
-				.dup()
-				.invokespecial(
-					Item.Properties.mimicClassDesc,
-					"<init>",
-					MethodTypeDesc.of(ConstantDescs.CD_void),
-				)
+				.invokeSpecialNewMimic(Item.Properties.mimicClassDesc)
 				.getfield(
 					Item.Properties.mimicClassDesc,
 					"around",
@@ -125,22 +111,14 @@ class ItemFeatureTransform(input: MinecraftItem) : FeatureTransform<MinecraftIte
 				.checkcast(Item.Properties.classDesc)
 				.invokespecial(
 					Item.classDesc,
-					"<init>",
+					ConstantDescs.INIT_NAME,
 					MethodTypeDesc.of(ConstantDescs.CD_void, Item.Properties.classDesc)
 				)
 				.aload(0)
 				.aload(1)
-				.putfield(
-					ClassDesc.of(name),
-					"reference",
-					MinecraftItem.mimicClassDesc
-				)
+				.putReferenceField(name, MinecraftItem.mimicClassDesc)
 				.return_()
 		}
-		classBuilder.withField(
-			"reference",
-			MinecraftItem.mimicClassDesc,
-			ClassFile.ACC_FINAL or ClassFile.ACC_PRIVATE
-		)
+		classBuilder.withReferenceField(MinecraftItem.mimicClassDesc)
 	}
 }

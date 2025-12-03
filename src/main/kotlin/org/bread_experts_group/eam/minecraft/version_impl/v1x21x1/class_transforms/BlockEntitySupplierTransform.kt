@@ -18,9 +18,10 @@ class BlockEntitySupplierTransform(
 	scanning, classFile
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
-		// Signature { "<T:Ldqh;>Ljava/lang/Object;" }
-//		if (classElement is SignatureAttribute) println(classElement.signature())
 		if (classElement is AccessFlags) classBuilder.withFlags(AccessFlag.INTERFACE, AccessFlag.ABSTRACT, AccessFlag.PUBLIC)
 		else classBuilder.with(classElement)
 	}
 }
+
+// Signature { "<T:Ldqh;>Ljava/lang/Object;" }
+//		if (classElement is SignatureAttribute) println(classElement.signature())

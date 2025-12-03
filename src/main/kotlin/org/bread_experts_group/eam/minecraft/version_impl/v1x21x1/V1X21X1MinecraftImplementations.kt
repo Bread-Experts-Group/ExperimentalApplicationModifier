@@ -96,8 +96,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 	// todo refer to MinecraftCreativeTab
 	@JvmStatic
-	fun registerTabs(around: Any) {
-		val registry = Registry(CreativeModeTab::class.java, around)
+	fun registerTabs(registry: Registry<CreativeModeTab>) {
 		var column = 7
 		this.mods.forEach { it.addCreativeTabs(this.get(MinecraftFeatures.CREATIVE_TAB)) }
 		EAMRegistries.CREATIVE_TABS.entryIterator().forEach { (identifier, _) ->
