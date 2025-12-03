@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.registerAdditionalModels
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.UnbakedModel
@@ -44,7 +44,7 @@ class ModelBakeryTransform(
 			ACC_PUBLIC
 		)
 		val returnInvoke = invokeAtMethodReturns(
-			MimicLookup1x21x1,
+			NativeLookupV1x21x1,
 			ConstantDescs.INIT_NAME,
 			MethodTypeDesc.of(
 				ConstantDescs.CD_void,

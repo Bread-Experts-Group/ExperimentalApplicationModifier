@@ -2,8 +2,8 @@ package org.bread_experts_group.eam.minecraft
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getNativeLocalVariable
-import org.bread_experts_group.eam.minecraft.mimic.MimicLookup
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.mimic.NativeLookup
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeBuilder
@@ -17,7 +17,6 @@ import kotlin.reflect.full.isSubclassOf
 val DEFAULT_VOID: MethodTypeDesc = MethodTypeDesc.of(ConstantDescs.CD_void)
 
 fun CodeBuilder.invokeStaticWithLocalVars(
-	lookup: MimicLookup,
 	method: Method?,
 	localVars: List<LocalVariable>,
 	returnDesc: ClassDesc = ConstantDescs.CD_void
@@ -30,6 +29,7 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	params.forEach { parameter ->
 		val filtered = localVars.filter { it.slot() !in usedSlots }
 		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
+			val lookup = NativeLookup.getLookup(parameter.type.kotlin)
 			val localVariable = lookup.findNativeInLocalVars(parameter, filtered)
 			this.invokeSpecialNewMimic(parameter.classDesc, localVariable.slot())
 			usedSlots.add(localVariable.slot())

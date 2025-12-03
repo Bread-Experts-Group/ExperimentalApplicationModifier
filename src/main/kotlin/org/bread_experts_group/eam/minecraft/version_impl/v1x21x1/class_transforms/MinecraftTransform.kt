@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.postClientInit
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.updateWindowTitle
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.main.GameConfig
@@ -25,13 +25,13 @@ class MinecraftTransform(
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val r = invokeAtMethodReturns(
-			MimicLookup1x21x1,
+			NativeLookupV1x21x1,
 			net_minecraft_client_Minecraft_updateTitle,
 			MethodTypeDesc.of(ConstantDescs.CD_void),
 			::updateWindowTitle.javaMethod!!
 		)
 		val r1 = invokeAtMethodReturns(
-			MimicLookup1x21x1,
+			NativeLookupV1x21x1,
 			ConstantDescs.INIT_NAME,
 			MethodTypeDesc.of(ConstantDescs.CD_void, GameConfig.classDesc),
 			::postClientInit.javaMethod!!

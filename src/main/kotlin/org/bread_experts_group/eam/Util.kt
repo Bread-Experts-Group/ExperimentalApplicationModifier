@@ -9,7 +9,9 @@ import java.lang.constant.ConstantDesc
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 
-fun loadClass(clazz: String): Class<*> = ClassLoader.getSystemClassLoader().loadClass(clazz)
+val SYSTEM_CLASS_LOADER: ClassLoader = ClassLoader.getSystemClassLoader()
+
+fun loadClass(clazz: String): Class<*> = SYSTEM_CLASS_LOADER.loadClass(clazz)
 
 ///**
 // * @return The parameters subclassing [MimickedClass].

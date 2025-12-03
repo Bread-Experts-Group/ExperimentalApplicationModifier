@@ -13,7 +13,6 @@ import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScr
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.screens.Screen
@@ -57,7 +56,6 @@ class MouseHandlerTransform(
 								.atLine(92, codeElement) { builder ->
 									builder
 										.invokeStaticWithLocalVars(
-											MimicLookup1x21x1,
 											::handleMouseButtonPre.javaMethod,
 											localVars,
 											ConstantDescs.CD_boolean
@@ -67,7 +65,7 @@ class MouseHandlerTransform(
 										.labelBinding(label)
 								}
 								.atLine(130, codeElement) { builder ->
-									builder.invokeStaticWithLocalVars(MimicLookup1x21x1, ::handleMouseButtonPost.javaMethod, localVars)
+									builder.invokeStaticWithLocalVars(::handleMouseButtonPost.javaMethod, localVars)
 								}
 								.with(codeElement)
 						}
@@ -83,7 +81,6 @@ class MouseHandlerTransform(
 								.aload(0)
 								.iconst_0()
 								.invokeStaticWithLocalVars(
-									MimicLookup1x21x1,
 									::handleScreenMousePressedPre.javaMethod,
 									localVars,
 									ConstantDescs.CD_boolean
@@ -112,7 +109,6 @@ class MouseHandlerTransform(
 										)
 										.bastore()
 										.invokeStaticWithLocalVars(
-											MimicLookup1x21x1,
 											::handleScreenMousePressedPost.javaMethod,
 											localVars
 										)
@@ -139,7 +135,6 @@ class MouseHandlerTransform(
 								.aload(0)
 								.iconst_0()
 								.invokeStaticWithLocalVars(
-									MimicLookup1x21x1,
 									::handleScreenMouseReleasedPre.javaMethod,
 									localVars,
 									ConstantDescs.CD_boolean
@@ -168,7 +163,6 @@ class MouseHandlerTransform(
 										)
 										.bastore()
 										.invokeStaticWithLocalVars(
-											MimicLookup1x21x1,
 											::handleScreenMouseReleasedPost.javaMethod,
 											localVars
 										)

@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
-import org.bread_experts_group.eam.minecraft.mimic.MimicLookup
+import org.bread_experts_group.eam.minecraft.mimic.NativeLookup
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.pipeline.RenderCall
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.platform.Window
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.systems.RenderSystem
@@ -89,7 +89,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.validation.DirectoryValidator
 import kotlin.reflect.KClass
 
-object MimicLookup1x21x1 : MimicLookup() {
+object NativeLookupV1x21x1 : NativeLookup() {
 	override fun resolveNativeNameFromMimic(mimic: KClass<*>): String = when (mimic) {
 		Component::class -> net_minecraft_network_chat_Component
 		MutableComponent::class -> net_minecraft_network_chat_MutableComponent

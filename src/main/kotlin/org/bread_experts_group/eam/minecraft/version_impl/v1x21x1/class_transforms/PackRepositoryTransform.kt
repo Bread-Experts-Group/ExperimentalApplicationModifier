@@ -4,7 +4,7 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_PackRepository
@@ -53,7 +53,7 @@ class PackRepositoryTransform(
 								)
 							)
 							.putfield(
-								MimicLookup1x21x1.nativeClassDesc(PackRepository::class),
+								NativeLookupV1x21x1.nativeClassDesc(PackRepository::class),
 								"a",
 								ConstantDescs.CD_Set
 							)
@@ -81,7 +81,7 @@ class PackRepositoryTransform(
 				codeBuilder
 					.aload(0)
 					.getfield(
-						MimicLookup1x21x1.nativeClassDesc(PackRepository::class),
+						NativeLookupV1x21x1.nativeClassDesc(PackRepository::class),
 						"a",
 						ConstantDescs.CD_Set
 					)
