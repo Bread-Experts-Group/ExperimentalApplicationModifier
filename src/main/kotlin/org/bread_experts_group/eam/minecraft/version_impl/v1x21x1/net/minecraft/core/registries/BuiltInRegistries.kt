@@ -161,20 +161,17 @@ class BuiltInRegistries(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BuiltInRegistries::class.classDesc
 
-		val BLOCK: DefaultedRegistry<Block>
-			get() = DefaultedRegistry(
-				Block::class.java,
-				clazz.getField("e").get(null)
-			)
-		val ITEM: DefaultedRegistry<Item>
-			get() = DefaultedRegistry(
-				Item::class.java,
-				clazz.getField("g").get(null)
-			)
-		val BLOCK_ENTITY_TYPE: Registry<BlockEntityType>
-			get() = Registry(
-				BlockEntityType::class.java,
-				clazz.getField("j").get(null)
-			)
+		val BLOCK: DefaultedRegistry<Block> = DefaultedRegistry(
+			Block::class.java,
+			clazz.getField("e").get(null)
+		)
+		val ITEM: DefaultedRegistry<Item> = DefaultedRegistry(
+			Item::class.java,
+			clazz.getField("g").get(null)
+		)
+		val BLOCK_ENTITY_TYPE: Registry<BlockEntityType> = Registry(
+			BlockEntityType::class.java,
+			clazz.getField("j").get(null)
+		)
 	}
 }

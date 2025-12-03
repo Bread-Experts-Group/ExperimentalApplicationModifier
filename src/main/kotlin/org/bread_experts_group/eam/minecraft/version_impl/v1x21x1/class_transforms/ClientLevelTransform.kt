@@ -1,7 +1,6 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
 import org.bread_experts_group.eam.minecraft.ClassTransform
-import org.bread_experts_group.eam.minecraft.Test
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundEvent
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.sounds.SoundSource
@@ -39,9 +38,6 @@ class ClientLevelTransform(
 			ACC_PUBLIC
 		)
 
-		classBuilder.integrateMethod(Test::class.java, "perspective")
-		classBuilder.integrateMethod(Test::class.java, "test")
-		classBuilder.integrateMethod(Test::class.java, "mimicTest", generateMimicMethod = true)
 		if (!f.invoke(classBuilder, classElement)) classBuilder.with(classElement)
 	}
 }

@@ -1,5 +1,7 @@
 package org.bread_experts_group.eam.minecraft
 
+import org.bread_experts_group.eam.getLocalVariableInfo
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.MimicLookup1x21x1
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -90,10 +92,13 @@ interface CodeTransformer {
 				classElement.methodType().equalsString(targetMethodType.descriptorString())
 			) {
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
-					if (methodElement is CodeModel) methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						// todo replace with invokeStaticMethodWithLocalVars
-						if (codeElement is ReturnInstruction) codeBuilder.invokeStaticMethodWithMimics(method)
-						codeBuilder.with(codeElement)
+					if (methodElement is CodeModel) {
+						val localVars = methodBuilder.getLocalVariableInfo(methodElement)
+						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+							if (codeElement is ReturnInstruction)
+								codeBuilder.invokeStaticWithLocalVars(MimicLookup1x21x1, method, localVars)
+							codeBuilder.with(codeElement)
+						}
 					}
 				}
 				return@transform true

@@ -7,6 +7,7 @@ import org.bread_experts_group.eam.minecraft.feature.MimickedClass
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.logger
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_datafixers_types_Type
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
@@ -217,7 +218,7 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 		}
 
 		fun build(): BlockEntityType = BlockEntityType(
-			clazz.getMethod("a", loadClass("com.mojang.datafixers.types.Type"))
+			clazz.getMethod("a", loadClass(com_mojang_datafixers_types_Type))
 				.invoke(around, null)
 		)
 	}

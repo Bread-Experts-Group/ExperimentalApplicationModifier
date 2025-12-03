@@ -10,6 +10,8 @@ import java.lang.reflect.Constructor
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.createParentDirectories
+import kotlin.reflect.KClass
+import kotlin.reflect.full.superclasses
 
 abstract class MimickedClass(
 	@JvmField var around: Any
@@ -22,8 +24,8 @@ abstract class MimickedClass(
 	 *
 	 * @return The constructor for the generated class.
 	 */
-	fun implementNative(
-		mimicClass: Class<*>,
+	fun <T> implementNative(
+		mimicClass: Class<T>,
 		builder: (ClassBuilder, String) -> Unit
 	): Constructor<*> {
 		val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
@@ -41,6 +43,17 @@ abstract class MimickedClass(
 
 		return cl.define(name, built).constructors[0]
 	}
+
+	fun hasSuperclass(clazz: KClass<*>): Boolean = clazz in this::class.superclasses
+	fun overrides(
+		methodName: String,
+		returnType: Class<*>? = null,
+		vararg parameterTypes: Class<*>
+	): Boolean = this::class.java.declaredMethods.firstOrNull {
+		it.name == methodName &&
+				(it.parameterTypes.contentEquals(parameterTypes) || parameterTypes.isEmpty()) &&
+				(returnType == null || it.returnType == returnType)
+	} != null
 
 	override fun equals(other: Any?): Boolean = around == other
 	override fun hashCode(): Int = around.hashCode()

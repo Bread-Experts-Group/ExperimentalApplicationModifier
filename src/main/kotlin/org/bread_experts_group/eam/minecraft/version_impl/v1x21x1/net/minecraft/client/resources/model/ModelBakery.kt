@@ -89,7 +89,7 @@ net.minecraft.client.resources.model.ModelBakery$TextureGetter -> gss$c:
  */
 class ModelBakery(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
-		override val clazz: Class<*> = loadClass(net_minecraft_client_resources_model_ModelBakery)
+		override val clazz: Class<*> by lazy { loadClass(net_minecraft_client_resources_model_ModelBakery) }
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = ModelBakery::class.classDesc
 	}

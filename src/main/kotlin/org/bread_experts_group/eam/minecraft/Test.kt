@@ -6,7 +6,16 @@ import org.bread_experts_group.numeric.geometry.Matrix4F
 import org.bread_experts_group.numeric.geometry.Vector4F
 import kotlin.math.tan
 
+/**
+ * ClassBuilder method integration test class.
+ */
 class Test {
+	/*
+		classBuilder.integrateMethod(Test::class.java, "perspective")
+		classBuilder.integrateMethod(Test::class.java, "test")
+		classBuilder.integrateMethod(Test::class.java, "mimicTest", generateMimicMethod = true)
+	 */
+
 	fun test() {
 		println("this is a test...")
 		val isTrue = System.currentTimeMillis() > 30

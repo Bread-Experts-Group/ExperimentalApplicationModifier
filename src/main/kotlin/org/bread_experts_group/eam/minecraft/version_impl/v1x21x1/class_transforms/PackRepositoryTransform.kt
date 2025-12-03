@@ -1,9 +1,11 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.ClassTransform
 import org.bread_experts_group.eam.minecraft.feature.Scanning
-import org.bread_experts_group.eam.minecraft.invokeStaticMethodWithMimics
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.addPackSources
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_PackRepository
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -13,7 +15,6 @@ import java.lang.classfile.CodeModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
-import kotlin.reflect.jvm.javaMethod
 
 class PackRepositoryTransform(
 	scanning: Scanning,
@@ -55,16 +56,12 @@ class PackRepositoryTransform(
 								"a",
 								ClassDesc.of(Set::class.java.name)
 							)
-							.aload(0)
-//								.invokestatic(
-//									ClassDesc.of(V1x21x1Implementations::class.qualifiedName),
-//									"addPackSources",
-//									MethodTypeDesc.of(
-//										ConstantDescs.CD_void,
-//										PackRepository.classDesc
-//									)
-//								)
-							.invokeStaticMethodWithMimics(::addPackSources.javaMethod!!)
+							.invokeSpecialNewMimic(PackRepository::class.classDesc, 0)
+							.invokestatic(
+								V1X21X1MinecraftImplementations::class.classDesc,
+								"addPackSources",
+								MethodTypeDesc.of(ConstantDescs.CD_void, PackRepository::class.classDesc)
+							)
 							.return_()
 					}
 					.with(codeElement)
@@ -75,7 +72,7 @@ class PackRepositoryTransform(
 			"addSources",
 			MethodTypeDesc.of(
 				ConstantDescs.CD_void,
-				ClassDesc.of("java.util.Collection")
+				ConstantDescs.CD_Collection
 			),
 			ACC_PUBLIC
 		) { methodBuilder ->
@@ -85,15 +82,15 @@ class PackRepositoryTransform(
 					.getfield(
 						ClassDesc.of(net_minecraft_server_packs_repository_PackRepository),
 						"a",
-						ClassDesc.of("java.util.Set")
+						ConstantDescs.CD_Set
 					)
 					.aload(1)
 					.invokeinterface(
-						ClassDesc.of("java.util.Set"),
+						ConstantDescs.CD_Set,
 						"addAll",
 						MethodTypeDesc.of(
 							ConstantDescs.CD_boolean,
-							ClassDesc.of("java.util.Collection")
+							ConstantDescs.CD_Collection
 						)
 					)
 					.return_()

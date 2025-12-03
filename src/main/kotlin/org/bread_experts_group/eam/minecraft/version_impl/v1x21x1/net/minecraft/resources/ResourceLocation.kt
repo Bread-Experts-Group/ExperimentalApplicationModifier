@@ -65,5 +65,10 @@ class ResourceLocation(around: Any) : MimickedClass(around) {
 		fun parse(location: String) = ResourceLocation(
 			clazz.getMethod("a", String::class.java).invoke(null, location)
 		)
+
+		fun fromNamespaceAndPath(namespace: String, path: String) = ResourceLocation(
+			clazz.getMethod("a", String::class.java, String::class.java)
+				.invoke(null, namespace, path)
+		)
 	}
 }

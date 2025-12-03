@@ -123,7 +123,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 	// todo built-in pack source that doesn't need to be manually enabled
 	@JvmStatic
-	@Suppress("unused")
 	fun addPackSources(self: PackRepository) {
 		logger.info("[EAM Loader] Adding additional pack sources")
 		val validator = Minecraft.getInstance().directoryValidator()
@@ -144,7 +143,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	@Suppress("unused")
 	fun registerAdditionalModels(self: ModelBakery) {
 		logger.info("[EAM Loader] Registering additional models")
 		val item = "breadmod:item/tool_gun/item"
@@ -156,7 +154,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	@Suppress("unused")
 	fun addLayers(self: Gui) {
 		logger.info("[EAM Loader] Registering drawLayers")
 		val layers = self.layers
@@ -164,7 +161,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	@Suppress("unused")
 	fun renderBEWLR(
 		stack: ItemStack,
 		displayContext: ItemDisplayContext,
@@ -177,7 +173,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	@Suppress("unused")
 	fun afterCreateContents() {
 		mods.forEach {
 			it.addBlocks(this.get(MinecraftFeatures.BLOCK))
@@ -203,7 +198,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	@Suppress("unused")
 	fun postClientInit() {
 		// adding a 7th entry to the top creative tab texture arrays so it won't crash when trying to render the extra tab
 		addToStaticArray(
@@ -228,7 +222,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	@Suppress("unused")
 	fun renderTitleScreen(guiGraphics: GuiGraphics) {
 		val poseStack = guiGraphics.pose()
 		poseStack.pushPose()
@@ -249,7 +242,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		poseStack.popPose()
 	}
 	@JvmStatic
-	@Suppress("unused")
 	fun updateWindowTitle(self: Minecraft) {
 		self.getWindow().setTitle("Minecraft - EAM 1.21.1")
 	}

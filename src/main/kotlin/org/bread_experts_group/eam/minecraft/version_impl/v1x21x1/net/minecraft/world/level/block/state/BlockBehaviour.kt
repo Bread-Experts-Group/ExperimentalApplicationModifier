@@ -182,10 +182,12 @@ abstract class BlockBehaviour(around: Any) : MimickedClass(around) {
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = Properties::class.classDesc
 
+			@JvmStatic
 			fun of(): Properties = Properties(
 				clazz.getMethod("a").invoke(null)
 			)
 
+			@JvmStatic
 			fun ofFullCopy(p: BlockBehaviour): Properties = Properties(
 				clazz.getMethod("a", BlockBehaviour.clazz).invoke(null, p.around)
 			)

@@ -8,15 +8,16 @@ import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftEntityBlock
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
+import org.bread_experts_group.eam.minecraft.putReferenceField
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.EntityBlock
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
+import org.bread_experts_group.eam.minecraft.withReferenceField
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
-import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.full.superclasses
@@ -70,13 +71,14 @@ class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftB
 		) { codeBuilder ->
 			codeBuilder
 				.aload(0)
-				.invokestatic(
+/*				.invokestatic(
 					BlockBehaviour.Properties.classDesc,
 					"a",
 					MethodTypeDesc.of(BlockBehaviour.Properties.classDesc)
 				)
-				// todo figure out why it's throwing no method found later
-				/*.invokestatic(
+ */
+				// todo maybe this'll work now that it's annotated with JvmStatic
+				.invokestatic(
 					BlockBehaviour.Properties.mimicClassDesc,
 					"of",
 					MethodTypeDesc.of(BlockBehaviour.Properties.mimicClassDesc)
@@ -85,7 +87,7 @@ class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftB
 					BlockBehaviour.Properties.mimicClassDesc,
 					"around",
 					ConstantDescs.CD_Object
-				)*/
+				)
 				.checkcast(BlockBehaviour.Properties.classDesc)
 				.invokespecial(
 					Block.classDesc,
@@ -94,17 +96,9 @@ class BlockFeatureTransform(input: MinecraftBlock) : FeatureTransform<MinecraftB
 				)
 				.aload(0)
 				.aload(1)
-				.putfield(
-					ClassDesc.of(name),
-					"reference",
-					MinecraftBlock.mimicClassDesc
-				)
+				.putReferenceField(name, MinecraftBlock.mimicClassDesc)
 				.return_()
 		}
-		classBuilder.withField(
-			"reference",
-			MinecraftBlock.mimicClassDesc,
-			ClassFile.ACC_FINAL or ClassFile.ACC_PRIVATE
-		)
+		classBuilder.withReferenceField(MinecraftBlock.mimicClassDesc)
 	}
 }

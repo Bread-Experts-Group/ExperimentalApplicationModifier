@@ -3,17 +3,20 @@ package org.bread_experts_group.eam.minecraft
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getNativeLocalVariable
 import org.bread_experts_group.eam.minecraft.feature.MimickedClass
+import java.lang.classfile.ClassBuilder
+import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeBuilder
-import java.lang.classfile.constantpool.MethodRefEntry
 import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
-import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
+val DEFAULT_VOID: MethodTypeDesc = MethodTypeDesc.of(ConstantDescs.CD_void)
+
 fun CodeBuilder.invokeStaticWithLocalVars(
+	lookup: MimicLookup,
 	method: Method?,
 	localVars: List<LocalVariable>,
 	returnDesc: ClassDesc = ConstantDescs.CD_void
@@ -26,15 +29,9 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	params.forEach { parameter ->
 		val filtered = localVars.filter { it.slot() !in usedSlots }
 		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
-			val kClass = parameter.type.kotlin
-			val companionInst = kClass.companionObjectInstance!!
-			val desc = companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
-			val native = filtered.getNativeLocalVariable(desc.displayName())
-			this.invokeSpecialNewMimic(
-				parameter.classDesc,
-				native.slot()
-			)
-			usedSlots.add(native.slot())
+			val localVariable = lookup.findNativeInLocalVars(parameter, localVars)
+			this.invokeSpecialNewMimic(parameter.classDesc, localVariable.slot())
+			usedSlots.add(localVariable.slot())
 		} else if (parameter.type.isPrimitive) {
 			when (val c = parameter.type) {
 				Boolean::class.java -> {
@@ -85,60 +82,6 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	return this
 }
 
-fun CodeBuilder.prepareMimicry(method: Method): MethodTypeDesc {
-	var lVarPos = 0
-	return MethodTypeDesc.of(
-		ConstantDescs.CD_void,
-		method.parameters.map {
-			val slot = lVarPos++
-			when (val c = it.type) {
-				Int::class.java -> {
-					this.iload(slot)
-					ConstantDescs.CD_int
-				}
-
-				Boolean::class.java -> {
-					this.iload(slot)
-					ConstantDescs.CD_boolean
-				}
-
-				else if !c.isPrimitive -> {
-					val desc = ClassDesc.of(c.name)
-					if (c.kotlin.isSubclassOf(MimickedClass::class)) this
-						.new_(desc)
-						.dup()
-						.aload(slot)
-						.invokespecial(
-							desc,
-							"<init>",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_void,
-								ConstantDescs.CD_Object
-							)
-						)
-					else this.aload(slot)
-					desc
-				}
-
-				else -> throw IllegalArgumentException("No ClassDesc cnv for $c")
-			}
-		}
-	)
-}
-
-fun CodeBuilder.getMethodMimicry(method: Method): MethodRefEntry = this.constantPool().methodRefEntry(
-	ClassDesc.of(method.declaringClass.name),
-	method.name,
-	this.prepareMimicry(method)
-)
-
-//fun CodeBuilder.invokeVirtualMethodWithMimics(method: Method): CodeBuilder =
-//	this.invokevirtual(this.getMethodMimicry(method))
-
-@Deprecated("replace with invokeStaticWithLocalVars")
-fun CodeBuilder.invokeStaticMethodWithMimics(method: Method): CodeBuilder =
-	this.invokestatic(this.getMethodMimicry(method))
-
 fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuilder =
 	this.aload(0)
 		.getfield(
@@ -146,6 +89,20 @@ fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuild
 			"reference",
 			fieldType
 		)
+
+fun ClassBuilder.withReferenceField(descriptor: ClassDesc): ClassBuilder =
+	this.withField(
+		"reference",
+		descriptor,
+		ClassFile.ACC_FINAL or ClassFile.ACC_PRIVATE
+	)
+
+fun CodeBuilder.putReferenceField(name: String, type: ClassDesc): CodeBuilder =
+	this.putfield(
+		ClassDesc.of(name),
+		"reference",
+		type
+	)
 
 fun CodeBuilder.invokeSpecialNewMimic(
 	classDesc: ClassDesc,
