@@ -44,11 +44,7 @@ class Test {
 		}
 	}
 
-	fun lambdaTest(lambda: () -> Unit) {
-		lambda.invoke()
-	}
-
-	fun lambdaExecuteTest() {
-		lambdaTest { println("test") }
+	fun lambdaTest() {
+		Runnable { println("test") }
 	}
 }

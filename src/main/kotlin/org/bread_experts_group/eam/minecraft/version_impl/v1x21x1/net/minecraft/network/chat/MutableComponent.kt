@@ -38,4 +38,9 @@ class MutableComponent(around: Any) : Component(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = MutableComponent::class.classDesc
 	}
+
+	fun withColor(color: Int): MutableComponent = MutableComponent(
+		clazz.getMethod("b", Int::class.java)
+			.invoke(around, color)
+	)
 }

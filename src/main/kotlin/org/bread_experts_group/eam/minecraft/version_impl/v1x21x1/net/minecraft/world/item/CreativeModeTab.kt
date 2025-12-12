@@ -147,7 +147,7 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 
 		fun displayItems(generator: (ItemDisplayParameters, Output) -> Unit): Builder {
 			clazz.getMethod("a", loadClass($$"cta$b"))
-				.invoke(around, DisplayItemsGenerator.implementNative(generator).around)
+				.invoke(around, DisplayItemsGenerator(generator).around)
 			return Builder(around)
 		}
 
@@ -159,78 +159,76 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 	# {"fileName":"CreativeModeTab.java","id":"sourceFile"}
 	void accept(net.minecraft.world.item.CreativeModeTab$ItemDisplayParameters,net.minecraft.world.item.CreativeModeTab$Output) -> accept
 	 */
-	open class DisplayItemsGenerator : MimickedClass(0) {
+	open class DisplayItemsGenerator(
+		private val generator: (ItemDisplayParameters, Output) -> Unit
+	) : MimickedClass(0) {
 		companion object : ClassInfo {
 			override val clazz: Class<*> = loadClass(net_minecraft_world_item_CreativeModeTab_DisplayItemsGenerator)
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = DisplayItemsGenerator::class.classDesc
-
-			fun implementNative(generator: (ItemDisplayParameters, Output) -> Unit): DisplayItemsGenerator {
-				val itemsGenerator = object : DisplayItemsGenerator() {
-					override fun accept(displayParameters: ItemDisplayParameters, output: Output) =
-						generator.invoke(displayParameters, output)
-				}
-
-				itemsGenerator.around = itemsGenerator.implementNative(DisplayItemsGenerator::class.java) { classBuilder, name ->
-					classBuilder.withInterfaceSymbols(classDesc)
-					classBuilder.withMethodBody(
-						"accept",
-						MethodTypeDesc.of(
-							ConstantDescs.CD_void,
-							ItemDisplayParameters.classDesc,
-							Output.classDesc
-						),
-						ACC_PUBLIC or ACC_FINAL
-					) { codeBuilder ->
-						codeBuilder
-							.getReferenceField(name, mimicClassDesc)
-							.invokeSpecialNewMimic(ItemDisplayParameters.mimicClassDesc, 1)
-							.invokeSpecialNewMimic(Output.mimicClassDesc, 2)
-							.invokevirtual(
-								mimicClassDesc,
-								"accept",
-								MethodTypeDesc.of(
-									ConstantDescs.CD_void,
-									ItemDisplayParameters.mimicClassDesc,
-									Output.mimicClassDesc
-								)
-							)
-							.return_()
-					}
-					classBuilder.withMethodBody(
-						"<init>",
-						MethodTypeDesc.of(
-							ConstantDescs.CD_void, mimicClassDesc
-						),
-						ACC_PUBLIC
-					) { codeBuilder ->
-						codeBuilder
-							.aload(0)
-							.dup()
-							.invokespecial(
-								ConstantDescs.CD_Object,
-								"<init>",
-								DEFAULT_VOID
-							)
-							.aload(1)
-							.putfield(
-								ClassDesc.of(name),
-								"reference",
-								mimicClassDesc
-							)
-							.return_()
-					}
-					classBuilder.withField(
-						"reference",
-						mimicClassDesc,
-						ACC_FINAL or ACC_PRIVATE
-					)
-				}.newInstance(itemsGenerator)
-				return itemsGenerator
-			}
 		}
 
-		open fun accept(displayParameters: ItemDisplayParameters, output: Output) {}
+		init {
+			this.around = createNative(DisplayItemsGenerator::class.java) { classBuilder, name ->
+				classBuilder.withInterfaceSymbols(classDesc)
+				classBuilder.withMethodBody(
+					"accept",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void,
+						ItemDisplayParameters.classDesc,
+						Output.classDesc
+					),
+					ACC_PUBLIC or ACC_FINAL
+				) { codeBuilder ->
+					codeBuilder
+						.getReferenceField(name, mimicClassDesc)
+						.invokeSpecialNewMimic(ItemDisplayParameters.mimicClassDesc, 1)
+						.invokeSpecialNewMimic(Output.mimicClassDesc, 2)
+						.invokevirtual(
+							mimicClassDesc,
+							"accept",
+							MethodTypeDesc.of(
+								ConstantDescs.CD_void,
+								ItemDisplayParameters.mimicClassDesc,
+								Output.mimicClassDesc
+							)
+						)
+						.return_()
+				}
+				classBuilder.withMethodBody(
+					"<init>",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void, mimicClassDesc
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
+					codeBuilder
+						.aload(0)
+						.dup()
+						.invokespecial(
+							ConstantDescs.CD_Object,
+							"<init>",
+							DEFAULT_VOID
+						)
+						.aload(1)
+						.putfield(
+							ClassDesc.of(name),
+							"reference",
+							mimicClassDesc
+						)
+						.return_()
+				}
+				classBuilder.withField(
+					"reference",
+					mimicClassDesc,
+					ACC_FINAL or ACC_PRIVATE
+				)
+			}.newInstance(this)
+		}
+
+		@Suppress("unused")
+		fun accept(displayParameters: ItemDisplayParameters, output: Output): Unit =
+			this.generator(displayParameters, output)
 	}
 
 	/*

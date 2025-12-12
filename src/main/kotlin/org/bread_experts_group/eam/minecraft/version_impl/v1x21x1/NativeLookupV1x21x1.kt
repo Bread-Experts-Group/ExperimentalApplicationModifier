@@ -24,8 +24,13 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.player.AbstractClientPlayer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.player.LocalPlayer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.FogRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.GameRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.ItemBlockRenderTypes
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.LevelRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.LightTexture
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.RenderBuffers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.RenderType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderer
@@ -33,6 +38,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.AbstractTexture
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.TextureManager
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.Tickable
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.ClientPackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.BakedModel
@@ -47,7 +53,9 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.DefaultedRegistry
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Holder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.IdMapper
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Position
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Registry
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.Vec3i
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.Registries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
@@ -64,7 +72,9 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.RepositorySource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.resources.ResourceManager
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.resources.ResourceProvider
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Display
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.LivingEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.player.Player
@@ -87,10 +97,12 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.StateDefinition
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.validation.DirectoryValidator
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.phys.Vec3
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Matrix4f
 import kotlin.reflect.KClass
 
 object NativeLookupV1x21x1 : NativeLookup() {
-	override fun resolveNativeNameFromMimic(mimic: KClass<*>): String = when (mimic) {
+	override fun resolveNativeNameFromClass(clazz: KClass<*>): String = when (clazz) {
 		Component::class -> net_minecraft_network_chat_Component
 		MutableComponent::class -> net_minecraft_network_chat_MutableComponent
 		ResourceLocation::class -> net_minecraft_resources_ResourceLocation
@@ -192,7 +204,20 @@ object NativeLookupV1x21x1 : NativeLookup() {
 		Axis::class -> com_mojang_math_Axis
 		RenderSystem::class -> com_mojang_blaze3d_systems_RenderSystem
 		RenderCall::class -> com_mojang_blaze3d_pipeline_RenderCall
+		TextureManager::class -> net_minecraft_client_renderer_texture_TextureManager
+		Matrix4f::class -> org_joml_Matrix4f
+		RenderBuffers::class -> net_minecraft_client_renderer_RenderBuffers
+		Vec3i::class -> net_minecraft_core_Vec3i
+		Display.BlockDisplay::class -> net_minecraft_world_entity_Display_BlockDisplay
+		FogRenderer::class -> net_minecraft_client_renderer_FogRenderer
+		GameRenderer::class -> net_minecraft_client_renderer_GameRenderer
+		LevelRenderer::class -> net_minecraft_client_renderer_LevelRenderer
+		Vec3::class -> net_minecraft_world_phys_Vec3
+		Position::class -> net_minecraft_core_Position
+		LightTexture::class -> net_minecraft_client_renderer_LightTexture
+		ResourceProvider::class -> net_minecraft_server_packs_resources_ResourceProvider
+		RenderType.CompositeRenderType::class -> net_minecraft_client_renderer_RenderType_CompositeRenderType
 
-		else             -> throw IllegalStateException("Native class name for ${mimic.simpleName} not implemented.")
+		else             -> throw IllegalStateException("Native class name for ${clazz.simpleName} not implemented.")
 	}
 }

@@ -10,13 +10,12 @@ import kotlin.reflect.full.isSubclassOf
 /**
  * Provides a "translation" layer to retrieve native class names from supplied mimic classes.
  * 
- * - Primarily used in edge cases where [org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars]
- * attempts to load a duplicate class definition, causing a LinkageError.
+ * - Should be used in edge cases where class transforms attempt to load a duplicate class definition, causing a LinkageError.
  */
 abstract class NativeLookup {
 	companion object {
-		fun getLookup(clazz: KClass<*>): NativeLookup {
-			val name = clazz.java.packageName
+		fun getLookup(clazz: Class<*>): NativeLookup {
+			val name = clazz.packageName
 
 			return when {
 				name.contains("v1x21x1") -> NativeLookupV1x21x1
@@ -30,14 +29,14 @@ abstract class NativeLookup {
 		val kClass: KClass<*> = mimicParameter.type.kotlin
 		require(kClass.isSubclassOf(MimickedClass::class)) { "Parameter does not subclass MimickedClass!" }
 
-		val nativeClassName: String = this.resolveNativeNameFromMimic(kClass)
+		val nativeClassName: String = this.resolveNativeNameFromClass(kClass)
 
 		return localVars.find {
 			it.typeSymbol().displayName() == nativeClassName
 		} ?: throw NullPointerException("Local variable not found with provided native name.")
 	}
 
-	abstract fun resolveNativeNameFromMimic(mimic: KClass<*>): String
+	abstract fun resolveNativeNameFromClass(clazz: KClass<*>): String
 
-	fun nativeClassDesc(mimic: KClass<*>): ClassDesc = ClassDesc.of(this.resolveNativeNameFromMimic(mimic))
+	fun nativeClassDesc(clazz: KClass<*>): ClassDesc = ClassDesc.of(this.resolveNativeNameFromClass(clazz))
 }

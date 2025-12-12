@@ -11,8 +11,8 @@ import java.lang.classfile.CodeElement
 import java.lang.classfile.CodeModel
 import java.lang.classfile.FieldModel
 import java.lang.classfile.MethodBuilder
-import java.lang.classfile.MethodElement
 import java.lang.classfile.MethodModel
+import java.lang.classfile.MethodTransform
 import java.lang.classfile.instruction.LineNumber
 import java.lang.classfile.instruction.ReturnInstruction
 import java.lang.constant.MethodTypeDesc
@@ -42,7 +42,7 @@ interface CodeTransformer {
 		return Files.readAllBytes(path)
 	}
 
-	fun CodeBuilder.atLine(
+	fun CodeBuilder.atLineNumber(
 		line: Int,
 		codeElement: CodeElement,
 		transform: (CodeBuilder) -> Unit
@@ -51,31 +51,37 @@ interface CodeTransformer {
 		return this
 	}
 
-	// todo injects at every return in the targeted method, find a way to fix this
-	fun CodeBuilder.atReturn(
-		codeElement: CodeElement,
-		transform: (CodeBuilder) -> Unit
-	): CodeBuilder {
-		if (codeElement is ReturnInstruction) transform(this)
-		return this
-	}
-
-	// todo retrofit to return a boolean
-	fun ClassBuilder.modifyMethod(
+	fun ClassBuilder.transformMethod(
 		classElement: ClassElement,
 		methodName: String,
 		typeDesc: MethodTypeDesc? = null,
-		transform: (MethodBuilder, MethodElement) -> Unit
+		transform: MethodTransform
+	) : Boolean = if (
+		classElement is MethodModel &&
+		classElement.methodName().equalsString(methodName) &&
+		(classElement.methodTypeSymbol() == typeDesc || typeDesc == null)
 	) {
-		if (
-			classElement is MethodModel &&
-			classElement.methodName().equalsString(methodName) &&
-			(classElement.methodTypeSymbol() == typeDesc || typeDesc == null)
-		) {
-			this.transformMethod(classElement) { methodBuilder, methodElement ->
-				transform(methodBuilder, methodElement)
-			}
-		} else this.with(classElement)
+		this.transformMethod(classElement, transform)
+		true
+	} else false
+
+	fun ClassBuilder.transformMethodCode(
+		classElement: ClassElement,
+		methodName: String,
+		typeDesc: MethodTypeDesc?,
+		transform: (CodeBuilder, CodeElement, Int) -> Unit
+	) : Boolean = this.transformMethod(classElement, methodName, typeDesc) { methodBuilder, methodElement ->
+		if (methodElement is CodeModel) methodBuilder.transformCodeIndexed(methodElement, transform)
+	}
+	/**
+	 * The index refers to the position of a [CodeElement] in the method being transformed.
+	 */
+	fun MethodBuilder.transformCodeIndexed(model: CodeModel, transform: (CodeBuilder, CodeElement, Int) -> Unit) {
+		var index = 0
+		this.transformCode(model) { c, e ->
+			@Suppress("AssignedValueIsNeverRead")
+			transform(c, e, index++)
+		}
 	}
 
 	fun invokeAtMethodReturns(
@@ -84,6 +90,7 @@ interface CodeTransformer {
 		targetMethodType: MethodTypeDesc,
 		method: Method
 	): (ClassBuilder, ClassElement) -> Boolean {
+		java.lang.Boolean.TYPE
 		if (method.returnType != Void.TYPE) throw IllegalArgumentException(
 			"$method (in injection to returns of $targetMethodName : $targetMethodType) must return void!"
 		)

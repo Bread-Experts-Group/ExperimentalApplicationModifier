@@ -1,0 +1,299 @@
+package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer
+
+import org.bread_experts_group.eam.classDesc
+import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
+import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_GameRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Matrix4f
+import java.lang.constant.ClassDesc
+
+/*
+net.minecraft.client.renderer.GameRenderer -> ges:
+# {"fileName":"GameRenderer.java","id":"sourceFile"}
+    net.minecraft.resources.ResourceLocation NAUSEA_LOCATION -> f
+    net.minecraft.resources.ResourceLocation BLUR_LOCATION -> g
+    int MAX_BLUR_RADIUS -> a
+    org.slf4j.Logger LOGGER -> h
+    boolean DEPTH_BUFFER_DEBUG -> i
+    float PROJECTION_Z_NEAR -> b
+    float GUI_Z_NEAR -> j
+    net.minecraft.client.Minecraft minecraft -> k
+    net.minecraft.server.packs.resources.ResourceManager resourceManager -> l
+    net.minecraft.util.RandomSource random -> m
+    float renderDistance -> n
+    net.minecraft.client.renderer.ItemInHandRenderer itemInHandRenderer -> c
+    net.minecraft.client.gui.MapRenderer mapRenderer -> o
+    net.minecraft.client.renderer.RenderBuffers renderBuffers -> p
+    int confusionAnimationTick -> q
+    float fov -> r
+    float oldFov -> s
+    float darkenWorldAmount -> t
+    float darkenWorldAmountO -> u
+    boolean renderHand -> v
+    boolean renderBlockOutline -> w
+    long lastScreenshotAttempt -> x
+    boolean hasWorldScreenshot -> y
+    long lastActiveTime -> z
+    net.minecraft.client.renderer.LightTexture lightTexture -> A
+    net.minecraft.client.renderer.texture.OverlayTexture overlayTexture -> B
+    boolean panoramicMode -> C
+    float zoom -> D
+    float zoomX -> E
+    float zoomY -> F
+    int ITEM_ACTIVATION_ANIMATION_LENGTH -> d
+    net.minecraft.world.item.ItemStack itemActivationItem -> G
+    int itemActivationTicks -> H
+    float itemActivationOffX -> I
+    float itemActivationOffY -> J
+    net.minecraft.client.renderer.PostChain postEffect -> K
+    net.minecraft.client.renderer.PostChain blurEffect -> L
+    boolean effectActive -> M
+    net.minecraft.client.Camera mainCamera -> N
+    net.minecraft.client.renderer.ShaderInstance blitShader -> e
+    java.util.Map shaders -> O
+    net.minecraft.client.renderer.ShaderInstance positionShader -> P
+    net.minecraft.client.renderer.ShaderInstance positionColorShader -> Q
+    net.minecraft.client.renderer.ShaderInstance positionTexShader -> R
+    net.minecraft.client.renderer.ShaderInstance positionTexColorShader -> S
+    net.minecraft.client.renderer.ShaderInstance particleShader -> T
+    net.minecraft.client.renderer.ShaderInstance positionColorLightmapShader -> U
+    net.minecraft.client.renderer.ShaderInstance positionColorTexLightmapShader -> V
+    net.minecraft.client.renderer.ShaderInstance rendertypeSolidShader -> W
+    net.minecraft.client.renderer.ShaderInstance rendertypeCutoutMippedShader -> X
+    net.minecraft.client.renderer.ShaderInstance rendertypeCutoutShader -> Y
+    net.minecraft.client.renderer.ShaderInstance rendertypeTranslucentShader -> Z
+    net.minecraft.client.renderer.ShaderInstance rendertypeTranslucentMovingBlockShader -> aa
+    net.minecraft.client.renderer.ShaderInstance rendertypeArmorCutoutNoCullShader -> ab
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntitySolidShader -> ac
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityCutoutShader -> ad
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityCutoutNoCullShader -> ae
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityCutoutNoCullZOffsetShader -> af
+    net.minecraft.client.renderer.ShaderInstance rendertypeItemEntityTranslucentCullShader -> ag
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityTranslucentCullShader -> ah
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityTranslucentShader -> ai
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityTranslucentEmissiveShader -> aj
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntitySmoothCutoutShader -> ak
+    net.minecraft.client.renderer.ShaderInstance rendertypeBeaconBeamShader -> al
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityDecalShader -> am
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityNoOutlineShader -> an
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityShadowShader -> ao
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityAlphaShader -> ap
+    net.minecraft.client.renderer.ShaderInstance rendertypeEyesShader -> aq
+    net.minecraft.client.renderer.ShaderInstance rendertypeEnergySwirlShader -> ar
+    net.minecraft.client.renderer.ShaderInstance rendertypeBreezeWindShader -> as
+    net.minecraft.client.renderer.ShaderInstance rendertypeLeashShader -> at
+    net.minecraft.client.renderer.ShaderInstance rendertypeWaterMaskShader -> au
+    net.minecraft.client.renderer.ShaderInstance rendertypeOutlineShader -> av
+    net.minecraft.client.renderer.ShaderInstance rendertypeArmorGlintShader -> aw
+    net.minecraft.client.renderer.ShaderInstance rendertypeArmorEntityGlintShader -> ax
+    net.minecraft.client.renderer.ShaderInstance rendertypeGlintTranslucentShader -> ay
+    net.minecraft.client.renderer.ShaderInstance rendertypeGlintShader -> az
+    net.minecraft.client.renderer.ShaderInstance rendertypeGlintDirectShader -> aA
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityGlintShader -> aB
+    net.minecraft.client.renderer.ShaderInstance rendertypeEntityGlintDirectShader -> aC
+    net.minecraft.client.renderer.ShaderInstance rendertypeTextShader -> aD
+    net.minecraft.client.renderer.ShaderInstance rendertypeTextBackgroundShader -> aE
+    net.minecraft.client.renderer.ShaderInstance rendertypeTextIntensityShader -> aF
+    net.minecraft.client.renderer.ShaderInstance rendertypeTextSeeThroughShader -> aG
+    net.minecraft.client.renderer.ShaderInstance rendertypeTextBackgroundSeeThroughShader -> aH
+    net.minecraft.client.renderer.ShaderInstance rendertypeTextIntensitySeeThroughShader -> aI
+    net.minecraft.client.renderer.ShaderInstance rendertypeLightningShader -> aJ
+    net.minecraft.client.renderer.ShaderInstance rendertypeTripwireShader -> aK
+    net.minecraft.client.renderer.ShaderInstance rendertypeEndPortalShader -> aL
+    net.minecraft.client.renderer.ShaderInstance rendertypeEndGatewayShader -> aM
+    net.minecraft.client.renderer.ShaderInstance rendertypeCloudsShader -> aN
+    net.minecraft.client.renderer.ShaderInstance rendertypeLinesShader -> aO
+    net.minecraft.client.renderer.ShaderInstance rendertypeCrumblingShader -> aP
+    net.minecraft.client.renderer.ShaderInstance rendertypeGuiShader -> aQ
+    net.minecraft.client.renderer.ShaderInstance rendertypeGuiOverlayShader -> aR
+    net.minecraft.client.renderer.ShaderInstance rendertypeGuiTextHighlightShader -> aS
+    net.minecraft.client.renderer.ShaderInstance rendertypeGuiGhostRecipeOverlayShader -> aT
+    104:284:void <init>(net.minecraft.client.Minecraft,net.minecraft.client.renderer.ItemInHandRenderer,net.minecraft.server.packs.resources.ResourceManager,net.minecraft.client.renderer.RenderBuffers) -> <init>
+    288:299:void close() -> close
+    302:303:void setRenderHand(boolean) -> a
+    306:307:void setRenderBlockOutline(boolean) -> b
+    310:311:void setPanoramicMode(boolean) -> c
+    314:314:boolean isPanoramicMode() -> a
+    318:322:void shutdownEffect() -> b
+    325:326:void togglePostEffect() -> c
+    329:341:void checkEntityPostEffect(net.minecraft.world.entity.Entity) -> a
+    344:359:void loadEffect(net.minecraft.resources.ResourceLocation) -> a
+    362:374:void loadBlurEffect(net.minecraft.server.packs.resources.ResourceProvider) -> b
+    377:382:void processBlurEffect(float) -> a
+    396:396:net.minecraft.server.packs.resources.PreparableReloadListener createReloadListener() -> d
+    435:453:void preloadUiShader(net.minecraft.server.packs.resources.ResourceProvider) -> a
+    457:461:net.minecraft.client.renderer.ShaderInstance preloadShader(net.minecraft.server.packs.resources.ResourceProvider,java.lang.String,com.mojang.blaze3d.vertex.VertexFormat) -> a
+    466:547:void reloadShaders(net.minecraft.server.packs.resources.ResourceProvider) -> c
+    550:553:void shutdownShaders() -> at
+    557:560:net.minecraft.client.renderer.ShaderInstance getShader(java.lang.String) -> a
+    564:596:void tick() -> e
+    600:600:net.minecraft.client.renderer.PostChain currentEffect() -> f
+    604:612:void resize(int,int) -> a
+    615:633:void pick(float) -> b
+    637:661:net.minecraft.world.phys.HitResult pick(net.minecraft.world.entity.Entity,double,double,float) -> a
+    666:672:net.minecraft.world.phys.HitResult filterHitResult(net.minecraft.world.phys.HitResult,net.minecraft.world.phys.Vec3,double) -> a
+    676:691:void tickFov() -> au
+    694:714:double getFov(net.minecraft.client.Camera,float,boolean) -> a
+    718:741:void bobHurt(com.mojang.blaze3d.vertex.PoseStack,float) -> a
+    744:755:void bobView(com.mojang.blaze3d.vertex.PoseStack,float) -> b
+    758:765:void renderZoomed(float,float,float) -> a
+    768:800:void renderItemInHand(net.minecraft.client.Camera,float,org.joml.Matrix4f) -> a
+    807:812:org.joml.Matrix4f getProjectionMatrix(double) -> a
+    820:824:float getNightVisionScale(net.minecraft.world.entity.LivingEntity,float) -> a
+    829:953:void render(net.minecraft.client.DeltaTracker,boolean) -> a
+    956:979:void tryTakeScreenshotIfNeeded() -> av
+    982:1007:void takeAutoScreenshot(java.nio.file.Path) -> a
+    1010:1032:boolean shouldRenderBlockOutline() -> aw
+    1036:1117:void renderLevel(net.minecraft.client.DeltaTracker) -> a
+    1120:1124:void resetData() -> h
+    1127:1127:net.minecraft.client.gui.MapRenderer getMapRenderer() -> i
+    1131:1135:void displayItemActivation(net.minecraft.world.item.ItemStack) -> a
+    1138:1164:void renderItemActivationAnimation(net.minecraft.client.gui.GuiGraphics,float) -> a
+    1167:1193:void renderConfusionOverlay(net.minecraft.client.gui.GuiGraphics,float) -> b
+    1196:1196:net.minecraft.client.Minecraft getMinecraft() -> j
+    1200:1200:float getDarkenWorldAmount(float) -> c
+    1204:1204:float getRenderDistance() -> k
+    1208:1208:net.minecraft.client.Camera getMainCamera() -> l
+    1216:1216:net.minecraft.client.renderer.texture.OverlayTexture overlayTexture() -> n
+    1221:1221:net.minecraft.client.renderer.ShaderInstance getPositionShader() -> o
+    1226:1226:net.minecraft.client.renderer.ShaderInstance getPositionColorShader() -> p
+    1231:1231:net.minecraft.client.renderer.ShaderInstance getPositionTexShader() -> q
+    1236:1236:net.minecraft.client.renderer.ShaderInstance getPositionTexColorShader() -> r
+    1241:1241:net.minecraft.client.renderer.ShaderInstance getParticleShader() -> s
+    1246:1246:net.minecraft.client.renderer.ShaderInstance getPositionColorLightmapShader() -> t
+    1251:1251:net.minecraft.client.renderer.ShaderInstance getPositionColorTexLightmapShader() -> u
+    1256:1256:net.minecraft.client.renderer.ShaderInstance getRendertypeSolidShader() -> v
+    1261:1261:net.minecraft.client.renderer.ShaderInstance getRendertypeCutoutMippedShader() -> w
+    1266:1266:net.minecraft.client.renderer.ShaderInstance getRendertypeCutoutShader() -> x
+    1271:1271:net.minecraft.client.renderer.ShaderInstance getRendertypeTranslucentShader() -> y
+    1276:1276:net.minecraft.client.renderer.ShaderInstance getRendertypeTranslucentMovingBlockShader() -> z
+    1281:1281:net.minecraft.client.renderer.ShaderInstance getRendertypeArmorCutoutNoCullShader() -> A
+    1286:1286:net.minecraft.client.renderer.ShaderInstance getRendertypeEntitySolidShader() -> B
+    1291:1291:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityCutoutShader() -> C
+    1296:1296:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityCutoutNoCullShader() -> D
+    1301:1301:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityCutoutNoCullZOffsetShader() -> E
+    1306:1306:net.minecraft.client.renderer.ShaderInstance getRendertypeItemEntityTranslucentCullShader() -> F
+    1311:1311:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityTranslucentCullShader() -> G
+    1316:1316:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityTranslucentShader() -> H
+    1321:1321:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityTranslucentEmissiveShader() -> I
+    1326:1326:net.minecraft.client.renderer.ShaderInstance getRendertypeEntitySmoothCutoutShader() -> J
+    1331:1331:net.minecraft.client.renderer.ShaderInstance getRendertypeBeaconBeamShader() -> K
+    1336:1336:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityDecalShader() -> L
+    1341:1341:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityNoOutlineShader() -> M
+    1346:1346:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityShadowShader() -> N
+    1351:1351:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityAlphaShader() -> O
+    1356:1356:net.minecraft.client.renderer.ShaderInstance getRendertypeEyesShader() -> P
+    1361:1361:net.minecraft.client.renderer.ShaderInstance getRendertypeEnergySwirlShader() -> Q
+    1366:1366:net.minecraft.client.renderer.ShaderInstance getRendertypeBreezeWindShader() -> R
+    1371:1371:net.minecraft.client.renderer.ShaderInstance getRendertypeLeashShader() -> S
+    1376:1376:net.minecraft.client.renderer.ShaderInstance getRendertypeWaterMaskShader() -> T
+    1381:1381:net.minecraft.client.renderer.ShaderInstance getRendertypeOutlineShader() -> U
+    1386:1386:net.minecraft.client.renderer.ShaderInstance getRendertypeArmorGlintShader() -> V
+    1391:1391:net.minecraft.client.renderer.ShaderInstance getRendertypeArmorEntityGlintShader() -> W
+    1396:1396:net.minecraft.client.renderer.ShaderInstance getRendertypeGlintTranslucentShader() -> X
+    1401:1401:net.minecraft.client.renderer.ShaderInstance getRendertypeGlintShader() -> Y
+    1406:1406:net.minecraft.client.renderer.ShaderInstance getRendertypeGlintDirectShader() -> Z
+    1411:1411:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityGlintShader() -> aa
+    1416:1416:net.minecraft.client.renderer.ShaderInstance getRendertypeEntityGlintDirectShader() -> ab
+    1421:1421:net.minecraft.client.renderer.ShaderInstance getRendertypeTextShader() -> ac
+    1426:1426:net.minecraft.client.renderer.ShaderInstance getRendertypeTextBackgroundShader() -> ad
+    1431:1431:net.minecraft.client.renderer.ShaderInstance getRendertypeTextIntensityShader() -> ae
+    1436:1436:net.minecraft.client.renderer.ShaderInstance getRendertypeTextSeeThroughShader() -> af
+    1441:1441:net.minecraft.client.renderer.ShaderInstance getRendertypeTextBackgroundSeeThroughShader() -> ag
+    1446:1446:net.minecraft.client.renderer.ShaderInstance getRendertypeTextIntensitySeeThroughShader() -> ah
+    1451:1451:net.minecraft.client.renderer.ShaderInstance getRendertypeLightningShader() -> ai
+    1456:1456:net.minecraft.client.renderer.ShaderInstance getRendertypeTripwireShader() -> aj
+    1461:1461:net.minecraft.client.renderer.ShaderInstance getRendertypeEndPortalShader() -> ak
+    1466:1466:net.minecraft.client.renderer.ShaderInstance getRendertypeEndGatewayShader() -> al
+    1471:1471:net.minecraft.client.renderer.ShaderInstance getRendertypeCloudsShader() -> am
+    1476:1476:net.minecraft.client.renderer.ShaderInstance getRendertypeLinesShader() -> an
+    1481:1481:net.minecraft.client.renderer.ShaderInstance getRendertypeCrumblingShader() -> ao
+    1486:1486:net.minecraft.client.renderer.ShaderInstance getRendertypeGuiShader() -> ap
+    1491:1491:net.minecraft.client.renderer.ShaderInstance getRendertypeGuiOverlayShader() -> aq
+    1496:1496:net.minecraft.client.renderer.ShaderInstance getRendertypeGuiTextHighlightShader() -> ar
+    1501:1501:net.minecraft.client.renderer.ShaderInstance getRendertypeGuiGhostRecipeOverlayShader() -> as
+    1161:1161:void lambda$renderItemActivationAnimation$65(com.mojang.blaze3d.vertex.PoseStack,net.minecraft.client.gui.GuiGraphics) -> a
+    985:1005:void lambda$takeAutoScreenshot$64(com.mojang.blaze3d.platform.NativeImage,java.nio.file.Path) -> a
+    972:978:void lambda$tryTakeScreenshotIfNeeded$63(java.nio.file.Path) -> b
+    933:933:java.lang.String lambda$render$62() -> ax
+    920:920:java.lang.String lambda$render$61() -> ay
+    919:919:java.lang.String lambda$render$60(int,int) -> b
+    918:918:java.lang.String lambda$render$59() -> az
+    907:907:java.lang.String lambda$render$58() -> aA
+    656:656:boolean lambda$pick$57(net.minecraft.world.entity.Entity) -> b
+    543:546:void lambda$reloadShaders$56(com.mojang.datafixers.util.Pair) -> a
+    536:536:void lambda$reloadShaders$55(com.mojang.datafixers.util.Pair) -> b
+    533:533:void lambda$reloadShaders$54(net.minecraft.client.renderer.ShaderInstance) -> a
+    532:532:void lambda$reloadShaders$53(net.minecraft.client.renderer.ShaderInstance) -> b
+    531:531:void lambda$reloadShaders$52(net.minecraft.client.renderer.ShaderInstance) -> c
+    530:530:void lambda$reloadShaders$51(net.minecraft.client.renderer.ShaderInstance) -> d
+    529:529:void lambda$reloadShaders$50(net.minecraft.client.renderer.ShaderInstance) -> e
+    528:528:void lambda$reloadShaders$49(net.minecraft.client.renderer.ShaderInstance) -> f
+    527:527:void lambda$reloadShaders$48(net.minecraft.client.renderer.ShaderInstance) -> g
+    526:526:void lambda$reloadShaders$47(net.minecraft.client.renderer.ShaderInstance) -> h
+    525:525:void lambda$reloadShaders$46(net.minecraft.client.renderer.ShaderInstance) -> i
+    524:524:void lambda$reloadShaders$45(net.minecraft.client.renderer.ShaderInstance) -> j
+    523:523:void lambda$reloadShaders$44(net.minecraft.client.renderer.ShaderInstance) -> k
+    522:522:void lambda$reloadShaders$43(net.minecraft.client.renderer.ShaderInstance) -> l
+    521:521:void lambda$reloadShaders$42(net.minecraft.client.renderer.ShaderInstance) -> m
+    520:520:void lambda$reloadShaders$41(net.minecraft.client.renderer.ShaderInstance) -> n
+    519:519:void lambda$reloadShaders$40(net.minecraft.client.renderer.ShaderInstance) -> o
+    518:518:void lambda$reloadShaders$39(net.minecraft.client.renderer.ShaderInstance) -> p
+    517:517:void lambda$reloadShaders$38(net.minecraft.client.renderer.ShaderInstance) -> q
+    516:516:void lambda$reloadShaders$37(net.minecraft.client.renderer.ShaderInstance) -> r
+    515:515:void lambda$reloadShaders$36(net.minecraft.client.renderer.ShaderInstance) -> s
+    514:514:void lambda$reloadShaders$35(net.minecraft.client.renderer.ShaderInstance) -> t
+    513:513:void lambda$reloadShaders$34(net.minecraft.client.renderer.ShaderInstance) -> u
+    512:512:void lambda$reloadShaders$33(net.minecraft.client.renderer.ShaderInstance) -> v
+    511:511:void lambda$reloadShaders$32(net.minecraft.client.renderer.ShaderInstance) -> w
+    510:510:void lambda$reloadShaders$31(net.minecraft.client.renderer.ShaderInstance) -> x
+    509:509:void lambda$reloadShaders$30(net.minecraft.client.renderer.ShaderInstance) -> y
+    508:508:void lambda$reloadShaders$29(net.minecraft.client.renderer.ShaderInstance) -> z
+    507:507:void lambda$reloadShaders$28(net.minecraft.client.renderer.ShaderInstance) -> A
+    506:506:void lambda$reloadShaders$27(net.minecraft.client.renderer.ShaderInstance) -> B
+    505:505:void lambda$reloadShaders$26(net.minecraft.client.renderer.ShaderInstance) -> C
+    504:504:void lambda$reloadShaders$25(net.minecraft.client.renderer.ShaderInstance) -> D
+    503:503:void lambda$reloadShaders$24(net.minecraft.client.renderer.ShaderInstance) -> E
+    502:502:void lambda$reloadShaders$23(net.minecraft.client.renderer.ShaderInstance) -> F
+    501:501:void lambda$reloadShaders$22(net.minecraft.client.renderer.ShaderInstance) -> G
+    500:500:void lambda$reloadShaders$21(net.minecraft.client.renderer.ShaderInstance) -> H
+    499:499:void lambda$reloadShaders$20(net.minecraft.client.renderer.ShaderInstance) -> I
+    498:498:void lambda$reloadShaders$19(net.minecraft.client.renderer.ShaderInstance) -> J
+    497:497:void lambda$reloadShaders$18(net.minecraft.client.renderer.ShaderInstance) -> K
+    496:496:void lambda$reloadShaders$17(net.minecraft.client.renderer.ShaderInstance) -> L
+    495:495:void lambda$reloadShaders$16(net.minecraft.client.renderer.ShaderInstance) -> M
+    494:494:void lambda$reloadShaders$15(net.minecraft.client.renderer.ShaderInstance) -> N
+    493:493:void lambda$reloadShaders$14(net.minecraft.client.renderer.ShaderInstance) -> O
+    492:492:void lambda$reloadShaders$13(net.minecraft.client.renderer.ShaderInstance) -> P
+    491:491:void lambda$reloadShaders$12(net.minecraft.client.renderer.ShaderInstance) -> Q
+    490:490:void lambda$reloadShaders$11(net.minecraft.client.renderer.ShaderInstance) -> R
+    489:489:void lambda$reloadShaders$10(net.minecraft.client.renderer.ShaderInstance) -> S
+    488:488:void lambda$reloadShaders$9(net.minecraft.client.renderer.ShaderInstance) -> T
+    487:487:void lambda$reloadShaders$8(net.minecraft.client.renderer.ShaderInstance) -> U
+    486:486:void lambda$reloadShaders$7(net.minecraft.client.renderer.ShaderInstance) -> V
+    484:484:void lambda$reloadShaders$6(net.minecraft.client.renderer.ShaderInstance) -> W
+    483:483:void lambda$reloadShaders$5(net.minecraft.client.renderer.ShaderInstance) -> X
+    482:482:void lambda$reloadShaders$4(net.minecraft.client.renderer.ShaderInstance) -> Y
+    481:481:void lambda$reloadShaders$3(net.minecraft.client.renderer.ShaderInstance) -> Z
+    480:480:void lambda$reloadShaders$2(net.minecraft.client.renderer.ShaderInstance) -> aa
+    479:479:void lambda$reloadShaders$1(net.minecraft.client.renderer.ShaderInstance) -> ab
+    478:478:void lambda$reloadShaders$0(net.minecraft.client.renderer.ShaderInstance) -> ac
+    90:94:void <clinit>() -> <clinit>
+ */
+class GameRenderer(around: Any) : MimickedClass(around) {
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_GameRenderer)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = GameRenderer::class.classDesc
+	}
+
+	fun getDepthFar(): Float = clazz.getMethod("g").invoke(around) as Float
+
+	fun resetProjectionMatrix(matrix4f: Matrix4f) {
+		clazz.getMethod("a", Matrix4f.clazz)
+			.invoke(around, matrix4f.around)
+	}
+
+	fun lightTexture(): LightTexture = LightTexture(clazz.getMethod("m").invoke(around))
+}

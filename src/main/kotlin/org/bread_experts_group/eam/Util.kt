@@ -9,7 +9,7 @@ import java.lang.constant.ConstantDesc
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 
-val SYSTEM_CLASS_LOADER: ClassLoader = ClassLoader.getSystemClassLoader()
+private val SYSTEM_CLASS_LOADER: ClassLoader = ClassLoader.getSystemClassLoader()
 
 fun loadClass(clazz: String): Class<*> = SYSTEM_CLASS_LOADER.loadClass(clazz)
 

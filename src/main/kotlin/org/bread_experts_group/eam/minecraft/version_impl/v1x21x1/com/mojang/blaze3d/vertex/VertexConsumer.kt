@@ -9,16 +9,6 @@ import java.lang.constant.ClassDesc
 
 /*
 com.mojang.blaze3d.vertex.VertexConsumer -> fbm:
-# {"fileName":"VertexConsumer.java","id":"sourceFile"}
-    com.mojang.blaze3d.vertex.VertexConsumer addVertex(float,float,float) -> a
-    com.mojang.blaze3d.vertex.VertexConsumer setColor(int,int,int,int) -> a
-    com.mojang.blaze3d.vertex.VertexConsumer setUv(float,float) -> a
-    com.mojang.blaze3d.vertex.VertexConsumer setUv1(int,int) -> a
-    com.mojang.blaze3d.vertex.VertexConsumer setUv2(int,int) -> b
-    com.mojang.blaze3d.vertex.VertexConsumer setNormal(float,float,float) -> b
-    28:34:void addVertex(float,float,float,int,float,float,int,int,float,float,float) -> a
-    37:37:com.mojang.blaze3d.vertex.VertexConsumer setColor(float,float,float,float) -> a
-    41:41:com.mojang.blaze3d.vertex.VertexConsumer setColor(int) -> a
     45:45:com.mojang.blaze3d.vertex.VertexConsumer setWhiteAlpha(int) -> d
     49:49:com.mojang.blaze3d.vertex.VertexConsumer setLight(int) -> c
     53:53:com.mojang.blaze3d.vertex.VertexConsumer setOverlay(int) -> b
@@ -36,4 +26,77 @@ class VertexConsumer(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = VertexConsumer::class.classDesc
 	}
+
+	fun addVertex(x: Float, y: Float, z: Float): VertexConsumer = VertexConsumer(
+		clazz.getMethod("a", Float::class.java, Float::class.java, Float::class.java)
+			.invoke(around, x, y, z)
+	)
+
+	fun setColor(red: Int, green: Int, blue: Int, alpha: Int): VertexConsumer = VertexConsumer(
+		clazz.getMethod("a", Int::class.java, Int::class.java, Int::class.java, Int::class.java)
+			.invoke(around, red, green, blue, alpha)
+	)
+
+	fun setUv(u: Float, v: Float): VertexConsumer = VertexConsumer(
+		clazz.getMethod("a", Float::class.java, Float::class.java)
+			.invoke(around, u, v)
+	)
+
+	fun setUv1(u: Int, v: Int): VertexConsumer = VertexConsumer(
+		clazz.getMethod("a", Int::class.java, Int::class.java)
+			.invoke(around, u, v)
+	)
+
+	fun setUv2(u: Int, v: Int): VertexConsumer = VertexConsumer(
+		clazz.getMethod("b", Int::class.java, Int::class.java)
+			.invoke(around, u, v)
+	)
+
+	fun setNormal(normalX: Float, normalY: Float, normalZ: Float): VertexConsumer = VertexConsumer(
+		clazz.getMethod("b", Float::class.java, Float::class.java, Float::class.java)
+			.invoke(around, normalX, normalY, normalZ)
+	)
+
+	fun addVertex(
+		x: Float,
+		y: Float,
+		z: Float,
+		color: Int,
+		u: Float,
+		v: Float,
+		packedOverlay: Int,
+		packedLight: Int,
+		normalX: Float,
+		normalY: Float,
+		normalZ: Float
+	) {
+		clazz.getMethod("a",
+			Float::class.java,
+			Float::class.java,
+			Float::class.java,
+			Int::class.java,
+			Float::class.java,
+			Float::class.java,
+			Int::class.java,
+			Int::class.java,
+			Float::class.java,
+			Float::class.java,
+			Float::class.java
+		).invoke(around, x, y, z, color, u, v, packedOverlay, packedLight, normalX, normalY, normalZ)
+	}
+
+	fun setColor(red: Float, green: Float, blue: Float, alpha: Float): VertexConsumer = VertexConsumer(
+		clazz.getMethod("a", Float::class.java, Float::class.java, Float::class.java, Float::class.java)
+			.invoke(around, red, green, blue, alpha)
+	)
+
+	fun setColor(color: Int): VertexConsumer = VertexConsumer(
+		clazz.getMethod("a", Int::class.java)
+			.invoke(around, color)
+	)
+
+	fun setLight(packedLight: Int): VertexConsumer = VertexConsumer(
+		clazz.getMethod("c", Int::class.java)
+			.invoke(around, packedLight)
+	)
 }

@@ -6,6 +6,7 @@ import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_blaze3d_vertex_PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_blaze3d_vertex_PoseStack_Pose
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Matrix4f
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Quaternionf
 import java.lang.constant.ClassDesc
 
@@ -60,10 +61,11 @@ class PoseStack(around: Any) : MimickedClass(around) {
 			.invoke(around, rotation,around, x, y, z)
 	}
 
+	fun last(): Pose = Pose(clazz.getMethod("c").invoke(around))
+
 	/*
 	com.mojang.blaze3d.vertex.PoseStack$Pose -> fbi$a:
 	# {"fileName":"PoseStack.java","id":"sourceFile"}
-    org.joml.Matrix4f pose -> a
     org.joml.Matrix3f normal -> b
     boolean trustedNormals -> c
     97:102:void <init>(org.joml.Matrix4f,org.joml.Matrix3f) -> <init>
@@ -82,6 +84,6 @@ class PoseStack(around: Any) : MimickedClass(around) {
 			override val mimicClassDesc: ClassDesc = Pose::class.classDesc
 		}
 
-
+		fun pose(): Matrix4f = Matrix4f(clazz.getMethod("a").invoke(around))
 	}
 }

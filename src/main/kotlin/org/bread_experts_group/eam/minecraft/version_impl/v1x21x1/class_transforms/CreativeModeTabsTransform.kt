@@ -23,14 +23,14 @@ class CreativeModeTabsTransform(
 	scanning, classFile
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
-		classBuilder.modifyMethod(
+		classBuilder.transformMethod(
 			classElement,
 			"a",
 			MethodTypeDesc.of(CreativeModeTab.classDesc, Registry.classDesc)
 		) { methodBuilder, methodElement ->
 			if (methodElement is CodeModel) {
 				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-					codeBuilder.atLine(68, codeElement) { builder ->
+					codeBuilder.atLineNumber(68, codeElement) { builder ->
 						builder
 							.new_(Registry.mimicClassDesc)
 							.dup()
@@ -54,6 +54,6 @@ class CreativeModeTabsTransform(
 					.with(codeElement)
 				}
 			}
-		}
+		}.let { if (!it) classBuilder.with(classElement) }
 	}
 }

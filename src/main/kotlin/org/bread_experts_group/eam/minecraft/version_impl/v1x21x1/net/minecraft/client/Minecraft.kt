@@ -4,14 +4,20 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.pipeline.MainTarget
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.platform.Window
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Font
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.model.geom.EntityModelSet
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.multiplayer.ClientLevel
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.player.LocalPlayer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.GameRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.LevelRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.RenderBuffers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.entity.ItemRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.TextureManager
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelManager
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.validation.DirectoryValidator
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_Minecraft
 import java.lang.constant.ClassDesc
@@ -22,7 +28,6 @@ net.minecraft.client.Minecraft -> fgo:
 # {"fileName":"Minecraft.java","id":"sourceFile"}
     net.minecraft.client.Minecraft instance -> E
     org.slf4j.Logger LOGGER -> F
-    boolean ON_OSX -> a
     int MAX_TICKS_PER_UPDATE -> G
     net.minecraft.resources.ResourceLocation DEFAULT_FONT -> b
     net.minecraft.resources.ResourceLocation UNIFORM_FONT -> c
@@ -40,13 +45,11 @@ net.minecraft.client.Minecraft -> fgo:
     com.mojang.blaze3d.platform.Window window -> Q // PRIVATE METHOD
     net.minecraft.client.DeltaTracker$Timer timer -> R
     net.minecraft.client.renderer.RenderBuffers renderBuffers -> S
-    net.minecraft.client.renderer.LevelRenderer levelRenderer -> f
     net.minecraft.client.renderer.entity.EntityRenderDispatcher entityRenderDispatcher -> T
     net.minecraft.client.renderer.entity.ItemRenderer itemRenderer -> U
     net.minecraft.client.particle.ParticleEngine particleEngine -> g
     net.minecraft.client.User user -> V
     net.minecraft.client.gui.Font fontFilterFishy -> i
-    net.minecraft.client.renderer.GameRenderer gameRenderer -> j
     net.minecraft.client.renderer.debug.DebugRenderer debugRenderer -> k
     java.util.concurrent.atomic.AtomicReference progressListener -> W
     net.minecraft.client.gui.Gui gui -> l
@@ -165,7 +168,6 @@ net.minecraft.client.Minecraft -> fgo:
     864:907:void run() -> f
     910:911:void updateFontOptions() -> g
     914:916:void onFullscreenError(int,long) -> a
-    919:919:com.mojang.blaze3d.pipeline.RenderTarget getMainRenderTarget() -> h
     923:923:java.lang.String getLaunchedVersion() -> i
     927:927:java.lang.String getVersionType() -> j
     931:932:void delayCrash(net.minecraft.CrashReport) -> a
@@ -281,7 +283,6 @@ net.minecraft.client.Minecraft -> fgo:
     2749:2749:net.minecraft.client.renderer.entity.EntityRenderDispatcher getEntityRenderDispatcher() -> ap
     2753:2753:net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher getBlockEntityRenderDispatcher() -> aq
     2761:2761:com.mojang.datafixers.DataFixer getFixerUpper() -> as
-    2765:2765:net.minecraft.client.DeltaTracker getTimer() -> at
     2769:2769:net.minecraft.client.color.block.BlockColors getBlockColors() -> au
     2773:2773:boolean showOnlyReducedInfo() -> av
     2777:2777:net.minecraft.client.gui.components.toasts.ToastComponent getToasts() -> aw
@@ -301,7 +302,6 @@ net.minecraft.client.Minecraft -> fgo:
     2956:2956:net.minecraft.client.gui.screens.Overlay getOverlay() -> aK
     2960:2960:net.minecraft.client.gui.screens.social.PlayerSocialManager getPlayerSocialManager() -> aL
     2968:2968:net.minecraft.client.gui.components.DebugScreenOverlay getDebugOverlay() -> aN
-    2972:2972:net.minecraft.client.renderer.RenderBuffers renderBuffers() -> aO
     2976:2977:void updateMaxMipLevel(int) -> b
     2980:2980:net.minecraft.client.model.geom.EntityModelSet getEntityModels() -> aP
     2984:2984:boolean isTextFilteringEnabled() -> aQ
@@ -381,6 +381,9 @@ class Minecraft(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = ClassDesc.of(net_minecraft_client_Minecraft)
 		override val mimicClassDesc: ClassDesc = Minecraft::class.classDesc
 
+		val ON_OSX: Boolean
+			get() = clazz.getField("a").getBoolean(null)
+
 		fun getInstance(): Minecraft = Minecraft(clazz.getMethod("Q").invoke(null))
 	}
 
@@ -388,16 +391,16 @@ class Minecraft(around: Any) : MimickedClass(around) {
 		get() = Font(clazz.getField("h").get(around))
 
 	val level: ClientLevel?
-		get() {
-			val level = clazz.getField("r").get(around) ?: return null
-			return ClientLevel(level)
-		}
+		get() = clazz.getField("r").get(around)?.let { ClientLevel(it) }
 
 	val player: LocalPlayer?
-		get() {
-			val player = clazz.getField("s").get(around) ?: return null
-			return LocalPlayer(player)
-		}
+		get() = clazz.getField("s").get(around)?.let { LocalPlayer(it) }
+
+	val gameRenderer: GameRenderer
+		get() = GameRenderer(clazz.getField("j").get(around))
+
+	val levelRenderer: LevelRenderer
+		get() = LevelRenderer(clazz.getField("f").get(around))
 
 	fun getBlockEntityRenderDispatcher(): BlockEntityRenderDispatcher =
 		BlockEntityRenderDispatcher(clazz.getMethod("aq").invoke(around))
@@ -416,4 +419,17 @@ class Minecraft(around: Any) : MimickedClass(around) {
 
 	fun getItemRenderer(): ItemRenderer =
 		ItemRenderer(clazz.getMethod("ar").invoke(around))
+
+	fun getTextureManager(): TextureManager =
+		TextureManager(clazz.getMethod("aa").invoke(around))
+
+	fun renderBuffers(): RenderBuffers = RenderBuffers(clazz.getMethod("aO").invoke(around))
+
+	fun getMainRenderTarget(): MainTarget = MainTarget(
+		clazz.getMethod("h").invoke(around)
+	)
+
+	fun getTimer(): DeltaTracker = DeltaTracker(clazz.getMethod("at").invoke(around))
+
+	fun getCameraEntity(): Entity = Entity(clazz.getMethod("an").invoke(around))
 }

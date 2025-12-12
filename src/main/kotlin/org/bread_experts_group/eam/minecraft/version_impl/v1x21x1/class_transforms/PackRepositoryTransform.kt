@@ -26,10 +26,10 @@ class PackRepositoryTransform(
 	scanning, classFile
 ) {
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
-		classBuilder.modifyMethod(classElement, ConstantDescs.INIT_NAME) { methodBuilder, methodElement ->
+		classBuilder.transformMethod(classElement, ConstantDescs.INIT_NAME) { methodBuilder, methodElement ->
 			if (methodElement is CodeModel) {
 				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-					codeBuilder.atLine(27, codeElement) { builder ->
+					codeBuilder.atLineNumber(27, codeElement) { builder ->
 						builder
 							.aload(0)
 							.new_(ClassDesc.of(LinkedHashSet::class.java.name))
@@ -68,7 +68,7 @@ class PackRepositoryTransform(
 					.with(codeElement)
 				}
 			}
-		}
+		}.let { if (!it) classBuilder.with(classElement) }
 		classBuilder.addMethod(
 			"addSources",
 			MethodTypeDesc.of(

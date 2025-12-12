@@ -1157,8 +1157,7 @@ class Blocks(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Blocks::class.classDesc
 
-		val HAY_BLOCK: Block
-			get() = Block(clazz.getField("ij").get(null))
+		val HAY_BLOCK: Block = Block(clazz.getField("ij").get(null))
 
 		fun register(id: String, block: Block): Block = Block(
 			clazz

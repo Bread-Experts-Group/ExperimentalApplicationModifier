@@ -4,6 +4,7 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.DEFAULT_VOID
 import org.bread_experts_group.eam.minecraft.getReferenceField
+import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.putReferenceField
@@ -33,16 +34,17 @@ net.minecraft.client.renderer.texture.AbstractTexture -> gpw:
     68:69:void lambda$bind$1() -> d
     50:54:void lambda$releaseId$0() -> e
  */
-abstract class AbstractTexture(around: Any) : MimickedClass(around) {
+abstract class AbstractTexture : MimickedClass(0) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_texture_AbstractTexture)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = AbstractTexture::class.classDesc
+		}
 
-		fun <T : AbstractTexture> implementNative(input: T): T {
-			input.around = input.implementNative(AbstractTexture::class.java) { classBuilder, name ->
+		init {
+			this.around = createNative(AbstractTexture::class.java) { classBuilder, name ->
 				classBuilder.withSuperclass(classDesc)
-				if (input.hasSuperclass(Tickable::class)) {
+				if (this.hasSuperclass(Tickable::class)) {
 					classBuilder.withInterfaceSymbols(Tickable.classDesc)
 					classBuilder.withMethodBody(
 						Tickable.tick,
@@ -69,6 +71,7 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 				) { codeBuilder ->
 					codeBuilder
 						.getReferenceField(name, mimicClassDesc)
+						.invokeSpecialNewMimic(ResourceManager.mimicClassDesc, 1)
 						.invokevirtual(
 							mimicClassDesc,
 							"load",
@@ -79,7 +82,7 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 						)
 						.return_()
 				}
-				if (input.overrides("close")) {
+				if (this.overrides("close")) {
 					classBuilder.withMethodBody(
 						"close",
 						DEFAULT_VOID,
@@ -95,7 +98,7 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 							.return_()
 					}
 				}
-				if (input.overrides("releaseId")) {
+				if (this.overrides("releaseId")) {
 					classBuilder.withMethodBody(
 						"b",
 						DEFAULT_VOID,
@@ -111,10 +114,10 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 							.return_()
 					}
 				}
-				if (input.overrides("bind")) {
+				if (this.overrides("bind")) {
 					throw NotImplementedError("bind override not implemented yet.")
 				}
-				if (input.overrides("getId")) {
+				if (this.overrides("getId")) {
 					classBuilder.withMethodBody(
 						"a",
 						MethodTypeDesc.of(ConstantDescs.CD_int),
@@ -131,7 +134,7 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 					}
 				}
 				classBuilder.withMethodBody(
-					"<init>",
+					ConstantDescs.INIT_NAME,
 					MethodTypeDesc.of(ConstantDescs.CD_void, mimicClassDesc),
 					ACC_PUBLIC
 				) { codeBuilder ->
@@ -139,7 +142,7 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 						.aload(0)
 						.invokespecial(
 							classDesc,
-							"<init>",
+							ConstantDescs.INIT_NAME,
 							DEFAULT_VOID
 						)
 						.aload(0)
@@ -148,19 +151,15 @@ abstract class AbstractTexture(around: Any) : MimickedClass(around) {
 						.return_()
 				}
 				classBuilder.withReferenceField(mimicClassDesc)
-			}.newInstance(input)
-			return input
-		}
-	}
-
-	protected var id: Int
-		get() = clazz.getField("b").get(around) as Int
-		set(value) {
-			clazz.getField("b").set(around, value)
+			}.newInstance(this)
 		}
 
-	// todo declaration clash...
-//	open fun getId(): Int = clazz.getMethod("a").invoke(around) as Int
+	// Can't annotate with JvmField to remove the getter/setter population because there's no backing field
+	protected var textureId: Int
+		get() = clazz.getField("b").getInt(around)
+		set(value) = clazz.getField("b").setInt(around, value)
+
+	open fun getId(): Int = clazz.getMethod("a").invoke(around) as Int
 
 	open fun releaseId() {
 		clazz.getMethod("b").invoke(around)

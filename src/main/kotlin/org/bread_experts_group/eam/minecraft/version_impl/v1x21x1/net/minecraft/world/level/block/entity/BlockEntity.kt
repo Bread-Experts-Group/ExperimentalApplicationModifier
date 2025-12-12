@@ -5,6 +5,7 @@ import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.Level
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntity
 import java.lang.classfile.ClassFile.ACC_PUBLIC
@@ -45,7 +46,6 @@ net.minecraft.world.level.block.entity.BlockEntity -> dqh:
     175:201:net.minecraft.world.level.block.entity.BlockEntity loadStatic(net.minecraft.core.BlockPos,net.minecraft.world.level.block.state.BlockState,net.minecraft.nbt.CompoundTag,net.minecraft.core.HolderLookup$Provider) -> a
     208:211:void setChanged() -> e
     214:219:void setChanged(net.minecraft.world.level.Level,net.minecraft.core.BlockPos,net.minecraft.world.level.block.state.BlockState) -> a
-    222:222:net.minecraft.core.BlockPos getBlockPos() -> aD_
     226:226:net.minecraft.world.level.block.state.BlockState getBlockState() -> n
     231:231:net.minecraft.network.protocol.Packet getUpdatePacket() -> az_
     235:235:net.minecraft.nbt.CompoundTag getUpdateTag(net.minecraft.core.HolderLookup$Provider) -> a
@@ -76,47 +76,60 @@ net.minecraft.world.level.block.entity.BlockEntity -> dqh:
     89:89:void lambda$loadWithComponents$0(java.lang.String) -> c
     36:36:void <clinit>() -> <clinit>
  */
-abstract class BlockEntity(val type: BlockEntityType, around: Any) : MimickedClass(around) {
+open class BlockEntity(type: BlockEntityType, pos: BlockPos, state: BlockState, initAround: Boolean = true) : MimickedClass(0) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_entity_BlockEntity)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockEntity::class.classDesc
+	}
 
-		@JvmStatic
-		fun <T : BlockEntity> implementNative(pos: BlockPos, state: BlockState, blockEntity: T): T {
-			blockEntity.around = blockEntity.implementNative(BlockEntity::class.java) { classBuilder, _ ->
-				classBuilder.withSuperclass(classDesc)
-				classBuilder.withMethodBody(
-					"<init>",
-					MethodTypeDesc.of(
-						ConstantDescs.CD_void,
-						BlockEntityType.classDesc,
-						BlockPos.classDesc,
-						BlockState.classDesc
-					),
-					ACC_PUBLIC
-				) { codeBuilder ->
-					codeBuilder
-						.aload(0)
-						.aload(1)
-						.aload(2)
-						.aload(3)
-						.invokespecial(
-							classDesc,
-							"<init>",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_void,
-								BlockEntityType.classDesc,
-								BlockPos.classDesc,
-								BlockState.classDesc
-							)
+	constructor(around: Any) : this(BlockEntityType(0), BlockPos(0), BlockState(0), false) {
+		this.around = around
+	}
+
+	init {
+		if (initAround) this.around = createNative(BlockEntity::class.java) { classBuilder, _ ->
+			classBuilder.withSuperclass(classDesc)
+			classBuilder.withMethodBody(
+				"<init>",
+				MethodTypeDesc.of(
+					ConstantDescs.CD_void,
+					BlockEntityType.classDesc,
+					BlockPos.classDesc,
+					BlockState.classDesc
+				),
+				ACC_PUBLIC
+			) { codeBuilder ->
+				codeBuilder
+					.aload(0)
+					.aload(1)
+					.aload(2)
+					.aload(3)
+					.invokespecial(
+						classDesc,
+						"<init>",
+						MethodTypeDesc.of(
+							ConstantDescs.CD_void,
+							BlockEntityType.classDesc,
+							BlockPos.classDesc,
+							BlockState.classDesc
 						)
-						.return_()
-				}
+					)
+					.return_()
+			}
 
-			}.newInstance(blockEntity.type.around, pos.around, state.around)
-			return blockEntity
+		}.newInstance(type.around, pos.around, state.around)
+	}
+
+	fun getLevel(): Level? = clazz.getMethod("i").invoke(around)?.let { Level(it) }
+
+	private var pos: BlockPos? = null
+	fun getBlockPos(): BlockPos {
+		if (pos == null) {
+			pos = BlockPos(clazz.getMethod("aD_").invoke(around))
+			return pos!!
 		}
+		return pos!!
 	}
 
 //	constructor(type: BlockEntityType<*>, pos: BlockPos, state: BlockState) : this(

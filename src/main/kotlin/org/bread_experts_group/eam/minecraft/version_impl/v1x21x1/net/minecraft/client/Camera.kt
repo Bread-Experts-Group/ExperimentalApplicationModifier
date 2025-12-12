@@ -4,7 +4,10 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.phys.Vec3
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_Camera
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Quaternionf
 import java.lang.constant.ClassDesc
 
 /*
@@ -15,7 +18,6 @@ import java.lang.constant.ClassDesc
     org.joml.Vector3f LEFT -> e
     boolean initialized -> f
     net.minecraft.world.level.BlockGetter level -> g
-    net.minecraft.world.entity.Entity entity -> h
     net.minecraft.world.phys.Vec3 position -> i
     net.minecraft.core.BlockPos$MutableBlockPos blockPosition -> j
     org.joml.Vector3f forwards -> k
@@ -37,12 +39,9 @@ import java.lang.constant.ClassDesc
     104:116:void setRotation(float,float) -> a
     119:120:void setPosition(double,double,double) -> a
     123:125:void setPosition(net.minecraft.world.phys.Vec3) -> a
-    128:128:net.minecraft.world.phys.Vec3 getPosition() -> b
     132:132:net.minecraft.core.BlockPos getBlockPosition() -> c
     136:136:float getXRot() -> d
     140:140:float getYRot() -> e
-    144:144:org.joml.Quaternionf rotation() -> f
-    148:148:net.minecraft.world.entity.Entity getEntity() -> g
     152:152:boolean isInitialized() -> h
     156:156:boolean isDetached() -> i
     160:169:net.minecraft.client.Camera$NearPlane getNearPlane() -> j
@@ -63,6 +62,14 @@ class Camera(around: Any) : MimickedClass(around) {
 
 	constructor() : this(clazz.getConstructor().newInstance())
 
+	var entity: Entity?
+		get() = clazz.getField("h").get(around)?.let { Entity(it) }
+		set(value) {
+			val field = clazz.getField("h")
+			if (value != null) field.set(around, value.around)
+			else field.set(around, null)
+		}
+
 	fun setPosition(x: Double, y: Double, z: Double) {
 		clazz.getMethod("a", Double::class.java, Double::class.java, Double::class.java)
 			.invoke(around, x, y, z)
@@ -72,4 +79,13 @@ class Camera(around: Any) : MimickedClass(around) {
 		clazz.getMethod("a", Float::class.java, Float::class.java)
 			.invoke(around, yRot, xRot)
 	}
+
+	fun rotation(): Quaternionf = Quaternionf(clazz.getMethod("f").invoke(around))
+	fun getPosition(): Vec3 = Vec3(clazz.getMethod("b").invoke(around))
+	fun isDetached(): Boolean = clazz.getMethod("i").invoke(around) as Boolean
+
+	// declaration clash, but it shouldn't be an issue since the entity field is transformed to be public
+//	fun getEntity(): Entity = Entity(
+//		clazz.getMethod("g").invoke(around)
+//	)
 }

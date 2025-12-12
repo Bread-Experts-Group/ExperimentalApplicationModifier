@@ -8,9 +8,11 @@ import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContent
+import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient.TEST_RENDERER
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntityRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.AbstractTextureTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
@@ -19,20 +21,27 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfor
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GameRendererTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GuiTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ItemRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.LevelRendererTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MinecraftTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ModelBakeryTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MouseHandlerTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.PackRepositoryTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.RenderStateShardTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.RenderTypeTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TextureManagerTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.DefaultVertexFormat
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.datafixers.util.Pair
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Gui
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.LayeredDraw
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.MultiBufferSource
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.ShaderInstance
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelBakery
@@ -45,11 +54,11 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.FolderRepositorySource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackSource
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.resources.ResourceProvider
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.Builder
 import org.bread_experts_group.logging.ColoredHandler
@@ -57,6 +66,7 @@ import java.awt.Color
 import java.net.URI
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
+import java.util.function.Consumer
 import java.util.logging.Logger
 
 @Suppress("unused")
@@ -90,6 +100,21 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		BlockEntityRenderersTransform(scanning, classFile).startTransform()
 		BlockEntityTypeTransform(scanning, classFile).startTransform()
 		BlockEntitySupplierTransform(scanning, classFile).startTransform()
+		TextureManagerTransform(scanning, classFile).startTransform()
+		AbstractTextureTransform(scanning, classFile).startTransform()
+		GameRendererTransform(scanning, classFile).startTransform()
+		RenderTypeTransform(scanning, classFile).startTransform()
+		RenderStateShardTransform(scanning, classFile).startTransform()
+		LevelRendererTransform(scanning, classFile).startTransform()
+
+		// todo a way to implement natives directly into mimics in the future?
+		scanning["org.bread_experts_group.eam.minecraft.test_mods.breadmod.camera.CameraTexture"] = { _, _, _, data ->
+			val model = classFile.parse(data)
+			classFile.transformClass(model) { classBuilder, classElement ->
+				println(classElement)
+				classBuilder.with(classElement)
+			}
+		}
 
 		this.mods.forEach { it.registerEvents() }
 	}
@@ -183,9 +208,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 			BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			"breadmod:test_entity",
 			Builder.of(
-				BlockEntitySupplier.implementNative { pos, state ->
-					BlockEntity.implementNative(pos, state, TestBlockEntity(0))
-				},
+				BlockEntitySupplier(::TestBlockEntity),
 				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
 			).build()
 		)
@@ -214,11 +237,27 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 		BlockEntityRenderers.register(
 			BMContent.TEST_ENTITY_TYPE,
-			BlockEntityRendererProvider.implementNative { context ->
-				BlockEntityRenderer.implementNative(TestBlockEntityRenderer(context), TestBlockEntity::class.java)
-			}
+			BlockEntityRendererProvider(::TestBlockEntityRenderer)
 		)
 	}
+
+	// todo shaders are currently hard-coded to the minecraft namespace, make patch reflecting neoforge's change later
+	@JvmStatic
+	fun registerShaders(resourceProvider: ResourceProvider, shaderList: MutableList<Any>) {
+		println("loading shader instances")
+		shaderList.add(
+			makeShaderPair(
+				ShaderInstance(
+					resourceProvider,
+					"position_tex_color_no_cutout",
+					DefaultVertexFormat.POSITION_TEX_COLOR
+				)
+			) { BMContentClient.TEST_SHADER_INSTANCE = it }
+		)
+	}
+
+	private fun makeShaderPair(shaderInstance: ShaderInstance, onLoaded: (ShaderInstance) -> Unit): Any =
+		Pair(shaderInstance.around, Consumer<Any> { onLoaded(ShaderInstance(it)) }).around
 
 	@JvmStatic
 	fun renderTitleScreen(guiGraphics: GuiGraphics) {

@@ -4,7 +4,12 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.VertexFormat
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_RenderType
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_RenderType_CompositeRenderType
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_RenderType_CompositeState
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_RenderType_CompositeState_CompositeStateBuilder
 import java.lang.constant.ClassDesc
 
 /*
@@ -117,7 +122,6 @@ net.minecraft.client.renderer.RenderType -> gfh:
     507:507:net.minecraft.client.renderer.RenderType entityGlint() -> m
     521:521:net.minecraft.client.renderer.RenderType entityGlintDirect() -> n
     536:536:net.minecraft.client.renderer.RenderType crumbling(net.minecraft.resources.ResourceLocation) -> s
-    549:549:net.minecraft.client.renderer.RenderType text(net.minecraft.resources.ResourceLocation) -> t
     561:561:net.minecraft.client.renderer.RenderType textBackground() -> o
     574:574:net.minecraft.client.renderer.RenderType textIntensity(net.minecraft.resources.ResourceLocation) -> u
     588:588:net.minecraft.client.renderer.RenderType textPolygonOffset(net.minecraft.resources.ResourceLocation) -> v
@@ -147,8 +151,6 @@ net.minecraft.client.renderer.RenderType -> gfh:
     854:854:net.minecraft.client.renderer.RenderType guiTextHighlight() -> G
     865:865:net.minecraft.client.renderer.RenderType guiGhostRecipeOverlay() -> H
     877:883:void <init>(java.lang.String,com.mojang.blaze3d.vertex.VertexFormat,com.mojang.blaze3d.vertex.VertexFormat$Mode,int,boolean,boolean,java.lang.Runnable,java.lang.Runnable) -> <init>
-    886:886:net.minecraft.client.renderer.RenderType$CompositeRenderType create(java.lang.String,com.mojang.blaze3d.vertex.VertexFormat,com.mojang.blaze3d.vertex.VertexFormat$Mode,int,net.minecraft.client.renderer.RenderType$CompositeState) -> a
-    890:890:net.minecraft.client.renderer.RenderType$CompositeRenderType create(java.lang.String,com.mojang.blaze3d.vertex.VertexFormat,com.mojang.blaze3d.vertex.VertexFormat$Mode,int,boolean,boolean,net.minecraft.client.renderer.RenderType$CompositeState) -> a
     894:897:void draw(com.mojang.blaze3d.vertex.MeshData) -> a
     901:901:java.lang.String toString() -> toString
     905:905:java.util.List chunkBufferLayers() -> I
@@ -186,11 +188,15 @@ net.minecraft.client.renderer.RenderType -> gfh:
     108:108:net.minecraft.client.renderer.RenderType lambda$static$0(net.minecraft.resources.ResourceLocation) -> P
     46:868:void <clinit>() -> <clinit>
  */
-class RenderType(around: Any) : MimickedClass(around) {
+open class RenderType(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_RenderType)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = RenderType::class.classDesc
+
+		const val BIG_BUFFER_SIZE: Int = 4194304
+		const val SMALL_BUFFER_SIZE: Int = 786432
+		const val TRANSIENT_BUFFER_SIZE: Int = 1536
 
 		fun solid(): RenderType = RenderType(
 			clazz.getMethod("c").invoke(null)
@@ -198,5 +204,182 @@ class RenderType(around: Any) : MimickedClass(around) {
 		fun translucent(): RenderType = RenderType(
 			clazz.getMethod("f").invoke(null)
 		)
+		fun text(location: ResourceLocation): RenderType = RenderType(
+			clazz.getMethod("t", ResourceLocation.clazz)
+				.invoke(null, location.around)
+		)
+
+/*
+		create(java.lang.String,com.mojang.blaze3d.vertex.VertexFormat,com.mojang.blaze3d.vertex.VertexFormat$Mode,int,net.minecraft.client.renderer.RenderType$CompositeState) -> a
+        create(java.lang.String,com.mojang.blaze3d.vertex.VertexFormat,com.mojang.blaze3d.vertex.VertexFormat$Mode,int,boolean,boolean,net.minecraft.client.renderer.RenderType$CompositeState) -> a
+*/
+
+		fun create(
+			name: String,
+			vertexFormat: VertexFormat,
+			mode: VertexFormat.Mode,
+			bufferSize: Int,
+			state: CompositeState
+		): CompositeRenderType = CompositeRenderType(
+			clazz.getMethod(
+				"a",
+				String::class.java,
+				VertexFormat.clazz,
+				VertexFormat.Mode.clazz,
+				Int::class.java,
+				CompositeState.clazz
+			).invoke(null, name, vertexFormat.around, mode.around, bufferSize, state.around)
+		)
+
+		fun create(
+			name: String,
+			vertexFormat: VertexFormat,
+			mode: VertexFormat.Mode,
+			bufferSize: Int,
+			affectsCrumbling: Boolean,
+			sortOnUpload: Boolean,
+			state: CompositeState
+		): CompositeRenderType = CompositeRenderType(
+			clazz.getMethod(
+				"a",
+				String::class.java,
+				VertexFormat.clazz,
+				VertexFormat.Mode.clazz,
+				Int::class.java,
+				Boolean::class.java,
+				Boolean::class.java,
+				CompositeState.clazz
+			).invoke(null, name, vertexFormat.around, mode.around, bufferSize, affectsCrumbling, sortOnUpload, state.around)
+		)
+	}
+
+	/*
+	net.minecraft.client.renderer.RenderType$CompositeRenderType -> gfh$a:
+# {"fileName":"RenderType.java","id":"sourceFile"}
+    java.util.function.BiFunction OUTLINE -> aV
+    net.minecraft.client.renderer.RenderType$CompositeState state -> aW
+    java.util.Optional outline -> aX
+    boolean isOutline -> aY
+    1109:1113:void <init>(java.lang.String,com.mojang.blaze3d.vertex.VertexFormat,com.mojang.blaze3d.vertex.VertexFormat$Mode,int,boolean,boolean,net.minecraft.client.renderer.RenderType$CompositeState) -> <init>
+    1117:1117:java.util.Optional outline() -> M
+    1122:1122:boolean isOutline() -> N
+    1126:1126:net.minecraft.client.renderer.RenderType$CompositeState state() -> R
+    1131:1131:java.lang.String toString() -> toString
+    1111:1111:net.minecraft.client.renderer.RenderType lambda$new$3(net.minecraft.client.renderer.RenderType$CompositeState,net.minecraft.resources.ResourceLocation) -> a
+    1109:1109:void lambda$new$2(net.minecraft.client.renderer.RenderType$CompositeState) -> a
+    1109:1109:void lambda$new$1(net.minecraft.client.renderer.RenderType$CompositeState) -> b
+    1095:1101:net.minecraft.client.renderer.RenderType lambda$static$0(net.minecraft.resources.ResourceLocation,net.minecraft.client.renderer.RenderStateShard$CullStateShard) -> a
+    1094:1094:void <clinit>() -> <clinit>
+	 */
+	class CompositeRenderType(around: Any) : RenderType(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_RenderType_CompositeRenderType)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = CompositeRenderType::class.classDesc
+		}
+	}
+
+	/*
+	net.minecraft.client.renderer.RenderType$CompositeState -> gfh$b:
+# {"fileName":"RenderType.java","id":"sourceFile"}
+    net.minecraft.client.renderer.RenderStateShard$EmptyTextureStateShard textureState -> a
+    net.minecraft.client.renderer.RenderStateShard$ShaderStateShard shaderState -> b
+    net.minecraft.client.renderer.RenderStateShard$TransparencyStateShard transparencyState -> c
+    net.minecraft.client.renderer.RenderStateShard$DepthTestStateShard depthTestState -> d
+    net.minecraft.client.renderer.RenderStateShard$CullStateShard cullState -> e
+    net.minecraft.client.renderer.RenderStateShard$LightmapStateShard lightmapState -> f
+    net.minecraft.client.renderer.RenderStateShard$OverlayStateShard overlayState -> g
+    net.minecraft.client.renderer.RenderStateShard$LayeringStateShard layeringState -> h
+    net.minecraft.client.renderer.RenderStateShard$OutputStateShard outputState -> i
+    net.minecraft.client.renderer.RenderStateShard$TexturingStateShard texturingState -> j
+    net.minecraft.client.renderer.RenderStateShard$WriteMaskStateShard writeMaskState -> k
+    net.minecraft.client.renderer.RenderStateShard$LineStateShard lineState -> l
+    net.minecraft.client.renderer.RenderStateShard$ColorLogicStateShard colorLogicState -> m
+    net.minecraft.client.renderer.RenderType$OutlineProperty outlineProperty -> n
+    com.google.common.collect.ImmutableList states -> o
+    958:989:void <init>(net.minecraft.client.renderer.RenderStateShard$EmptyTextureStateShard,net.minecraft.client.renderer.RenderStateShard$ShaderStateShard,net.minecraft.client.renderer.RenderStateShard$TransparencyStateShard,net.minecraft.client.renderer.RenderStateShard$DepthTestStateShard,net.minecraft.client.renderer.RenderStateShard$CullStateShard,net.minecraft.client.renderer.RenderStateShard$LightmapStateShard,net.minecraft.client.renderer.RenderStateShard$OverlayStateShard,net.minecraft.client.renderer.RenderStateShard$LayeringStateShard,net.minecraft.client.renderer.RenderStateShard$OutputStateShard,net.minecraft.client.renderer.RenderStateShard$TexturingStateShard,net.minecraft.client.renderer.RenderStateShard$WriteMaskStateShard,net.minecraft.client.renderer.RenderStateShard$LineStateShard,net.minecraft.client.renderer.RenderStateShard$ColorLogicStateShard,net.minecraft.client.renderer.RenderType$OutlineProperty) -> <init>
+    993:993:java.lang.String toString() -> toString
+    997:997:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder builder() -> a
+	 */
+	class CompositeState(around: Any) : MimickedClass(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_RenderType_CompositeState)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc = CompositeState::class.classDesc
+
+			fun builder(): CompositeStateBuilder = CompositeStateBuilder(
+				clazz.getMethod("a").invoke(null)
+			)
+		}
+
+		/*
+		net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder -> gfh$b$a:
+    net.minecraft.client.renderer.RenderStateShard$EmptyTextureStateShard textureState -> a
+    net.minecraft.client.renderer.RenderStateShard$ShaderStateShard shaderState -> b
+    net.minecraft.client.renderer.RenderStateShard$TransparencyStateShard transparencyState -> c
+    net.minecraft.client.renderer.RenderStateShard$DepthTestStateShard depthTestState -> d
+    net.minecraft.client.renderer.RenderStateShard$CullStateShard cullState -> e
+    net.minecraft.client.renderer.RenderStateShard$LightmapStateShard lightmapState -> f
+    net.minecraft.client.renderer.RenderStateShard$OverlayStateShard overlayState -> g
+    net.minecraft.client.renderer.RenderStateShard$LayeringStateShard layeringState -> h
+    net.minecraft.client.renderer.RenderStateShard$OutputStateShard outputState -> i
+    net.minecraft.client.renderer.RenderStateShard$TexturingStateShard texturingState -> j
+    net.minecraft.client.renderer.RenderStateShard$WriteMaskStateShard writeMaskState -> k
+    net.minecraft.client.renderer.RenderStateShard$LineStateShard lineState -> l
+    net.minecraft.client.renderer.RenderStateShard$ColorLogicStateShard colorLogicState -> m
+    1001:1016:void <init>() -> <init>
+    1019:1020:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setTextureState(net.minecraft.client.renderer.RenderStateShard$EmptyTextureStateShard) -> a
+    1024:1025:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setShaderState(net.minecraft.client.renderer.RenderStateShard$ShaderStateShard) -> a
+    1029:1030:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setTransparencyState(net.minecraft.client.renderer.RenderStateShard$TransparencyStateShard) -> a
+    1034:1035:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setDepthTestState(net.minecraft.client.renderer.RenderStateShard$DepthTestStateShard) -> a
+    1039:1040:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setCullState(net.minecraft.client.renderer.RenderStateShard$CullStateShard) -> a
+    1044:1045:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setLightmapState(net.minecraft.client.renderer.RenderStateShard$LightmapStateShard) -> a
+    1049:1050:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setOverlayState(net.minecraft.client.renderer.RenderStateShard$OverlayStateShard) -> a
+    1054:1055:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setLayeringState(net.minecraft.client.renderer.RenderStateShard$LayeringStateShard) -> a
+    1059:1060:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setOutputState(net.minecraft.client.renderer.RenderStateShard$OutputStateShard) -> a
+    1064:1065:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setTexturingState(net.minecraft.client.renderer.RenderStateShard$TexturingStateShard) -> a
+    1069:1070:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setWriteMaskState(net.minecraft.client.renderer.RenderStateShard$WriteMaskStateShard) -> a
+    1074:1075:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setLineState(net.minecraft.client.renderer.RenderStateShard$LineStateShard) -> a
+    1079:1080:net.minecraft.client.renderer.RenderType$CompositeState$CompositeStateBuilder setColorLogicState(net.minecraft.client.renderer.RenderStateShard$ColorLogicStateShard) -> a
+    1084:1084:net.minecraft.client.renderer.RenderType$CompositeState createCompositeState(boolean) -> a
+    1088:1088:net.minecraft.client.renderer.RenderType$CompositeState createCompositeState(net.minecraft.client.renderer.RenderType$OutlineProperty) -> a
+		 */
+		class CompositeStateBuilder(around: Any) : MimickedClass(around) {
+			companion object : ClassInfo {
+				override val clazz: Class<*> =
+					loadClass(net_minecraft_client_renderer_RenderType_CompositeState_CompositeStateBuilder)
+				override val classDesc: ClassDesc = clazz.classDesc
+				override val mimicClassDesc: ClassDesc = CompositeStateBuilder::class.classDesc
+			}
+
+			fun setShaderState(shaderStateShard: RenderStateShard.ShaderStateShard): CompositeStateBuilder =
+				CompositeStateBuilder(
+					clazz.getMethod("a", RenderStateShard.ShaderStateShard.clazz)
+					.invoke(around, shaderStateShard.around)
+				)
+
+			fun setTransparencyState(transparencyStateShard: RenderStateShard.TransparencyStateShard): CompositeStateBuilder =
+				CompositeStateBuilder(
+					clazz.getMethod("a", RenderStateShard.TransparencyStateShard.clazz)
+						.invoke(around, transparencyStateShard.around)
+				)
+
+			fun setCullState(cullStateShard: RenderStateShard.CullStateShard): CompositeStateBuilder =
+				CompositeStateBuilder(
+					clazz.getMethod("a", RenderStateShard.CullStateShard.clazz)
+						.invoke(around, cullStateShard.around)
+				)
+
+			fun setTexturingState(texturingStateShard: RenderStateShard.TexturingStateShard): CompositeStateBuilder =
+				CompositeStateBuilder(
+					clazz.getMethod("a", RenderStateShard.TexturingStateShard.clazz)
+						.invoke(around, texturingStateShard.around)
+				)
+
+			fun createCompositeState(outline: Boolean): CompositeState = CompositeState(
+				clazz.getMethod("a", Boolean::class.java)
+					.invoke(around, outline)
+			)
+		}
 	}
 }

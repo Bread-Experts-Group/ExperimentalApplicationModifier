@@ -22,7 +22,7 @@ fun interface RenderCall {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = RenderCall::class.classDesc
 
-		fun native(renderCall: RenderCall): Any {
+		fun createNative(renderCall: RenderCall): Any {
 			val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
 			val cl = DefiningClassLoader()
 			val name = "EAM_NativeMimic_${RenderCall::class.java.simpleName}"

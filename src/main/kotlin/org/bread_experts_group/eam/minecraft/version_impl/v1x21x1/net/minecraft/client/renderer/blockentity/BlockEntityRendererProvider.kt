@@ -22,80 +22,77 @@ net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider -> gha:
 # {"fileName":"BlockEntityRendererProvider.java","id":"sourceFile"}
     net.minecraft.client.renderer.blockentity.BlockEntityRenderer create(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider$Context) -> create
  */
-abstract class BlockEntityRendererProvider<T : BlockEntity>(around: Any) : MimickedClass(around) {
+class BlockEntityRendererProvider<T : BlockEntity>(
+	private val rendererProvider: (Context) -> BlockEntityRenderer<T>
+) : MimickedClass(0) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_client_renderer_blockentity_BlockEntityRendererProvider)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockEntityRendererProvider::class.classDesc
-
-		fun <T : BlockEntity> implementNative(rendererProvider: (Context) -> BlockEntityRenderer<T>): BlockEntityRendererProvider<T> {
-			val provider = object : BlockEntityRendererProvider<T>(0) {
-				override fun create(context: Context): BlockEntityRenderer<T> = rendererProvider(context)
-			}
-
-			provider.around =  provider.implementNative(BlockEntityRendererProvider::class.java) { classBuilder, name ->
-				classBuilder.withInterfaceSymbols(classDesc)
-				classBuilder.withMethodBody(
-					"create",
-					MethodTypeDesc.of(
-						BlockEntityRenderer.classDesc,
-						Context.classDesc
-					),
-					ACC_PUBLIC
-				) { codeBuilder ->
-					codeBuilder
-						.getReferenceField(name, mimicClassDesc)
-						.invokeSpecialNewMimic(Context.mimicClassDesc, 1)
-						.invokevirtual(
-							mimicClassDesc,
-							"create",
-							MethodTypeDesc.of(
-								BlockEntityRenderer.mimicClassDesc,
-								Context.mimicClassDesc
-							)
-						)
-						.getfield(
-							BlockEntityRenderer.mimicClassDesc,
-							"around",
-							ConstantDescs.CD_Object
-						)
-						.checkcast(BlockEntityRenderer.classDesc)
-						.areturn()
-				}
-				classBuilder.withMethodBody(
-					"<init>",
-					MethodTypeDesc.of(
-						ConstantDescs.CD_void, mimicClassDesc
-					),
-					ACC_PUBLIC
-				) { codeBuilder ->
-					codeBuilder
-						.aload(0)
-						.dup()
-						.invokespecial(
-							ConstantDescs.CD_Object,
-							"<init>",
-							MethodTypeDesc.of(ConstantDescs.CD_void)
-						)
-						.aload(1)
-						.putfield(
-							ClassDesc.of(name),
-							"reference",
-							mimicClassDesc
-						)
-						.return_()
-				}
-				classBuilder.withField(
-					"reference",
-					mimicClassDesc,
-					ACC_FINAL or ACC_PRIVATE
-				)
-			}.newInstance(provider)
-			return provider
-		}
 	}
 
-	abstract fun create(context: Context): BlockEntityRenderer<T>
+	init {
+		this.around = createNative(BlockEntityRendererProvider::class.java) { classBuilder, name ->
+			classBuilder.withInterfaceSymbols(classDesc)
+			classBuilder.withMethodBody(
+				"create",
+				MethodTypeDesc.of(
+					BlockEntityRenderer.classDesc,
+					Context.classDesc
+				),
+				ACC_PUBLIC
+			) { codeBuilder ->
+				codeBuilder
+					.getReferenceField(name, mimicClassDesc)
+					.invokeSpecialNewMimic(Context.mimicClassDesc, 1)
+					.invokevirtual(
+						mimicClassDesc,
+						"create",
+						MethodTypeDesc.of(
+							BlockEntityRenderer.mimicClassDesc,
+							Context.mimicClassDesc
+						)
+					)
+					.getfield(
+						BlockEntityRenderer.mimicClassDesc,
+						"around",
+						ConstantDescs.CD_Object
+					)
+					.checkcast(BlockEntityRenderer.classDesc)
+					.areturn()
+			}
+			classBuilder.withMethodBody(
+				"<init>",
+				MethodTypeDesc.of(
+					ConstantDescs.CD_void, mimicClassDesc
+				),
+				ACC_PUBLIC
+			) { codeBuilder ->
+				codeBuilder
+					.aload(0)
+					.dup()
+					.invokespecial(
+						ConstantDescs.CD_Object,
+						"<init>",
+						MethodTypeDesc.of(ConstantDescs.CD_void)
+					)
+					.aload(1)
+					.putfield(
+						ClassDesc.of(name),
+						"reference",
+						mimicClassDesc
+					)
+					.return_()
+			}
+			classBuilder.withField(
+				"reference",
+				mimicClassDesc,
+				ACC_FINAL or ACC_PRIVATE
+			)
+		}.newInstance(this)
+	}
+
+	fun create(context: Context): BlockEntityRenderer<T> = this.rendererProvider(context)
 	/*
 	net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider$Context -> gha$a:
 # {"fileName":"BlockEntityRendererProvider.java","id":"sourceFile"}

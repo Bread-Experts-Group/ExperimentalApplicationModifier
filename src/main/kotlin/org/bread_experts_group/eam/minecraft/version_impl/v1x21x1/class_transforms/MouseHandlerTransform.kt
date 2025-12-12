@@ -37,7 +37,6 @@ class MouseHandlerTransform(
 	"MouseHandler",
 	scanning, classFile
 ) {
-	private var onScrollCounter = 0
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		when (classElement) {
 			is MethodModel if classElement.methodName().equalsString("a") && classElement.methodTypeSymbol() == MethodTypeDesc.of(
@@ -53,7 +52,7 @@ class MouseHandlerTransform(
 						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
 							val label = codeBuilder.newLabel()
 							codeBuilder
-								.atLine(92, codeElement) { builder ->
+								.atLineNumber(92, codeElement) { builder ->
 									builder
 										.invokeStaticWithLocalVars(
 											::handleMouseButtonPre.javaMethod,
@@ -64,7 +63,7 @@ class MouseHandlerTransform(
 										.return_()
 										.labelBinding(label)
 								}
-								.atLine(130, codeElement) { builder ->
+								.atLineNumber(130, codeElement) { builder ->
 									builder.invokeStaticWithLocalVars(::handleMouseButtonPost.javaMethod, localVars)
 								}
 								.with(codeElement)
@@ -181,10 +180,10 @@ class MouseHandlerTransform(
 			)                                                                                                           -> { // onScroll
 				classBuilder.transformMethod(classElement) { methodBuilder, methodElement ->
 					if (methodElement is CodeModel) {
-						methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
+						methodBuilder.transformCodeIndexed(methodElement) { codeBuilder, codeElement, index ->
 							val label = codeBuilder.newLabel()
 							codeBuilder
-								.atLine(165, codeElement) { builder ->
+								.atLineNumber(165, codeElement) { builder ->
 									builder
 										.invokeSpecialNewMimic(MouseHandler::class.classDesc, 0)
 										.dload(3)
@@ -203,7 +202,7 @@ class MouseHandlerTransform(
 										.return_()
 										.labelBinding(label)
 								}
-							if (onScrollCounter == 115) {
+							if (index == 115) {
 								codeBuilder
 									.invokeSpecialNewMimic(MouseHandler::class.classDesc, 0)
 									.new_(Screen.mimicClassDesc)
@@ -309,8 +308,7 @@ class MouseHandlerTransform(
 
 									}
 							}
-							if (onScrollCounter !in 115 .. 123) codeBuilder.with(codeElement)
-							onScrollCounter++
+							if (index !in 115 .. 123) codeBuilder.with(codeElement)
 						}
 					}
 				}

@@ -68,7 +68,7 @@ class ItemRendererTransform(
 				if (methodElement is CodeModel) {
 					val localVars = methodBuilder.getLocalVariableInfo(methodElement)
 					methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->
-						codeBuilder.atLine(127, codeElement) { builder ->
+						codeBuilder.atLineNumber(127, codeElement) { builder ->
 							builder
 								.aload(1)
 								.invokevirtual(

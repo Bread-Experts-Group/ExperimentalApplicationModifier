@@ -37,7 +37,7 @@ class BreadMod : MinecraftMod("breadmod") {
 			object : MinecraftBlock(), MinecraftEntityBlock {
 				// todo make abstract in the future
 				override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity =
-					BlockEntity.implementNative(pos, state, TestBlockEntity(0))
+					TestBlockEntity(pos, state)
 			}
 		)
 	}

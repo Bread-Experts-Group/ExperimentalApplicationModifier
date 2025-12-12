@@ -18,7 +18,7 @@ class CameraTransform(
 	"Camera",
 	scanning, classFile
 ) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { cB, cE ->
 		val r = modifyMethodAccess(
 			"a",
 			MethodTypeDesc.of(
@@ -38,7 +38,8 @@ class CameraTransform(
 			),
 			ACC_PUBLIC
 		)
+		val e = modifyFieldAccess("h", ACC_PUBLIC)
 
-		if (!(r.invoke(classBuilder, classElement) || p.invoke(classBuilder, classElement))) classBuilder.with(classElement)
+		if (!(r(cB, cE) || p(cB, cE) || e(cB, cE))) cB.with(cE)
 	}
 }

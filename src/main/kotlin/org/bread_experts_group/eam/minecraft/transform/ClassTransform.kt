@@ -10,6 +10,7 @@ import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassTransform
 import java.lang.classfile.MethodBuilder
 import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
@@ -45,6 +46,11 @@ abstract class ClassTransform(
 		}
 	}
 
+	private fun transformClass(data: ByteArray, transform: ClassTransform) {
+		this.classFile.transformClass(this.classFile.parse(data), transform)
+	}
+
+	// todo look into lambda transferring
 	/**
 	 * Integrates a method from a [sourceClass] into the class transform.
 	 *
@@ -56,57 +62,104 @@ abstract class ClassTransform(
 		methodTypeDesc: MethodTypeDesc? = null,
 		generateMimicMethod: Boolean = false
 	) {
-		val transformer = this@ClassTransform
-		if (methodName !in transformer.existingMethods) transformer.existingMethods.add(methodName) else return
-		val classData = transformer.readClassSource(sourceClass)
-		transformer.classFile.transformClass(transformer.classFile.parse(classData)) { builder, element ->
+		if (methodName !in existingMethods) existingMethods.add(methodName) else return
+		val classData = readClassSource(sourceClass)
+		transformClass(classData) { builder, element ->
 			val method = if (
 				element is MethodModel &&
 				element.methodName().equalsString(methodName) &&
 				(element.methodTypeSymbol() == methodTypeDesc || methodTypeDesc == null)
-			) element else null
-			if (method != null) {
-				this.with(method)
-				if (generateMimicMethod) {
-					val typeDesc = method.methodTypeSymbol()
-					this.withMethodBody(
-						"${method.methodName()}_EAMGenerated",
-						MethodTypeDesc.of(
-							typeDesc.returnType(),
-							typeDesc.parameterList().map { desc ->
-								if (desc.isPrimitive) desc else {
-									val clazz = desc.clazz
-									if (clazz.kotlin.isSubclassOf(MimickedClass::class)) {
-										val companionInst = clazz.kotlin.companionObjectInstance!!
-										companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
-									} else desc
+			) element else return@transformClass
+			this.with(method)
+			// todo lambda stuff is hard...
+			/*this.withMethod(
+				method.methodName().stringValue(),
+				method.methodTypeSymbol(),
+				method.flags().flagsMask()
+			) { mBuilder ->
+				val desc = NativeLookupV1x21x1.nativeClassDesc(ClientLevel::class)
+				method.forEach { element ->
+					if (element is CodeModel) mBuilder.withCode { cB ->
+						element.forEach { cE ->
+							if (cE is InvokeDynamicInstruction) {
+//								cB.with(cE)
+//								cB.invokedynamic(cE.invokedynamic())
+								val staticMethod = cE.bootstrapArgs().filterIsInstance<MethodHandleDesc>().first()
+								println(cE.bootstrapArgs())
+								val rType = staticMethod.invocationType().returnType()
+								val mName = staticMethod.toString()
+									.substringBefore("()" + rType.displayName())
+									.substringAfter("::")
+//								println(mName)
+								transformClass(classData) { b, e ->
+									if (e is MethodModel && e.methodName().equalsString(mName)) {
+										this.with(e)
+										println(e)
+									}
 								}
-							}
-						),
-						ACC_PUBLIC
-					) { codeBuilder ->
-						val parameters = method.methodTypeSymbol().parameterList()
-						codeBuilder.aload(0)
-						parameters.forEachIndexed { index, desc ->
-							val slot = index + 1
-							if (desc.isPrimitive) {
-								when (desc.descriptorString()) {
-									"Z" -> codeBuilder.iload(slot)
-									"D" -> codeBuilder.dload(slot)
-									"F" -> codeBuilder.fload(slot)
-									"J" -> codeBuilder.lload(slot)
-								}
-							} else codeBuilder.invokeSpecialNewMimic(desc, slot)
+								cB.invokedynamic(DynamicCallSiteDesc.of(
+									cE.bootstrapMethod(),
+									cE.name().stringValue(),
+									cE.typeSymbol(),
+									cE.bootstrapArgs()[0],
+									MethodHandleDesc.ofMethod(
+										DirectMethodHandleDesc.Kind.STATIC,
+										desc,
+										mName,
+										DEFAULT_VOID
+									),
+									cE.bootstrapArgs()[2]
+								))
+							} else if (cE is InvokeInstruction) {
+								cB.invokevirtual(
+									desc,
+									$$"lambda$lambdaExecute$0",
+									DEFAULT_VOID
+								)
+							} else cB.with(cE)
 						}
-
-						codeBuilder
-							.invokevirtual(
-								ClassDesc.of(transformer.targetClass),
-								methodName,
-								method.methodTypeSymbol()
-							)
-							.return_()
+					} else mBuilder.with(element)
+				}
+			}*/
+			if (generateMimicMethod) {
+				val typeDesc = method.methodTypeSymbol()
+				this.withMethodBody(
+					"${method.methodName()}_EAMGenerated",
+					MethodTypeDesc.of(
+						typeDesc.returnType(),
+						typeDesc.parameterList().map { desc ->
+							if (desc.isPrimitive) desc else {
+								val clazz = desc.clazz
+								if (clazz.kotlin.isSubclassOf(MimickedClass::class)) {
+									val companionInst = clazz.kotlin.companionObjectInstance!!
+									companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
+								} else desc
+							}
+						}
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
+					val parameters = method.methodTypeSymbol().parameterList()
+					codeBuilder.aload(0)
+					parameters.forEachIndexed { index, desc ->
+						val slot = index + 1
+						if (desc.isPrimitive) {
+							when (desc.descriptorString()) {
+								"Z" -> codeBuilder.iload(slot)
+								"D" -> codeBuilder.dload(slot)
+								"F" -> codeBuilder.fload(slot)
+								"J" -> codeBuilder.lload(slot)
+							}
+						} else codeBuilder.invokeSpecialNewMimic(desc, slot)
 					}
+
+					codeBuilder
+						.invokevirtual(
+							ClassDesc.of(targetClass),
+							methodName,
+							method.methodTypeSymbol()
+						)
+						.return_()
 				}
 			}
 			builder.with(element)
@@ -137,7 +190,7 @@ abstract class ClassTransform(
 	 * Ensure calls that add methods or fields aren't ran more than once, or else the JVM will throw an error about duplicate entries.
 	 *
 	 * @see addMethod
-	 * @see modifyMethod
+	 * @see transformMethod
 	 */
 	protected abstract fun transform(): (ClassBuilder, ClassElement) -> Unit
 }

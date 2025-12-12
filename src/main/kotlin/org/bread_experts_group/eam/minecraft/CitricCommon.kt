@@ -29,7 +29,7 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	params.forEach { parameter ->
 		val filtered = localVars.filter { it.slot() !in usedSlots }
 		if (parameter.type.kotlin.isSubclassOf(MimickedClass::class)) {
-			val lookup = NativeLookup.getLookup(parameter.type.kotlin)
+			val lookup = NativeLookup.getLookup(parameter.type)
 			val localVariable = lookup.findNativeInLocalVars(parameter, filtered)
 			this.invokeSpecialNewMimic(parameter.classDesc, localVariable.slot())
 			usedSlots.add(localVariable.slot())

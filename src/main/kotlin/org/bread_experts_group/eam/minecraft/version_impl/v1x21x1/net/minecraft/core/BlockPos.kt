@@ -3,7 +3,6 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
-import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_core_BlockPos
 import java.lang.constant.ClassDesc
 
@@ -13,7 +12,6 @@ net.minecraft.core.BlockPos -> jd:
     com.mojang.serialization.Codec CODEC -> a
     net.minecraft.network.codec.StreamCodec STREAM_CODEC -> b
     org.slf4j.Logger LOGGER -> e
-    net.minecraft.core.BlockPos ZERO -> c
     int PACKED_X_LENGTH -> h
     int PACKED_Z_LENGTH -> i
     int PACKED_Y_LENGTH -> d
@@ -109,10 +107,18 @@ net.minecraft.core.BlockPos -> jd:
     37:37:net.minecraft.core.BlockPos lambda$static$0(int[]) -> a
     36:70:void <clinit>() -> <clinit>
  */
-class BlockPos(around: Any) : MimickedClass(around) {
+class BlockPos(around: Any) : Vec3i(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_core_BlockPos)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = BlockPos::class.classDesc
+
+		val ZERO: BlockPos
+			get() = BlockPos(clazz.getField("c").get(null))
 	}
+
+	constructor(x: Int, y: Int, z: Int) : this(
+		clazz.getConstructor(Int::class.java, Int::class.java, Int::class.java)
+			.newInstance(x, y, z)
+	)
 }

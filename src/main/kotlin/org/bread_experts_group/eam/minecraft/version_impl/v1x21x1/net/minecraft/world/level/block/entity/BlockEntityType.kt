@@ -105,88 +105,85 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 # {"fileName":"BlockEntityType.java","id":"sourceFile"}
 	net.minecraft.world.level.block.entity.BlockEntity create(net.minecraft.core.BlockPos,net.minecraft.world.level.block.state.BlockState) -> create
 	 */
-	abstract class BlockEntitySupplier<T : BlockEntity> : MimickedClass(0) {
+	class BlockEntitySupplier<T : BlockEntity>(
+		private val supplier: (BlockPos, BlockState) -> T
+	) : MimickedClass(0) {
 		companion object : ClassInfo {
 			override val clazz: Class<*> = loadClass(net_minecraft_world_level_block_entity_BlockEntityType_BlockEntitySupplier)
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = BlockEntitySupplier::class.classDesc
+		}
 
-			fun <T : BlockEntity> implementNative(supplier: (BlockPos, BlockState) -> T): BlockEntitySupplier<T> {
-				val entitySupplier = object : BlockEntitySupplier<T>() {
-					override fun create(pos: BlockPos, state: BlockState): T = supplier(pos, state)
-				}
-
-				entitySupplier.around = entitySupplier.implementNative(BlockEntitySupplier::class.java) { classBuilder, name ->
-					classBuilder.withInterfaceSymbols(classDesc)
-					// todo figure out signatures
+		init {
+			this.around = createNative(BlockEntitySupplier::class.java) { classBuilder, name ->
+				classBuilder.withInterfaceSymbols(classDesc)
+				// todo figure out signatures
 //					classBuilder.with(SignatureAttribute.of { "<T:Ldqh;>Ljava/lang/Object;" })
-					classBuilder.withMethodBody(
-						"create",
-						MethodTypeDesc.of(
-							BlockEntity.classDesc,
-							BlockPos.classDesc,
-							BlockState.classDesc
-						),
-						ACC_PUBLIC
-					) { codeBuilder ->
+				classBuilder.withMethodBody(
+					"create",
+					MethodTypeDesc.of(
+						BlockEntity.classDesc,
+						BlockPos.classDesc,
+						BlockState.classDesc
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
 //						val staringPackage = "Lorg/bread_experts_group/eam/minecraft/version_impl/v1x21x1/net/minecraft"
 //						val blockPos = "$staringPackage/core/BlockPos;"
 //						val blockState = "$staringPackage/world/level/block/state/BlockState;"
-						codeBuilder
-							.getReferenceField(name, mimicClassDesc)
-							.invokeSpecialNewMimic(BlockPos.mimicClassDesc, 1)
-							.invokeSpecialNewMimic(BlockState.mimicClassDesc, 2)
-							.invokevirtual(
-								mimicClassDesc,
-								"create",
-								MethodTypeDesc.of(
-									BlockEntity.mimicClassDesc,
-									BlockPos.mimicClassDesc,
-									BlockState.mimicClassDesc
-								)
-							)
-							.getfield(
+					codeBuilder
+						.getReferenceField(name, mimicClassDesc)
+						.invokeSpecialNewMimic(BlockPos.mimicClassDesc, 1)
+						.invokeSpecialNewMimic(BlockState.mimicClassDesc, 2)
+						.invokevirtual(
+							mimicClassDesc,
+							"create",
+							MethodTypeDesc.of(
 								BlockEntity.mimicClassDesc,
-								"around",
-								ConstantDescs.CD_Object
+								BlockPos.mimicClassDesc,
+								BlockState.mimicClassDesc
 							)
-							.checkcast(BlockEntity.classDesc)
-							.areturn()
-					}
-					classBuilder.withMethodBody(
-						"<init>",
-						MethodTypeDesc.of(
-							ConstantDescs.CD_void, mimicClassDesc
-						),
-						ACC_PUBLIC
-					) { codeBuilder ->
-						codeBuilder
-							.aload(0)
-							.dup()
-							.invokespecial(
-								ConstantDescs.CD_Object,
-								"<init>",
-								MethodTypeDesc.of(ConstantDescs.CD_void)
-							)
-							.aload(1)
-							.putfield(
-								ClassDesc.of(name),
-								"reference",
-								mimicClassDesc
-							)
-							.return_()
-					}
-					classBuilder.withField(
-						"reference",
-						mimicClassDesc,
-						ACC_FINAL or ACC_PRIVATE
-					)
-				}.newInstance(entitySupplier)
-				return entitySupplier
-			}
+						)
+						.getfield(
+							BlockEntity.mimicClassDesc,
+							"around",
+							ConstantDescs.CD_Object
+						)
+						.checkcast(BlockEntity.classDesc)
+						.areturn()
+				}
+				classBuilder.withMethodBody(
+					"<init>",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void, mimicClassDesc
+					),
+					ACC_PUBLIC
+				) { codeBuilder ->
+					codeBuilder
+						.aload(0)
+						.dup()
+						.invokespecial(
+							ConstantDescs.CD_Object,
+							"<init>",
+							MethodTypeDesc.of(ConstantDescs.CD_void)
+						)
+						.aload(1)
+						.putfield(
+							ClassDesc.of(name),
+							"reference",
+							mimicClassDesc
+						)
+						.return_()
+				}
+				classBuilder.withField(
+					"reference",
+					mimicClassDesc,
+					ACC_FINAL or ACC_PRIVATE
+				)
+			}.newInstance(this)
 		}
 
-		abstract fun create(pos: BlockPos, state: BlockState): T
+		fun create(pos: BlockPos, state: BlockState): T = this.supplier(pos, state)
 	}
 
 	/*
