@@ -27,6 +27,8 @@ class LevelRendererTransform(
 	scanning: Scanning,
 	classFile: ClassFile
 ) : ClassTransform(net_minecraft_client_renderer_LevelRenderer, "LevelRenderer", scanning, classFile) {
+	// For some reason specifying Camera#classDesc directly causes the entity field to not exist when it's accessed at runtime...
+	//  Unsure why that's the case, so we fall back to NativeLookup to get the ClassDesc
 	private val cameraNative = NativeLookupV1x21x1.nativeClassDesc(Camera::class)
 	private val levelRendererNative = NativeLookupV1x21x1.nativeClassDesc(LevelRenderer::class)
 

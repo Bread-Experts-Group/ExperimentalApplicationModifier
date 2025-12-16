@@ -1,0 +1,22 @@
+package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.metadata
+
+import org.bread_experts_group.eam.classDesc
+import org.bread_experts_group.eam.loadClass
+import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
+import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_metadata_MetadataSectionSerializer
+import java.lang.constant.ClassDesc
+
+/*
+net.minecraft.server.packs.metadata.MetadataSectionSerializer -> atd:
+# {"fileName":"MetadataSectionSerializer.java","id":"sourceFile"}
+    java.lang.String getMetadataSectionName() -> a
+    java.lang.Object fromJson(com.google.gson.JsonObject) -> a
+ */
+open class MetadataSectionSerializer<T>(around: Any) : MimickedClass(around) {
+	companion object : ClassInfo {
+		override val clazz: Class<*> = loadClass(net_minecraft_server_packs_metadata_MetadataSectionSerializer)
+		override val classDesc: ClassDesc = clazz.classDesc
+		override val mimicClassDesc: ClassDesc = MetadataSectionSerializer::class.classDesc
+	}
+}

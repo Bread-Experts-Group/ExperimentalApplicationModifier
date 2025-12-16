@@ -4,7 +4,11 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackLocationInfo
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackSelectionConfig
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_Pack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_Pack_Position
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_server_packs_repository_Pack_ResourcesSupplier
 import java.lang.constant.ClassDesc
 
@@ -50,24 +54,23 @@ net.minecraft.server.packs.repository.Pack$Metadata -> atm$a:
     35:35:net.minecraft.server.packs.repository.PackCompatibility compatibility() -> b
     35:35:net.minecraft.world.flag.FeatureFlagSet requestedFeatures() -> c
     35:35:java.util.List overlays() -> d
-net.minecraft.server.packs.repository.Pack$Position -> atm$b:
-# {"fileName":"Pack.java","id":"sourceFile"}
-    net.minecraft.server.packs.repository.Pack$Position TOP -> a
-    net.minecraft.server.packs.repository.Pack$Position BOTTOM -> b
-    net.minecraft.server.packs.repository.Pack$Position[] $VALUES -> c
-    163:163:net.minecraft.server.packs.repository.Pack$Position[] values() -> values
-    163:163:net.minecraft.server.packs.repository.Pack$Position valueOf(java.lang.String) -> valueOf
-    163:163:void <init>(java.lang.String,int) -> <init>
-    169:193:int insert(java.util.List,java.lang.Object,java.util.function.Function,boolean) -> a
-    198:198:net.minecraft.server.packs.repository.Pack$Position opposite() -> a
-    163:163:net.minecraft.server.packs.repository.Pack$Position[] $values() -> b
-    163:165:void <clinit>() -> <clinit>
  */
 class Pack(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_Pack)
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Pack::class.classDesc
+
+		fun readMetaAndCreate(location: PackLocationInfo, resources: ResourcesSupplier, packType: PackType, selectionConfig: PackSelectionConfig): Pack? {
+			val invoke = clazz.getMethod(
+				"a",
+				PackLocationInfo.clazz,
+				ResourcesSupplier.clazz,
+				PackType.clazz,
+				PackSelectionConfig.clazz
+			).invoke(null, location.around, resources.around, packType.around, selectionConfig.around) ?: return null
+			return Pack(invoke)
+		}
 	}
 
 	/*
@@ -81,6 +84,17 @@ class Pack(around: Any) : MimickedClass(around) {
 			override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_Pack_ResourcesSupplier)
 			override val classDesc: ClassDesc = clazz.classDesc
 			override val mimicClassDesc: ClassDesc = ResourcesSupplier::class.classDesc
+		}
+	}
+
+	class Position(around: Any) : MimickedClass(around) {
+		companion object : ClassInfo {
+			override val clazz: Class<*> = loadClass(net_minecraft_server_packs_repository_Pack_Position)
+			override val classDesc: ClassDesc = clazz.classDesc
+			override val mimicClassDesc: ClassDesc= Position::class.classDesc
+
+			val TOP: Position = Position(clazz.enumConstants[0])
+			val BOTTOM: Position = Position(clazz.enumConstants[1])
 		}
 	}
 }

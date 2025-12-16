@@ -6,7 +6,6 @@ import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.logger
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_datafixers_types_Type
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
@@ -204,7 +203,6 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 			fun <T : BlockEntity> of(supplier: BlockEntitySupplier<T>, vararg blocks: Block): Builder {
 				val array = java.lang.reflect.Array.newInstance(Block.clazz, blocks.size)
 				repeat(blocks.size) {
-					logger.info("BLOCKS FROM BUILDER: ${blocks[it].around}")
 					java.lang.reflect.Array.set(array, it, blocks[it].around)
 				}
 				return Builder(

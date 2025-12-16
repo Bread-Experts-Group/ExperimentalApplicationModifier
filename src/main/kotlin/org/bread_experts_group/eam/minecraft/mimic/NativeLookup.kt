@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.mimic
 
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.LevelRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Camera
 import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
 import java.lang.reflect.Parameter
@@ -9,8 +11,12 @@ import kotlin.reflect.full.isSubclassOf
 
 /**
  * Provides a "translation" layer to retrieve native class names from supplied mimic classes.
- * 
- * - Should be used in edge cases where class transforms attempt to load a duplicate class definition, causing a LinkageError.
+ *
+ * ### Cases found when using [MimickedClass]#classDesc directly in transforms
+ * - Class transforms attempt to load a duplicate class definition, causing a [LinkageError].
+ * Usually caused when a [ClassDesc] directly referencing the target class is used in the transform.
+ *
+ * - Classes missing fields / methods in runtime when they're used in a transform, *example being [Camera] in [LevelRendererTransform]*
  */
 abstract class NativeLookup {
 	companion object {

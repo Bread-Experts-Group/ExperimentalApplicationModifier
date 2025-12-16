@@ -29,7 +29,7 @@ class PackSource(around: Any) : MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = PackSource::class.classDesc
 
-		val DEFAULT: PackSource
-			get() = PackSource(clazz.getField("b").get(null))
+		val DEFAULT: PackSource = PackSource(clazz.getField("b").get(null))
+		val BUILT_IN: PackSource = PackSource(clazz.getField("c").get(null))
 	}
 }

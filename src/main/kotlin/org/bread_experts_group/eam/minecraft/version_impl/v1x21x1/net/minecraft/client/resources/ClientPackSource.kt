@@ -1,14 +1,5 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources
 
-import org.bread_experts_group.eam.classDesc
-import org.bread_experts_group.eam.loadClass
-import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.BuiltInPackSource
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.validation.DirectoryValidator
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_resources_ClientPackSource
-import java.lang.constant.ClassDesc
-import java.nio.file.Path
-
 /*
 net.minecraft.client.resources.ClientPackSource -> grc:
 # {"fileName":"ClientPackSource.java","id":"sourceFile"}
@@ -31,6 +22,7 @@ net.minecraft.client.resources.ClientPackSource -> grc:
     131:136:void populatePackList(java.util.function.BiConsumer) -> a
     31:65:void <clinit>() -> <clinit>
  */
+/*
 class ClientPackSource(around: Any) : BuiltInPackSource(around) {
 	companion object : ClassInfo {
 		override val clazz: Class<*> = loadClass(net_minecraft_client_resources_ClientPackSource)
@@ -42,4 +34,4 @@ class ClientPackSource(around: Any) : BuiltInPackSource(around) {
 		clazz.getConstructor(Path::class.java, DirectoryValidator.clazz)
 			.newInstance(path, validator.around)
 	)
-}
+}*/

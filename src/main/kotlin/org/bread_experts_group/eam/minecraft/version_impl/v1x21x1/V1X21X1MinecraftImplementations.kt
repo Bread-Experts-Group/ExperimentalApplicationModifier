@@ -16,6 +16,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfor
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInPackSourceTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CameraTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
@@ -50,10 +51,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.BuiltInRegistries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.PackType
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.FolderRepositorySource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.resources.ResourceProvider
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTab
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
@@ -61,6 +59,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.Builder
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resources.LoaderPackSource
 import org.bread_experts_group.logging.ColoredHandler
 import java.awt.Color
 import java.net.URI
@@ -106,6 +105,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		RenderTypeTransform(scanning, classFile).startTransform()
 		RenderStateShardTransform(scanning, classFile).startTransform()
 		LevelRendererTransform(scanning, classFile).startTransform()
+		BuiltInPackSourceTransform(scanning, classFile).startTransform()
 
 		// todo a way to implement natives directly into mimics in the future?
 		scanning["org.bread_experts_group.eam.minecraft.test_mods.breadmod.camera.CameraTexture"] = { _, _, _, data ->
@@ -145,12 +145,11 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		}
 	}
 
-	// todo built-in pack source that doesn't need to be manually enabled
 	@JvmStatic
 	fun addPackSources(self: PackRepository) {
 		logger.info("[EAM Loader] Adding additional pack sources")
 		val validator = Minecraft.getInstance().directoryValidator()
-		val resourceLocation = this::class.java.getResource("/resources")?.toURI()
+		val resourceLocation = this::class.java.getResource("/assets")?.toURI()
 		val env = hashMapOf<String, String>()
 		val array = resourceLocation.toString().split("!")
 		val uri = URI.create(array[0])
@@ -161,7 +160,8 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		}
 		val path = fs.getPath(array[1])
 		val sources = listOf(
-			FolderRepositorySource(path, PackType.CLIENT_RESOURCES, PackSource.DEFAULT, validator)
+			LoaderPackSource(path, validator)
+//			FolderRepositorySource(path, PackType.CLIENT_RESOURCES, PackSource.DEFAULT, validator)
 		)
 		self.addSources(sources)
 	}

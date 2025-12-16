@@ -40,7 +40,6 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.AbstractTexture
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.TextureManager
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.texture.Tickable
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.ClientPackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelBakery
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.ModelManager
@@ -101,6 +100,11 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Matrix4f
 import kotlin.reflect.KClass
 
+/**
+ * 1.21.1 Variant of [NativeLookup]
+ *
+ * @see NativeLookup
+ */
 object NativeLookupV1x21x1 : NativeLookup() {
 	override fun resolveNativeNameFromClass(clazz: KClass<*>): String = when (clazz) {
 		Component::class -> net_minecraft_network_chat_Component
@@ -174,7 +178,7 @@ object NativeLookupV1x21x1 : NativeLookup() {
 		ModelManager::class -> net_minecraft_client_resources_model_ModelManager
 		ModelResourceLocation::class -> net_minecraft_client_resources_model_ModelResourceLocation
 		ModelBakery::class -> net_minecraft_client_resources_model_ModelBakery
-		ClientPackSource::class -> net_minecraft_client_resources_ClientPackSource
+//		ClientPackSource::class -> net_minecraft_client_resources_ClientPackSource
 		GameConfig::class -> net_minecraft_client_main_GameConfig
 		UnbakedModel::class -> net_minecraft_client_resources_model_UnbakedModel
 		ClientLevel::class -> net_minecraft_client_multiplayer_ClientLevel
