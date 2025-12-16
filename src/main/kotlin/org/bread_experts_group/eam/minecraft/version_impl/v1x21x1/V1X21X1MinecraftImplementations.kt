@@ -12,6 +12,7 @@ import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient.TEST_RENDERER
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntityRenderer
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.AbstractTextureTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform

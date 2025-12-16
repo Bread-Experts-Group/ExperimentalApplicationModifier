@@ -7,7 +7,7 @@ import org.bread_experts_group.eam.minecraft.DEFAULT_VOID
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.putReferenceField
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com_mojang_blaze3d_pipeline_RenderCall
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.com_mojang_blaze3d_pipeline_RenderCall
 import org.bread_experts_group.eam.minecraft.withReferenceField
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.ClassFile.StackMapsOption

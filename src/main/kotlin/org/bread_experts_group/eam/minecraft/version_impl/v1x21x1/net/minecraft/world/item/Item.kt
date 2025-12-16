@@ -4,9 +4,9 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_item_Item
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_item_Item_Properties
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.food.FoodProperties
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_Item
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_Item_Properties
 import java.lang.constant.ClassDesc
 
 /*
@@ -115,9 +115,7 @@ open class Item(around: Any) : MimickedClass(around) {
 
 	class Properties(around: Any) : MimickedClass(around) {
 		companion object {
-			val clazz: Class<*> = loadClass(
-				net_minecraft_world_item_Item_Properties
-			)
+			val clazz: Class<*> = loadClass(net_minecraft_world_item_Item_Properties)
 			val classDesc: ClassDesc = ClassDesc.of(clazz.name)
 			val mimicClassDesc: ClassDesc = ClassDesc.of(Properties::class.java.name)
 		}

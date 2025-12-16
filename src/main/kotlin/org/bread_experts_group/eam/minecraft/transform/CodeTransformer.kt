@@ -2,7 +2,6 @@ package org.bread_experts_group.eam.minecraft.transform
 
 import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
-import org.bread_experts_group.eam.minecraft.mimic.NativeLookup
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -85,7 +84,6 @@ interface CodeTransformer {
 	}
 
 	fun invokeAtMethodReturns(
-		lookup: NativeLookup,
 		targetMethodName: String,
 		targetMethodType: MethodTypeDesc,
 		method: Method

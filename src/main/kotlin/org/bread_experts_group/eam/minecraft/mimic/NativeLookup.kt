@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.minecraft.mimic
 
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.LevelRendererTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Camera
 import java.lang.classfile.instruction.LocalVariable
@@ -24,12 +24,22 @@ abstract class NativeLookup {
 			val name = clazz.packageName
 
 			return when {
-				name.contains("v1x21x1") -> NativeLookupV1x21x1
+				name.contains("v1x21x1") -> NativeConstantsV1x21x1
 
 				else -> throw NullPointerException("Lookup cannot be found for $name")
 			}
 		}
 	}
+
+	private val allFields: Map<String, String> = buildMap {
+		val stringFields = this@NativeLookup::class.java.fields.filter { it.type == String::class.java }
+		stringFields.forEach {
+			this[it.name.substringAfterLast('_')] = it.get(null) as String
+		}
+	}
+
+	private fun resolveNativeNameFromClass(clazz: KClass<*>): String =
+		allFields[clazz.simpleName] ?: throw IllegalStateException("Native class name for ${clazz.simpleName} not implemented.")
 
 	fun findNativeInLocalVars(mimicParameter: Parameter, localVars: List<LocalVariable>) : LocalVariable {
 		val kClass: KClass<*> = mimicParameter.type.kotlin
@@ -41,8 +51,6 @@ abstract class NativeLookup {
 			it.typeSymbol().displayName() == nativeClassName
 		} ?: throw NullPointerException("Local variable not found with provided native name.")
 	}
-
-	abstract fun resolveNativeNameFromClass(clazz: KClass<*>): String
 
 	fun nativeClassDesc(clazz: KClass<*>): ClassDesc = ClassDesc.of(this.resolveNativeNameFromClass(clazz))
 }

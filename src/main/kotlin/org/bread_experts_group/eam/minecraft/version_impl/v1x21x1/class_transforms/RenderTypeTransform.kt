@@ -2,10 +2,10 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_renderer_RenderType
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.VertexFormat
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.RenderType
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_RenderType
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
@@ -22,7 +22,7 @@ class RenderTypeTransform(
 		val a = modifyMethodAccess(
 			"a",
 			MethodTypeDesc.of(
-				NativeLookupV1x21x1.nativeClassDesc(RenderType.CompositeRenderType::class),
+				NativeConstantsV1x21x1.nativeClassDesc(RenderType.CompositeRenderType::class),
 				ConstantDescs.CD_String,
 				VertexFormat.classDesc,
 				VertexFormat.Mode.classDesc,
@@ -36,7 +36,7 @@ class RenderTypeTransform(
 		val b = modifyMethodAccess(
 			"a",
 			MethodTypeDesc.of(
-				NativeLookupV1x21x1.nativeClassDesc(RenderType.CompositeRenderType::class),
+				NativeConstantsV1x21x1.nativeClassDesc(RenderType.CompositeRenderType::class),
 				ConstantDescs.CD_String,
 				VertexFormat.classDesc,
 				VertexFormat.Mode.classDesc,

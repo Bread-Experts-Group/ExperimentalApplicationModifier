@@ -46,3 +46,4 @@ bin/
 /src/main/resources/client.jar
 /src/main/resources/client.txt
 /src/main/resources/client-deobfuscated.jar
+/mc libs/

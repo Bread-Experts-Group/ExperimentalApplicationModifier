@@ -8,8 +8,8 @@ import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.putReferenceField
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_renderer_texture_AbstractTexture
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.resources.ResourceManager
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_texture_AbstractTexture
 import org.bread_experts_group.eam.minecraft.withReferenceField
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.constant.ClassDesc

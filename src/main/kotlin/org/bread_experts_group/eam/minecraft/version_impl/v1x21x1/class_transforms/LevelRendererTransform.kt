@@ -4,7 +4,8 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.camera.CameraTexture
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeLookupV1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_renderer_LevelRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.pipeline.RenderTarget
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Camera
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.DeltaTracker
@@ -13,7 +14,6 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.renderer.LightTexture
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.Entity
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.entity.LivingEntity
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_client_renderer_LevelRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml.Matrix4f
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -29,8 +29,8 @@ class LevelRendererTransform(
 ) : ClassTransform(net_minecraft_client_renderer_LevelRenderer, "LevelRenderer", scanning, classFile) {
 	// For some reason specifying Camera#classDesc directly causes the entity field to not exist when it's accessed at runtime...
 	//  Unsure why that's the case, so we fall back to NativeLookup to get the ClassDesc
-	private val cameraNative = NativeLookupV1x21x1.nativeClassDesc(Camera::class)
-	private val levelRendererNative = NativeLookupV1x21x1.nativeClassDesc(LevelRenderer::class)
+	private val cameraNative = NativeConstantsV1x21x1.nativeClassDesc(Camera::class)
+	private val levelRendererNative = NativeConstantsV1x21x1.nativeClassDesc(LevelRenderer::class)
 
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
 		val renderLevelTransform = classBuilder.transformMethodCode(

@@ -3,7 +3,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org.joml
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.org_joml_Matrix4f
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.org_joml_Matrix4f
 import java.lang.constant.ClassDesc
 
 class Matrix4f(around: Any) : Matrix4fc(around) {

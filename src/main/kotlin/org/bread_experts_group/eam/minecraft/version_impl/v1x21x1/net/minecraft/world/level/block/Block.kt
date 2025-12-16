@@ -3,12 +3,12 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_level_block_Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.IdMapper
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemLike
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockBehaviour
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.BlockState
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.state.StateDefinition
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_Block
 import java.lang.constant.ClassDesc
 
 /*

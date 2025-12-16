@@ -4,8 +4,8 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_food_FoodProperties
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_food_FoodProperties_Builder
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_food_FoodProperties
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_food_FoodProperties_Builder
 import java.lang.constant.ClassDesc
 
 /*
@@ -63,9 +63,7 @@ class FoodProperties(around: Any) : MimickedClass(around) {
 	 */
 	class Builder(around: Any) : MimickedClass(around) {
 		companion object {
-			val clazz: Class<*> = loadClass(
-				net_minecraft_world_food_FoodProperties_Builder
-			)
+			val clazz: Class<*> = loadClass(net_minecraft_world_food_FoodProperties_Builder)
 		}
 
 		constructor() : this(clazz.getConstructor().newInstance())

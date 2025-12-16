@@ -2,7 +2,7 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_level_block_entity_BlockEntityType_BlockEntitySupplier
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_level_block_entity_BlockEntityType_BlockEntitySupplier
 import java.lang.classfile.AccessFlags
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement

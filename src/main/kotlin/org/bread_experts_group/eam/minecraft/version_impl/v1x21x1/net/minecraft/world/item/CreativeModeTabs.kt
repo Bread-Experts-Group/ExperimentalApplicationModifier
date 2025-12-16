@@ -4,10 +4,10 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.loadClass
 import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_item_CreativeModeTabs
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.registries.Registries
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net_minecraft_world_item_CreativeModeTabs
 import java.lang.constant.ClassDesc
 
 /*
@@ -105,7 +105,7 @@ net.minecraft.world.item.CreativeModeTabs -> ctb:
  */
 class CreativeModeTabs(around: Any) : MimickedClass(around) {
 	companion object : ClassInfo {
-		override val clazz: Class<*> by lazy { loadClass(net_minecraft_world_item_CreativeModeTabs) }
+		override val clazz: Class<*> = loadClass(net_minecraft_world_item_CreativeModeTabs)
 		override val classDesc: ClassDesc = ClassDesc.of(net_minecraft_world_item_CreativeModeTabs)
 		override val mimicClassDesc: ClassDesc = CreativeModeTabs::class.classDesc
 
