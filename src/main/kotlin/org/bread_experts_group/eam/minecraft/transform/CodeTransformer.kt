@@ -14,6 +14,7 @@ import java.lang.classfile.MethodModel
 import java.lang.classfile.MethodTransform
 import java.lang.classfile.instruction.LineNumber
 import java.lang.classfile.instruction.ReturnInstruction
+import java.lang.constant.ClassDesc
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 import java.net.URI
@@ -24,6 +25,8 @@ import java.nio.file.Files
  * Contains helper methods to aid in transforming code within classes and methods.
  */
 interface CodeTransformer {
+	val existingElements: MutableList<String>
+
 	fun readClassSource(clazz: Class<*>): ByteArray {
 		val fullPath = clazz.name.replace('.', '/')
 		val subStringPath = "/" + fullPath.substringBeforeLast('/')
@@ -67,7 +70,7 @@ interface CodeTransformer {
 	fun ClassBuilder.transformMethodCode(
 		classElement: ClassElement,
 		methodName: String,
-		typeDesc: MethodTypeDesc?,
+		typeDesc: MethodTypeDesc? = null,
 		transform: (CodeBuilder, CodeElement, Int) -> Unit
 	) : Boolean = this.transformMethod(classElement, methodName, typeDesc) { methodBuilder, methodElement ->
 		if (methodElement is CodeModel) methodBuilder.transformCodeIndexed(methodElement, transform)
@@ -88,7 +91,6 @@ interface CodeTransformer {
 		targetMethodType: MethodTypeDesc,
 		method: Method
 	): (ClassBuilder, ClassElement) -> Boolean {
-		java.lang.Boolean.TYPE
 		if (method.returnType != Void.TYPE) throw IllegalArgumentException(
 			"$method (in injection to returns of $targetMethodName : $targetMethodType) must return void!"
 		)
@@ -149,4 +151,61 @@ interface CodeTransformer {
 		}
 		return@transform false
 	}
+
+	/**
+	 * Wraps withMethod with a check to see if this method already exists inside the class being built.
+	 *
+	 * If the method doesn't exist, invoke the builder.
+	 * Else do nothing to prevent duplicate entries from being added.
+	 */
+	fun ClassBuilder.addMethod(
+		name: String,
+		descriptor: MethodTypeDesc,
+		flags: Int,
+		builder: (MethodBuilder) -> Unit
+	): ClassBuilder {
+		if (name !in existingElements) {
+			this.withMethod(name, descriptor, flags, builder)
+			existingElements.add(name)
+		}
+		return this
+	}
+
+	fun ClassBuilder.addMethodWithCode(
+		name: String,
+		descriptor: MethodTypeDesc,
+		flags: Int,
+		builder: (CodeBuilder) -> Unit
+	): ClassBuilder = this.addMethod(name, descriptor, flags) { it.withCode(builder) }
+
+	fun ClassBuilder.addField(name: String, descriptor: ClassDesc, flags: Int): ClassBuilder {
+		if (name !in existingElements) {
+			this.withField(name, descriptor, flags)
+			existingElements.add(name)
+		}
+		return this
+	}
+
+	/**
+	 * Replaces the signature in the target method.
+	 *
+	 * @return True if the method was successfully transformed, false if not.
+	 */
+	fun ClassBuilder.replaceMethodSignature(
+		classElement: ClassElement,
+		newSignature: MethodTypeDesc,
+		methodName: String,
+		typeDesc: MethodTypeDesc? = null
+	): Boolean = if (
+		classElement is MethodModel &&
+		classElement.methodName().equalsString(methodName) &&
+		(classElement.methodTypeSymbol() == typeDesc || typeDesc == null)
+	) {
+		this.addMethod(methodName, newSignature, classElement.flags().flagsMask()) { builder ->
+			builder.withCode { codeBuilder ->
+				classElement.code().get().forEach(codeBuilder::with)
+			}
+		}
+		true
+	} else false
 }

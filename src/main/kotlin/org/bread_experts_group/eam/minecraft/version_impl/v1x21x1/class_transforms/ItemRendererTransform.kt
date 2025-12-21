@@ -1,6 +1,5 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
-import org.bread_experts_group.eam.asConstantDesc
 import org.bread_experts_group.eam.getLocalVariableInfo
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
@@ -16,6 +15,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.resources.model.BakedModel
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
+import org.bread_experts_group.eam.toConstantDesc
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
@@ -76,7 +76,7 @@ class ItemRendererTransform(
 									net_minecraft_world_item_ItemStack_getDescriptionId,
 									MethodTypeDesc.of(ConstantDescs.CD_String)
 								)
-								.loadConstant("item.breadmod.tool_gun".asConstantDesc())
+								.loadConstant("item.breadmod.tool_gun".toConstantDesc())
 								.invokevirtual(
 									ConstantDescs.CD_String,
 									"equals",

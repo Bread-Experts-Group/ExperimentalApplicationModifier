@@ -8,6 +8,7 @@ import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Co
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeMimics
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedFeatures
+import org.bread_experts_group.eam.minecraft.transform.CodeTransformer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1X0X0MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
 import org.bread_experts_group.logging.ColoredHandler
@@ -46,7 +47,8 @@ enum class EAMModificationType(
 				writeMimics
 			)
 			val logger = ColoredHandler.newLogger("TMP logger EAM")
-			instrumentation.addTransformer(object : ClassFileTransformer {
+			instrumentation.addTransformer(object : ClassFileTransformer, CodeTransformer {
+				override val existingElements: MutableList<String> = mutableListOf()
 				override fun transform(
 					module: Module?,
 					loader: ClassLoader?,
@@ -58,6 +60,15 @@ enum class EAMModificationType(
 					if (arguments.get(logAllLoadsFlag) == true) logger.info(
 						"Loading class $className [$classBeingRedefined, $module] Data#${classfileBuffer.size}"
 					)
+//					val cf = ClassFile.of()
+//					val model = cf.parse(classfileBuffer)
+//					model.constantPool().forEach { entry ->
+//						if (entry.toString().contains("lwjgl") && !(className.contains("lwjgl") || className.contains("paulscode"))) {
+//							if (entry.toString().contains("GL11")) return@forEach
+//							val resolvedMimic = NativeConstantsV1x0x0.resolveMimicNameFromNative(className)
+//							println("Class $className ($resolvedMimic) [Entry: $entry, Type: ${entry::class.java.simpleName}]")
+//						}
+//					}
 					return runCatching {
 						scanning[className]?.invoke(
 							loader,

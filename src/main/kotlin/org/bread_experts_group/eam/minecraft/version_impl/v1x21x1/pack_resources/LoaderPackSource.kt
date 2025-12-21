@@ -1,6 +1,5 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resources
 
-import org.bread_experts_group.eam.minecraft.transform.CodeTransformer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.BuiltInMetadata
@@ -28,7 +27,7 @@ class LoaderPackSource(
 	createPackSource(path),
 	ResourceLocation.fromNamespaceAndPath("eam", "resourcepacks"),
 	directoryValidator
-), CodeTransformer {
+) {
 	companion object {
 		private val EAM_PACK_INFO: PackLocationInfo = PackLocationInfo(
 			"eam",

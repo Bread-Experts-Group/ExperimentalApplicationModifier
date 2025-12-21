@@ -11,7 +11,6 @@ import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.ClassTransform
-import java.lang.classfile.MethodBuilder
 import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.MethodTypeDesc
@@ -27,7 +26,7 @@ abstract class ClassTransform(
 	private val scanning: Scanning,
 	private val classFile: ClassFile
 ) : CodeTransformer {
-	private val existingMethods: MutableList<String> = mutableListOf()
+	override val existingElements: MutableList<String> = mutableListOf()
 
 	fun startTransform() {
 		scanning[targetClass] = { _, _, _, data ->
@@ -35,10 +34,14 @@ abstract class ClassTransform(
 			classFile.transformClass(model) { classBuilder, classElement ->
 				transform().invoke(classBuilder, classElement)
 			}.also {
+				/*classFile.verify(it).forEach {
+					println(it)
+				}*/
 				val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
+				val target = targetClass.replace('/', '_').substringAfterLast('_')
 				if (path != null) Files.write(
 					Path(path)
-						.resolve("$deobfClassName [${targetClass.substringAfterLast('_')}].class")
+						.resolve("$deobfClassName [$target].class")
 						.createParentDirectories(),
 					it
 				)
@@ -62,7 +65,7 @@ abstract class ClassTransform(
 		methodTypeDesc: MethodTypeDesc? = null,
 		generateMimicMethod: Boolean = false
 	) {
-		if (methodName !in existingMethods) existingMethods.add(methodName) else return
+		if (methodName !in existingElements) existingElements.add(methodName) else return
 		val classData = readClassSource(sourceClass)
 		transformClass(classData) { builder, element ->
 			val method = if (
@@ -167,23 +170,6 @@ abstract class ClassTransform(
 	}
 
 	/**
-	 * Wraps withMethod with a check to see if this method already exists inside the class being built.
-	 *
-	 * If the method doesn't exist, invoke the builder.
-	 * Else do nothing to prevent duplicate entries from being added.
-	 */
-	protected fun ClassBuilder.addMethod(
-		name: String,
-		descriptor: MethodTypeDesc,
-		flags: Int,
-		builder: (MethodBuilder) -> Unit
-	) {
-		if (name !in existingMethods) {
-			this.withMethod(name, descriptor, flags, builder)
-			existingMethods.add(name)
-		}
-	}
-	/**
 	 * ## !!WARNING!!
 	 * This method is executed multiple times during class transformation due to [ClassBuilder] iterating through the structure being built.
 	 *
@@ -191,6 +177,8 @@ abstract class ClassTransform(
 	 *
 	 * @see addMethod
 	 * @see transformMethod
+	 * @see transformMethodCode
+	 * @see transformCodeIndexed
 	 */
 	protected abstract fun transform(): (ClassBuilder, ClassElement) -> Unit
 }

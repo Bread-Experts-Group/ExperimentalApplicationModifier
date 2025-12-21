@@ -20,6 +20,7 @@ abstract class FeatureTransform<I, E : FeatureImplementation<E>>(
 ) : CodeTransformer {
 	private val cf: ClassFile = of(StackMapsOption.GENERATE_STACK_MAPS)
 	private val cl: DefiningClassLoader = DefiningClassLoader()
+	override val existingElements: MutableList<String> = mutableListOf()
 
 	abstract fun startTransform(name: String): (ClassBuilder) -> Any
 	protected abstract fun createInstance(clazz: Class<*>): Any

@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>aload</w>
+      <w>clinit</w>
       <w>deobf</w>
       <w>invokevirtual</w>
       <w>ireturn</w>

@@ -39,10 +39,7 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 		lateinit var arguments: ArgumentContainer
 	}
 
-	protected val classFile: ClassFile = ClassFile.of(
-		ClassFile.StackMapsOption.GENERATE_STACK_MAPS
-	)
-
+	protected val classFile: ClassFile = ClassFile.of(ClassFile.StackMapsOption.STACK_MAPS_WHEN_REQUIRED)
 	private lateinit var instrumentation: Instrumentation
 	protected lateinit var scanning: Scanning
 	protected val mods: List<MinecraftMod> = ServiceLoader.load(MinecraftMod::class.java).toList()

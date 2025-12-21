@@ -92,5 +92,4 @@ val ClassDesc.qualifiedName: String
 val ClassDesc.clazz: Class<*>
 	get() = loadClass(this.qualifiedName)
 
-@Suppress("CAST_NEVER_SUCCEEDS")
-fun String.asConstantDesc(): ConstantDesc = this as ConstantDesc
+fun String.toConstantDesc(): ConstantDesc = java.lang.String(this)

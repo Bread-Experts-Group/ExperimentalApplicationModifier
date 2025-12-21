@@ -16,7 +16,7 @@ class MinecraftBlockFeature1x0x0 : MinecraftBlockFeature() {
 	}
 
 	override fun register(id: Identifier, value: MinecraftBlock): MinecraftBlock {
-		value.mimic = Block(123, Material.grass)
+		value.mimic = Block(236, 236, Material.grass)
 		return value
 	}
 }

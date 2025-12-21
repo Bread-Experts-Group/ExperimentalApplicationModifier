@@ -83,6 +83,14 @@ fun CodeBuilder.invokeStaticWithLocalVars(
 	return this
 }
 
+fun CodeBuilder.atIndex(source: Int, target: Int, builder: (CodeBuilder) -> Unit): CodeBuilder {
+	if (source == target) builder(this)
+	return this
+}
+
+fun CodeBuilder.localVariable(slot: Int, name: String, descriptor: ClassDesc): CodeBuilder =
+	this.localVariable(slot, name, descriptor, this.startLabel(), this.endLabel())
+
 fun CodeBuilder.getReferenceField(name: String, fieldType: ClassDesc): CodeBuilder =
 	this.aload(0)
 		.getfield(

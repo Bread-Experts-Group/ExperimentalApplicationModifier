@@ -38,8 +38,12 @@ abstract class NativeLookup {
 		}
 	}
 
-	private fun resolveNativeNameFromClass(clazz: KClass<*>): String =
+	fun resolveNativeNameFromClass(clazz: KClass<*>): String =
 		allFields[clazz.simpleName] ?: throw IllegalStateException("Native class name for ${clazz.simpleName} not implemented.")
+
+	fun resolveMimicNameFromNative(name: String): String? =
+		allFields.entries.find { name == it.value }?.key /*?:
+		throw IllegalStateException("Cannot resolve mimic for class $name, is it defined in the NativeLookup impl?")*/
 
 	fun findNativeInLocalVars(mimicParameter: Parameter, localVars: List<LocalVariable>) : LocalVariable {
 		val kClass: KClass<*> = mimicParameter.type.kotlin
