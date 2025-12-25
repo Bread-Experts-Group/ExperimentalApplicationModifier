@@ -1,12 +1,12 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.feature_transforms
 
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
-import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItem
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.putReferenceField
+import org.bread_experts_group.eam.minecraft.transform.FeatureTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_item_Item_inventoryTick
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_world_item_Item_useOn
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.InteractionResult

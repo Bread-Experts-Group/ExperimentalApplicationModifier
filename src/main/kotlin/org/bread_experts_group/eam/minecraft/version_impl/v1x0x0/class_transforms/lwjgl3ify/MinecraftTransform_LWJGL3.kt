@@ -2,16 +2,27 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.class_transfor
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.DEFAULT_VOID
+import org.bread_experts_group.eam.minecraft.LAMBDA_METAFACTORY_METHOD_HANDLE
 import org.bread_experts_group.eam.minecraft.feature.Scanning
+import org.bread_experts_group.eam.minecraft.loadConstant
+import org.bread_experts_group.eam.minecraft.localVariable
+import org.bread_experts_group.eam.minecraft.println
+import org.bread_experts_group.eam.minecraft.stringBuilderAppend
+import org.bread_experts_group.eam.minecraft.stringBuilderInvoke
+import org.bread_experts_group.eam.minecraft.stringBuilderToString
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.NativeConstantsV1x0x0
-import org.bread_experts_group.eam.toConstantDesc
+import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.method_transforms.Minecraft_InitTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.method_transforms.Minecraft_RunTickTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.method_transforms.Minecraft_StartGameTransform
 import java.io.PrintStream
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFile.ACC_SYNTHETIC
 import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
@@ -19,11 +30,7 @@ import java.lang.constant.DirectMethodHandleDesc
 import java.lang.constant.DynamicCallSiteDesc
 import java.lang.constant.MethodHandleDesc
 import java.lang.constant.MethodTypeDesc
-import java.lang.invoke.CallSite
-import java.lang.invoke.LambdaMetafactory
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
+import java.nio.IntBuffer
 
 class MinecraftTransform_LWJGL3(
 	scanning: Scanning,
@@ -34,127 +41,36 @@ class MinecraftTransform_LWJGL3(
 	scanning,
 	classFile
 ) {
+	private val guiScreenDesc = ClassDesc.of(NativeConstantsV1x0x0.net_minecraft_GuiScreen)
+	private val callbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallback")
+	private val glfwDesc = ClassDesc.of("org.lwjgl.glfw.GLFW")
+	private val memoryUtilDesc = ClassDesc.of("org.lwjgl.system.MemoryUtil")
+	private val glDesc = ClassDesc.of("org.lwjgl.opengl.GL")
+	private val glCapabilitiesDesc = ClassDesc.of("org.lwjgl.opengl.GLCapabilities")
+	private val minecraftAppletDesc = ClassDesc.of("net.minecraft.client.MinecraftApplet")
+	private val glfwErrorCallbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallback")
+	private val glfwErrorCallbackIDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallbackI")
+	private val glfwKeyCallbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWKeyCallback")
+	private val glfwKeyCallbackIDesc = ClassDesc.of("org.lwjgl.glfw.GLFWKeyCallbackI")
+	private val glfwMouseButtonCallbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWMouseButtonCallback")
+	private val glfwMouseButtonCallbackIDesc = ClassDesc.of("org.lwjgl.glfw.GLFWMouseButtonCallbackI")
+	private val glfwCursorPosCallbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWCursorPosCallback")
+	private val glfwCursorPosCallbackIDesc = ClassDesc.of("org.lwjgl.glfw.GLFWCursorPosCallbackI")
+	private val entityRendererDesc = ClassDesc.of(NativeConstantsV1x0x0.net_minecraft_EntityRenderer)
+
 	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
-		val callbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallback")
-		val glfwDesc = ClassDesc.of("org.lwjgl.glfw.GLFW")
-		val memoryUtilDesc = ClassDesc.of("org.lwjgl.system.MemoryUtil")
-		val glDesc = ClassDesc.of("org.lwjgl.opengl.GL")
-		val glCapabilitiesDesc = ClassDesc.of("org.lwjgl.opengl.GLCapabilities")
-		val minecraftDesc = ClassDesc.of("net.minecraft.client.Minecraft")
-		val minecraftAppletDesc = ClassDesc.of("net.minecraft.client.MinecraftApplet")
-		val glfwErrorCallbackIDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallbackI")
-		val glfwErrorCallbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallback")
 
-		classBuilder.withVersion(ClassFile.latestMajorVersion(), ClassFile.latestMinorVersion())
+		val startGame = Minecraft_StartGameTransform(classBuilder, classElement, thisClassDesc).run()
+		val init = Minecraft_InitTransform(classBuilder, classElement, thisClassDesc).run()
+		val runTick = Minecraft_RunTickTransform(classBuilder, classElement, thisClassDesc).run()
 
-		val startGame = classBuilder.transformMethodCode(
-			classElement,
-			"a",
-			DEFAULT_VOID
-		) { codeBuilder, codeElement, index ->
-			when (index) {
-				// todo instruction index 0 and 4 to 123 relating to LWJGL2 code has been dropped, replace with modern LWJGL
-				0 -> {
-					codeBuilder
-						.getstatic(
-							System::class.classDesc,
-							"err",
-							PrintStream::class.classDesc
-						)
-						.invokestatic(
-							callbackDesc,
-							"createPrint",
-							MethodTypeDesc.of(callbackDesc, PrintStream::class.classDesc)
-						)
-						.invokevirtual( // Setup error callback
-							callbackDesc,
-							"set",
-							MethodTypeDesc.of(callbackDesc)
-						)
-						.pop()
-
-						.invokestatic( // Init GLFW
-							glfwDesc,
-							"glfwInit",
-							MethodTypeDesc.of(ConstantDescs.CD_boolean)
-						)
-						.pop()
-
-						.aload(0) // create the GL window
-						.loadConstant(800)
-						.loadConstant(800)
-						.loadConstant("Minecraft 1.0 - LWJGL3".toConstantDesc())
-						.getstatic(
-							memoryUtilDesc,
-							"NULL",
-							ConstantDescs.CD_long
-						)
-						.getstatic(
-							memoryUtilDesc,
-							"NULL",
-							ConstantDescs.CD_long
-						)
-						.invokestatic(
-							glfwDesc,
-							"glfwCreateWindow",
-							MethodTypeDesc.of(
-								ConstantDescs.CD_long,
-								ConstantDescs.CD_int,
-								ConstantDescs.CD_int,
-								CharSequence::class.classDesc,
-								ConstantDescs.CD_long,
-								ConstantDescs.CD_long
-							)
-						)
-						.putfield(minecraftDesc, "window", ConstantDescs.CD_long)
-
-						.aload(0) // Make the OpenGL context current
-						.getfield(minecraftDesc, "window", ConstantDescs.CD_long)
-						.invokestatic(
-							glfwDesc,
-							"glfwMakeContextCurrent",
-							MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long)
-						)
-
-						.iconst_1() // Enable v-sync
-						.invokestatic(
-							glfwDesc,
-							"glfwSwapInterval",
-							MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_int)
-						)
-
-						.aload(0)  // Make the window visible
-						.getfield(minecraftDesc, "window", ConstantDescs.CD_long)
-						.invokestatic(
-							glfwDesc,
-							"glfwShowWindow",
-							MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long)
-						)
-
-						.invokestatic( // Create the gl capabilities
-							glDesc,
-							"createCapabilities",
-							MethodTypeDesc.of(glCapabilitiesDesc)
-						)
-						.pop()
-				}
-
-				else if (
-					index !in 0 .. 2 && // Drop try catch instructions
-					index !in 4 .. 123 && // Drop Display && PixelFormat code
-					index !in 248 .. 252 && // Drop Keyboard.create && Mouse.create
-					index !in 253 .. 259 && // Drop mouseHelper field assignment
-					index !in 261 .. 263 // Drop Controllers.create try catch
-				) -> codeBuilder.with(codeElement)
-			}
-		}
 		val loadScreen = classBuilder.transformMethodCode(
 			classElement,
 			"v"
 		) { codeBuilder, codeElement, index ->
 			if (index == 172) codeBuilder
 				.aload(0)
-				.getfield(minecraftDesc, "window", ConstantDescs.CD_long)
+				.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
 				.invokestatic(
 					glfwDesc,
 					"glfwSwapBuffers",
@@ -162,86 +78,137 @@ class MinecraftTransform_LWJGL3(
 				)
 			else codeBuilder.with(codeElement)
 		}
-		val init = classBuilder.transformMethodCode(
+		val main = classBuilder.transformMethodCode(
 			classElement,
-			ConstantDescs.INIT_NAME
-		) { codeBuilder, codeElement, index ->
-			val callBackDescriptor = MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_int, ConstantDescs.CD_long)
-			val metafactoryDesc = MethodHandleDesc.ofMethod(
-				DirectMethodHandleDesc.Kind.STATIC,
-				LambdaMetafactory::class.classDesc,
-				"metafactory",
-				MethodTypeDesc.of(
-					CallSite::class.classDesc,
-					MethodHandles.Lookup::class.classDesc,
-					ConstantDescs.CD_String,
-					MethodType::class.classDesc,
-					MethodType::class.classDesc,
-					MethodHandle::class.classDesc,
-					MethodType::class.classDesc
-				)
-			)
-
-			if (index == 3) codeBuilder
+			"main"
+		) { codeBuilder, _, _ ->
+			codeBuilder
 				.aload(0)
-				.loadConstant("".toConstantDesc())
-				.putfield(minecraftDesc, "errorSection", ConstantDescs.CD_String)
-
-				// todo java.lang.VerifyError: Expecting a stackmap frame at branch target 39
+				.iconst_0()
+				.aaload()
 				.aload(0)
-				.aload(0)
-				.invokedynamic(
-					DynamicCallSiteDesc.of(
-						metafactoryDesc,
-						"invoke",
-						MethodTypeDesc.of(glfwErrorCallbackIDesc, minecraftDesc),
-						callBackDescriptor,
-						MethodHandleDesc.ofMethod(
-							DirectMethodHandleDesc.Kind.VIRTUAL,
-							minecraftDesc,
-							"defaultErrorCallback",
-							callBackDescriptor
-						),
-						callBackDescriptor
+				.iconst_1()
+				.aaload()
+				.invokestatic(
+					thisClassDesc,
+					"a",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void,
+						ConstantDescs.CD_String,
+						ConstantDescs.CD_String
 					)
 				)
-				.invokestatic(
-					glfwErrorCallbackDesc,
-					"create",
-					MethodTypeDesc.of(glfwErrorCallbackDesc, glfwErrorCallbackIDesc)
-				)
-				.putfield(
-					minecraftDesc,
-					"glfwErrorCallback",
-					glfwErrorCallbackDesc
-				)
-			codeBuilder.with(codeElement)
-
-			/*
-			MethodHandleDesc.ofMethod(
-							DirectMethodHandleDesc.Kind.valueOf(REF_invokeVirtual),
-							minecraftDesc,
-							"defaultErrorCallback",
-							MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_int, ConstantDescs.CD_long)
-						)
-			 */
-
+				.return_()
 		}
-		// There's no proper name in the deobfuscated class, but the code inside appears to refer to the game loop
-		val func_40001_x = classBuilder.transformMethodCode(
-			classElement,
-			"x"
-		) { codeBuilder, codeElement, index ->
-//			println("$index, $codeElement")
-			codeBuilder.with(codeElement)
-		}
+		val func_40001_x = applyFunc_40001_xTransform(classBuilder, classElement)
 		val checkGlErrorRemove =
 			classElement is MethodModel &&
 			classElement.methodName().equalsString("d") &&
 			classElement.methodTypeSymbol() == MethodTypeDesc.of(
 		ConstantDescs.CD_void, ConstantDescs.CD_String
 			)
+		val shutdownMinecraftApplet = classBuilder.transformMethodCode(
+			classElement,
+			"d",
+			DEFAULT_VOID
+		) { codeBuilder, codeElement, index ->
+			when (index) {
+				else if (index !in listOf(68, 70, 73, 85)) -> codeBuilder.with(codeElement)
+			}
+		}
+		val toggleFullscreen = classBuilder.transformMethodCode(
+			classElement,
+			"j",
+			DEFAULT_VOID
+		) { codeBuilder, codeElement, index ->
+			IntBuffer.allocate(1)[0]
+			when (index) {
+				2 -> codeBuilder
+					.localVariable(1, "widthBuffer", IntBuffer::class.classDesc)
+					.localVariable(2, "heightBuffer", IntBuffer::class.classDesc)
 
+					.iconst_1()
+					.invokestatic(
+						IntBuffer::class.classDesc,
+						"allocate",
+						MethodTypeDesc.of(IntBuffer::class.classDesc, ConstantDescs.CD_int)
+					)
+					.astore(1)
+					.iconst_1()
+					.invokestatic(
+						IntBuffer::class.classDesc,
+						"allocate",
+						MethodTypeDesc.of(IntBuffer::class.classDesc, ConstantDescs.CD_int)
+					)
+					.astore(2)
+
+				48 -> codeBuilder
+					.aload(0)
+					.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
+					.aload(1)
+					.aload(2)
+					.invokestatic(
+						glfwDesc,
+						"glfwGetWindowSize",
+						MethodTypeDesc.of(
+							ConstantDescs.CD_void,
+							ConstantDescs.CD_long,
+							IntBuffer::class.classDesc,
+							IntBuffer::class.classDesc
+						)
+					).aload(0)
+					.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
+					.aload(1)
+					.aload(2)
+					.invokestatic(
+						glfwDesc,
+						"glfwGetWindowSize",
+						MethodTypeDesc.of(
+							ConstantDescs.CD_void,
+							ConstantDescs.CD_long,
+							IntBuffer::class.classDesc,
+							IntBuffer::class.classDesc
+						)
+					)
+					.aload(0)
+					.aload(1)
+					.iconst_0()
+					.invokevirtual(
+						IntBuffer::class.classDesc,
+						"get",
+						MethodTypeDesc.of(ConstantDescs.CD_int, ConstantDescs.CD_int)
+					)
+					.putfield(thisClassDesc, "d", ConstantDescs.CD_int)
+					.aload(0)
+					.aload(2)
+					.iconst_0()
+					.invokevirtual(
+						IntBuffer::class.classDesc,
+						"get",
+						MethodTypeDesc.of(ConstantDescs.CD_int, ConstantDescs.CD_int)
+					)
+					.putfield(thisClassDesc, "e", ConstantDescs.CD_int)
+
+				else if (index !in 48 .. 90) -> codeBuilder.with(codeElement)
+			}
+		}
+
+		addSetErrorSection(classBuilder)
+		addDefaultErrorCallback(classBuilder)
+		addSetupKeyCallbacks(classBuilder)
+		addSetupMouseCallbacks(classBuilder)
+		addSetupCursorPosCallbacks(classBuilder)
+
+		classBuilder.addField("window", ConstantDescs.CD_long, ACC_PUBLIC)
+		classBuilder.addField("glfwErrorCallback", glfwErrorCallbackDesc, ACC_PUBLIC)
+		classBuilder.addField("errorSection", ConstantDescs.CD_String, ACC_PRIVATE)
+		classBuilder.addField("mouseHandler", MouseHandler::class.classDesc, ACC_PUBLIC)
+
+		val modified = startGame || loadScreen || checkGlErrorRemove || init || main || func_40001_x || runTick || shutdownMinecraftApplet || toggleFullscreen
+		if (!modified) classBuilder.with(classElement)
+	}
+
+	private fun addSetErrorSection(classBuilder: ClassBuilder) {
 		classBuilder.addMethodWithCode(
 			"setErrorSection",
 			MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String),
@@ -250,22 +217,314 @@ class MinecraftTransform_LWJGL3(
 			codeBuilder
 				.aload(0)
 				.aload(1)
-				.putfield(minecraftDesc, "errorSection", ConstantDescs.CD_String)
+				.putfield(thisClassDesc, "errorSection", ConstantDescs.CD_String)
 				.return_()
 		}
+	}
 
+	private fun addDefaultErrorCallback(classBuilder: ClassBuilder) {
 		classBuilder.addMethodWithCode(
 			"defaultErrorCallback",
 			MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_int, ConstantDescs.CD_long),
 			ACC_PUBLIC
 		) { codeBuilder ->
-			codeBuilder.return_()
+			codeBuilder
+				.localVariable(3, "string", ConstantDescs.CD_String)
+				.lload(2)
+				.invokestatic(
+					memoryUtilDesc,
+					"memUTF8",
+					MethodTypeDesc.of(ConstantDescs.CD_String, ConstantDescs.CD_long)
+				)
+				.astore(3)
+				.println("########## GL ERROR ##########")
+				.getstatic(
+					System::class.classDesc,
+					"out",
+					PrintStream::class.classDesc
+				)
+				.stringBuilderInvoke()
+				.loadConstant("@")
+				.stringBuilderAppend()
+				.iload(1)
+				.invokestatic(
+					Integer::class.classDesc,
+					"toString",
+					MethodTypeDesc.of(ConstantDescs.CD_String, ConstantDescs.CD_int)
+				)
+				.stringBuilderAppend()
+				.stringBuilderToString()
+				.invokevirtual(
+					PrintStream::class.classDesc,
+					"println",
+					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String)
+				)
+				.getstatic(
+					System::class.classDesc,
+					"out",
+					PrintStream::class.classDesc
+				)
+				.stringBuilderInvoke()
+				.iload(1)
+				.invokestatic(
+					Integer::class.classDesc,
+					"toString",
+					MethodTypeDesc.of(ConstantDescs.CD_String, ConstantDescs.CD_int)
+				)
+				.stringBuilderAppend()
+				.loadConstant(":")
+				.stringBuilderAppend()
+				.aload(3)
+				.stringBuilderAppend()
+				.stringBuilderToString()
+				.invokevirtual(
+					PrintStream::class.classDesc,
+					"println",
+					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String)
+				)
+				.return_()
+		}
+	}
+
+	private fun addSetupKeyCallbacks(classBuilder: ClassBuilder) {
+		val keyCallbackDesc = MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long, ConstantDescs.CD_int, ConstantDescs.CD_int, ConstantDescs.CD_int, ConstantDescs.CD_int)
+		classBuilder.addMethodWithCode(
+			"setupKeyCallbacks",
+			MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long),
+			ACC_PUBLIC
+		) { codeBuilder ->
+			codeBuilder
+				.aload(0)
+				.lload(1)
+				.aload(0)
+				.invokedynamic(
+					DynamicCallSiteDesc.of(
+						LAMBDA_METAFACTORY_METHOD_HANDLE,
+						"invoke",
+						MethodTypeDesc.of(glfwKeyCallbackIDesc, thisClassDesc),
+						keyCallbackDesc,
+						MethodHandleDesc.ofMethod(
+							DirectMethodHandleDesc.Kind.VIRTUAL,
+							thisClassDesc,
+							$$"Minecraft$setupKeyCallbacks$lambda$1",
+							keyCallbackDesc
+						),
+						keyCallbackDesc
+					)
+				)
+				.invokestatic(
+					glfwDesc,
+					"glfwSetKeyCallback",
+					MethodTypeDesc.of(glfwKeyCallbackDesc, ConstantDescs.CD_long, glfwKeyCallbackIDesc)
+				)
+				.pop()
+				.return_()
 		}
 
-		classBuilder.addField("window", ConstantDescs.CD_long, ACC_PUBLIC)
-		classBuilder.addField("glfwErrorCallback", glfwErrorCallbackDesc, ACC_PUBLIC)
-		classBuilder.addField("errorSection", ConstantDescs.CD_String, ACC_PRIVATE)
+		classBuilder.addMethodWithCode(
+			$$"Minecraft$setupKeyCallbacks$lambda$1",
+			keyCallbackDesc,
+			ACC_PRIVATE or ACC_SYNTHETIC
+		) { codeBuilder ->
+			codeBuilder.return_()
+		}
+	}
 
-		if (!(startGame || loadScreen || checkGlErrorRemove || init || func_40001_x)) classBuilder.with(classElement)
+	private fun addSetupCursorPosCallbacks(classBuilder: ClassBuilder) {
+		val cursePosCallbackDesc = MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long, ConstantDescs.CD_double, ConstantDescs.CD_double)
+		classBuilder.addMethodWithCode(
+			"setupCursorPosCallbacks",
+			MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long),
+			ACC_PUBLIC
+		) { codeBuilder ->
+			codeBuilder
+				.aload(0)
+				.lload(1)
+				.aload(0)
+				.invokedynamic(
+					DynamicCallSiteDesc.of(
+						LAMBDA_METAFACTORY_METHOD_HANDLE,
+						"invoke",
+						MethodTypeDesc.of(glfwCursorPosCallbackIDesc, thisClassDesc),
+						cursePosCallbackDesc,
+						MethodHandleDesc.ofMethod(
+							DirectMethodHandleDesc.Kind.VIRTUAL,
+							thisClassDesc,
+							$$"Minecraft$setupCursorCallbacks$lambda$3",
+							cursePosCallbackDesc
+						),
+						cursePosCallbackDesc
+					)
+				)
+				.invokestatic(
+					glfwDesc,
+					"glfwSetCursorPosCallback",
+					MethodTypeDesc.of(glfwCursorPosCallbackDesc, ConstantDescs.CD_long, glfwCursorPosCallbackIDesc)
+				)
+				.pop()
+				.return_()
+		}
+
+		classBuilder.addMethodWithCode(
+			$$"Minecraft$setupCursorCallbacks$lambda$3",
+			cursePosCallbackDesc,
+			ACC_PRIVATE or ACC_SYNTHETIC
+		) { codeBuilder ->
+			codeBuilder
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"mouseHandler",
+					MouseHandler::class.classDesc
+				)
+				.lload(1)
+				.invokevirtual(
+					MouseHandler::class.classDesc,
+					"setCurrentWindow",
+					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long)
+				)
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"mouseHandler",
+					MouseHandler::class.classDesc
+				)
+				.dload(3)
+				.putfield(
+					MouseHandler::class.classDesc,
+					"cursorX",
+					ConstantDescs.CD_double
+				)
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"mouseHandler",
+					MouseHandler::class.classDesc
+				)
+				.dload(5)
+				.putfield(
+					MouseHandler::class.classDesc,
+					"cursorY",
+					ConstantDescs.CD_double
+				)
+				.return_()
+		}
+	}
+
+	private fun addSetupMouseCallbacks(classBuilder: ClassBuilder) {
+		val mouseCallbackDesc = MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long, ConstantDescs.CD_int, ConstantDescs.CD_int, ConstantDescs.CD_int)
+		classBuilder.addMethodWithCode(
+			"setupMouseCallbacks",
+			MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_long),
+			ACC_PUBLIC
+		) { codeBuilder ->
+			codeBuilder
+				.aload(0)
+				.lload(1)
+				.aload(0)
+				.invokedynamic(
+					DynamicCallSiteDesc.of(
+						LAMBDA_METAFACTORY_METHOD_HANDLE,
+						"invoke",
+						MethodTypeDesc.of(glfwMouseButtonCallbackIDesc, thisClassDesc),
+						mouseCallbackDesc,
+						MethodHandleDesc.ofMethod(
+							DirectMethodHandleDesc.Kind.VIRTUAL,
+							thisClassDesc,
+							$$"Minecraft$setupMouseCallbacks$lambda$2",
+							mouseCallbackDesc
+						),
+						mouseCallbackDesc
+					)
+				)
+				.invokestatic(
+					glfwDesc,
+					"glfwSetMouseButtonCallback",
+					MethodTypeDesc.of(glfwMouseButtonCallbackDesc, ConstantDescs.CD_long, glfwMouseButtonCallbackIDesc)
+				)
+				.pop()
+				.return_()
+		}
+
+		classBuilder.addMethodWithCode(
+			$$"Minecraft$setupMouseCallbacks$lambda$2",
+			mouseCallbackDesc,
+			ACC_PRIVATE or ACC_SYNTHETIC
+		) { codeBuilder ->
+			val label = codeBuilder.newLabel()
+			codeBuilder
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"s",
+					guiScreenDesc
+				)
+				.ifnull(label)
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"s",
+					guiScreenDesc
+				)
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"mouseHandler",
+					MouseHandler::class.classDesc
+				)
+				.iload(3)
+				.iload(4)
+				.iload(5)
+				.invokevirtual(
+					guiScreenDesc,
+					"g",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_void,
+//						ConstantDescs.CD_long, // window
+						MouseHandler::class.classDesc,
+						ConstantDescs.CD_int, // button
+						ConstantDescs.CD_int, // action
+						ConstantDescs.CD_int // mods
+					)
+				)
+				.labelBinding(label)
+				.return_()
+		}
+	}
+
+	private fun applyFunc_40001_xTransform(classBuilder: ClassBuilder, classElement: ClassElement): Boolean {
+		// There's no proper name in the deobfuscated class, but the code inside appears to refer to the game loop
+		return classBuilder.transformMethodCode(
+			classElement,
+			"x"
+		) { codeBuilder, codeElement, index ->
+			when (index) {
+				120 -> codeBuilder
+					.invokestatic(
+						glfwDesc,
+						"glfwPollEvents",
+						DEFAULT_VOID
+					)
+					.with(codeElement)
+				123, 340 -> codeBuilder.invokespecial(
+					thisClassDesc,
+					"setErrorSection",
+					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String)
+				)
+
+				213 -> codeBuilder
+					.aload(0)
+					.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
+					.invokevirtual(
+						entityRendererDesc,
+						"b",
+						MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_float, ConstantDescs.CD_long)
+					)
+
+				else if (
+					index !in 164 .. 169 // Delete Display.update & Keyboard call
+				) -> codeBuilder.with(codeElement)
+			}
+		}
 	}
 }

@@ -6,9 +6,13 @@ import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Co
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
-import java.lang.classfile.*
+import java.lang.classfile.ClassBuilder
+import java.lang.classfile.ClassElement
+import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFileVersion
 import java.lang.classfile.ClassTransform
+import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.MethodTypeDesc
 import java.nio.file.Files
@@ -24,13 +28,14 @@ abstract class ClassTransform(
 	private val classFile: ClassFile
 ) : CodeTransformer {
 	override val existingElements: MutableList<String> = mutableListOf()
+	val thisClassDesc: ClassDesc = ClassDesc.of(targetClass.replace('/', '.'))
 
-	fun startTransform() {
+	fun addTransform() {
 		scanning[targetClass] = { _, _, _, data ->
 			val model = classFile.parse(data)
 			val transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
 				classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
-				model.forEach { classElement ->
+				model.filterNot { it is ClassFileVersion }.forEach { classElement ->
 					transform().invoke(classBuilder, classElement)
 				}
 			}
@@ -42,15 +47,6 @@ abstract class ClassTransform(
 					.createParentDirectories(),
 				transformed
 			)
-//			val verified = classFile.verify(transformed)
-//			if (verified.isNotEmpty()) {
-//				logger.severe("${verified.size} verification errors found while validating " +
-//				"$targetClass ($deobfClassName)")
-//				verified.forEachIndexed { i, t ->
-//					logger.log(Level.SEVERE, t) { "Verification error $i" }
-//				}
-//				throw verified[0]
-//			}
 			transformed
 		}
 	}

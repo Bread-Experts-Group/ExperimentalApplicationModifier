@@ -1,14 +1,11 @@
-package org.bread_experts_group.eam.minecraft.feature
+package org.bread_experts_group.eam.minecraft.transform
 
 import org.bread_experts_group.api.feature.FeatureExpression
 import org.bread_experts_group.api.feature.FeatureImplementation
 import org.bread_experts_group.eam.DefiningClassLoader
-import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedFeatures
-import org.bread_experts_group.eam.minecraft.transform.CodeTransformer
+import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
-import java.lang.classfile.ClassFile.StackMapsOption
-import java.lang.classfile.ClassFile.of
 import java.lang.constant.ClassDesc
 import java.nio.file.Files
 import kotlin.io.path.Path
@@ -18,7 +15,7 @@ abstract class FeatureTransform<I, E : FeatureImplementation<E>>(
 	val input: I,
 	private val feature: FeatureExpression<E>
 ) : CodeTransformer {
-	private val cf: ClassFile = of(StackMapsOption.GENERATE_STACK_MAPS)
+	private val cf: ClassFile = ClassFile.of(ClassFile.StackMapsOption.GENERATE_STACK_MAPS)
 	private val cl: DefiningClassLoader = DefiningClassLoader()
 	override val existingElements: MutableList<String> = mutableListOf()
 
@@ -32,7 +29,7 @@ abstract class FeatureTransform<I, E : FeatureImplementation<E>>(
 			cf.build(ClassDesc.of(name)) { classBuilder ->
 				this.startTransform(name).invoke(classBuilder)
 			}.also {
-				val path = MinecraftImplementations.arguments.get(writeTransformedFeatures)
+				val path = MinecraftImplementations.arguments.get(MinecraftImplementations.writeTransformedFeatures)
 				if (path != null) Files.write(
 					Path(path)
 						.resolve("$name [${feature.name}].class")

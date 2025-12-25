@@ -39,7 +39,7 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 		lateinit var arguments: ArgumentContainer
 	}
 
-	protected val classFile: ClassFile = ClassFile.of(ClassFile.StackMapsOption.STACK_MAPS_WHEN_REQUIRED)
+	private val classFile: ClassFile = ClassFile.of(ClassFile.StackMapsOption.GENERATE_STACK_MAPS)
 	private lateinit var instrumentation: Instrumentation
 	protected lateinit var scanning: Scanning
 	protected val mods: List<MinecraftMod> = ServiceLoader.load(MinecraftMod::class.java).toList()
@@ -51,8 +51,8 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 	) {
 		this.instrumentation = instrumentation
 		this.scanning = scanning
-		start()
+		start(this.scanning, classFile)
 	}
 
-	abstract fun start()
+	abstract fun start(scanning: Scanning, classFile: ClassFile)
 }

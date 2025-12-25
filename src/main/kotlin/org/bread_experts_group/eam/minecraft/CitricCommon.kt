@@ -4,17 +4,40 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getNativeLocalVariable
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.mimic.NativeLookup
+import org.bread_experts_group.eam.toConstantDesc
+import java.io.PrintStream
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeBuilder
 import java.lang.classfile.instruction.LocalVariable
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
+import java.lang.constant.DirectMethodHandleDesc
+import java.lang.constant.MethodHandleDesc
 import java.lang.constant.MethodTypeDesc
+import java.lang.invoke.CallSite
+import java.lang.invoke.LambdaMetafactory
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType
 import java.lang.reflect.Method
 import kotlin.reflect.full.isSubclassOf
 
 val DEFAULT_VOID: MethodTypeDesc = MethodTypeDesc.of(ConstantDescs.CD_void)
+val LAMBDA_METAFACTORY_METHOD_HANDLE: DirectMethodHandleDesc = MethodHandleDesc.ofMethod(
+	DirectMethodHandleDesc.Kind.STATIC,
+	LambdaMetafactory::class.classDesc,
+	"metafactory",
+	MethodTypeDesc.of(
+		CallSite::class.classDesc,
+		MethodHandles.Lookup::class.classDesc,
+		ConstantDescs.CD_String,
+		MethodType::class.classDesc,
+		MethodType::class.classDesc,
+		MethodHandle::class.classDesc,
+		MethodType::class.classDesc
+	)
+)
 
 fun CodeBuilder.invokeStaticWithLocalVars(
 	method: Method?,
@@ -121,6 +144,44 @@ fun CodeBuilder.invokeDefaultSuper(): CodeBuilder = this
 		ConstantDescs.CD_Object,
 		ConstantDescs.INIT_NAME,
 		MethodTypeDesc.of(ConstantDescs.CD_void)
+	)
+
+fun CodeBuilder.loadConstant(string: String): CodeBuilder = this.loadConstant(string.toConstantDesc())
+
+fun CodeBuilder.println(message: String): CodeBuilder = this
+	.getstatic(
+		System::class.classDesc,
+		"out",
+		PrintStream::class.classDesc
+	)
+	.loadConstant(message.toConstantDesc())
+	.invokevirtual(
+		PrintStream::class.classDesc,
+		"println",
+		MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String)
+	)
+
+fun CodeBuilder.stringBuilderInvoke(): CodeBuilder = this
+	.new_(StringBuilder::class.classDesc)
+	.dup()
+	.invokespecial(
+		StringBuilder::class.classDesc,
+		ConstantDescs.INIT_NAME,
+		DEFAULT_VOID
+	)
+
+fun CodeBuilder.stringBuilderAppend(): CodeBuilder = this
+	.invokevirtual(
+		StringBuilder::class.classDesc,
+		"append",
+		MethodTypeDesc.of(StringBuilder::class.classDesc, ConstantDescs.CD_String)
+	)
+
+fun CodeBuilder.stringBuilderToString(): CodeBuilder = this
+	.invokevirtual(
+		StringBuilder::class.classDesc,
+		"toString",
+		MethodTypeDesc.of(ConstantDescs.CD_String)
 	)
 
 fun CodeBuilder.invokeSpecialNewMimic(

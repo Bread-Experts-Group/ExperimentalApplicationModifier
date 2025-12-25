@@ -1,10 +1,10 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0
 
 import org.bread_experts_group.api.feature.ImplementationSource
-import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.Identifier
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
+import org.bread_experts_group.eam.minecraft.transform.FeatureTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.net.minecraft.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.net.minecraft.Material
 

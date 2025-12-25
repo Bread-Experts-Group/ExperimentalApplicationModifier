@@ -75,6 +75,7 @@ interface CodeTransformer {
 	) : Boolean = this.transformMethod(classElement, methodName, typeDesc) { methodBuilder, methodElement ->
 		if (methodElement is CodeModel) methodBuilder.transformCodeIndexed(methodElement, transform)
 	}
+
 	/**
 	 * The index refers to the position of a [CodeElement] in the method being transformed.
 	 */
@@ -187,25 +188,30 @@ interface CodeTransformer {
 	}
 
 	/**
-	 * Replaces the signature in the target method.
+	 * Replaces the signature in the target method, and optionally code changes.
 	 *
 	 * @return True if the method was successfully transformed, false if not.
 	 */
-	fun ClassBuilder.replaceMethodSignature(
+	fun ClassBuilder.transformMethodNewSignature(
 		classElement: ClassElement,
-		newSignature: MethodTypeDesc,
 		methodName: String,
-		typeDesc: MethodTypeDesc? = null
+		newSignature: MethodTypeDesc,
+		oldSignature: MethodTypeDesc? = null,
+		transform: (CodeBuilder, CodeElement, Int) -> Unit = { c, e, i -> c.with(e) }
 	): Boolean = if (
 		classElement is MethodModel &&
 		classElement.methodName().equalsString(methodName) &&
-		(classElement.methodTypeSymbol() == typeDesc || typeDesc == null)
+		(classElement.methodTypeSymbol() == oldSignature || oldSignature == null)
 	) {
 		this.addMethod(methodName, newSignature, classElement.flags().flagsMask()) { builder ->
-			builder.withCode { codeBuilder ->
-				classElement.code().get().forEach(codeBuilder::with)
+			builder.withCode { builder ->
+				classElement.code().get().forEachIndexed { index, element ->
+					transform(builder, element, index)
+				}
 			}
 		}
 		true
 	} else false
+
+	fun CodeBuilder.shiftLocalVarSlots(): CodeBuilder = TODO()
 }

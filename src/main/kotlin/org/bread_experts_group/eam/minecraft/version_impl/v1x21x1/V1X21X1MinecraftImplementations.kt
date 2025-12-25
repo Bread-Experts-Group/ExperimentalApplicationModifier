@@ -6,6 +6,7 @@ import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
+import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContent
 import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient
@@ -63,6 +64,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resources.LoaderPackSource
 import org.bread_experts_group.logging.ColoredHandler
 import java.awt.Color
+import java.lang.classfile.ClassFile
 import java.net.URI
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
@@ -83,30 +85,30 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		MinecraftFeatures.CREATIVE_TAB to mutableListOf(MinecraftCreativeTabFeature1x21x1())
 	)
 
-	override fun start() {
+	override fun start(scanning: Scanning, classFile: ClassFile) {
 		logger.info("Starting Class Transforms")
-		BuiltInRegistriesTransform(scanning, classFile).startTransform()
-		MinecraftTransform(scanning, classFile).startTransform()
-		GuiTransform(scanning, classFile).startTransform()
-		ItemRendererTransform(scanning, classFile).startTransform()
-		ModelBakeryTransform(scanning, classFile).startTransform()
-		PackRepositoryTransform(scanning, classFile).startTransform()
-		TitleScreenTransform(scanning, classFile).startTransform()
-		CreativeModeTabsTransform(scanning, classFile).startTransform()
-		CreativeModeScreenTransform(scanning, classFile).startTransform()
-		MouseHandlerTransform(scanning, classFile).startTransform()
-		ClientLevelTransform(scanning, classFile).startTransform()
-		CameraTransform(scanning, classFile).startTransform()
-		BlockEntityRenderersTransform(scanning, classFile).startTransform()
-		BlockEntityTypeTransform(scanning, classFile).startTransform()
-		BlockEntitySupplierTransform(scanning, classFile).startTransform()
-		TextureManagerTransform(scanning, classFile).startTransform()
-		AbstractTextureTransform(scanning, classFile).startTransform()
-		GameRendererTransform(scanning, classFile).startTransform()
-		RenderTypeTransform(scanning, classFile).startTransform()
-		RenderStateShardTransform(scanning, classFile).startTransform()
-		LevelRendererTransform(scanning, classFile).startTransform()
-		BuiltInPackSourceTransform(scanning, classFile).startTransform()
+		BuiltInRegistriesTransform(scanning, classFile).addTransform()
+		MinecraftTransform(scanning, classFile).addTransform()
+		GuiTransform(scanning, classFile).addTransform()
+		ItemRendererTransform(scanning, classFile).addTransform()
+		ModelBakeryTransform(scanning, classFile).addTransform()
+		PackRepositoryTransform(scanning, classFile).addTransform()
+		TitleScreenTransform(scanning, classFile).addTransform()
+		CreativeModeTabsTransform(scanning, classFile).addTransform()
+		CreativeModeScreenTransform(scanning, classFile).addTransform()
+		MouseHandlerTransform(scanning, classFile).addTransform()
+		ClientLevelTransform(scanning, classFile).addTransform()
+		CameraTransform(scanning, classFile).addTransform()
+		BlockEntityRenderersTransform(scanning, classFile).addTransform()
+		BlockEntityTypeTransform(scanning, classFile).addTransform()
+		BlockEntitySupplierTransform(scanning, classFile).addTransform()
+		TextureManagerTransform(scanning, classFile).addTransform()
+		AbstractTextureTransform(scanning, classFile).addTransform()
+		GameRendererTransform(scanning, classFile).addTransform()
+		RenderTypeTransform(scanning, classFile).addTransform()
+		RenderStateShardTransform(scanning, classFile).addTransform()
+		LevelRendererTransform(scanning, classFile).addTransform()
+		BuiltInPackSourceTransform(scanning, classFile).addTransform()
 
 		// todo a way to implement natives directly into mimics in the future?
 		scanning["org.bread_experts_group.eam.minecraft.test_mods.breadmod.camera.CameraTexture"] = { _, _, _, data ->

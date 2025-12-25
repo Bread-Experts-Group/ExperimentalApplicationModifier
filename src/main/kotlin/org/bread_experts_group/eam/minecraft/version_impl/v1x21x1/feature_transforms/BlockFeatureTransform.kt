@@ -2,13 +2,13 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.feature_trans
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
-import org.bread_experts_group.eam.minecraft.feature.FeatureTransform
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftEntityBlock
 import org.bread_experts_group.eam.minecraft.getReferenceField
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.putReferenceField
+import org.bread_experts_group.eam.minecraft.transform.FeatureTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.core.BlockPos
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.Block
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.EntityBlock
