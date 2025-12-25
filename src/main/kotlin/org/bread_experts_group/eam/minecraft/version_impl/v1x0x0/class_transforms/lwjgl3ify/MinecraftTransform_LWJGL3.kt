@@ -16,6 +16,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.NativeConstants
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.method_transforms.Minecraft_InitTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.method_transforms.Minecraft_RunTickTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.method_transforms.Minecraft_StartGameTransform
+import java.io.File
 import java.io.PrintStream
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
@@ -24,6 +25,7 @@ import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.ClassFile.ACC_SYNTHETIC
 import java.lang.classfile.MethodModel
+import java.lang.classfile.instruction.BranchInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.DirectMethodHandleDesc
@@ -326,7 +328,58 @@ class MinecraftTransform_LWJGL3(
 			keyCallbackDesc,
 			ACC_PRIVATE or ACC_SYNTHETIC
 		) { codeBuilder ->
-			codeBuilder.return_()
+			val label = codeBuilder.newLabel()
+			codeBuilder
+				.iload(3)
+				.getstatic(
+					glfwDesc,
+					"GLFW_KEY_F2",
+					ConstantDescs.CD_int
+				)
+				.if_icmpne(label)
+				.iload(5)
+				.getstatic(
+					glfwDesc,
+					"GLFW_PRESS",
+					ConstantDescs.CD_int
+				)
+				.if_icmpne(label)
+				.aload(0)
+				.getfield(thisClassDesc, "w", ClassDesc.of("qd")) // GuiInGame
+				.getstatic(
+					thisClassDesc,
+					"aj",
+					File::class.classDesc,
+				)
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"d",
+					ConstantDescs.CD_int
+				)
+				.aload(0)
+				.getfield(
+					thisClassDesc,
+					"e",
+					ConstantDescs.CD_int
+				)
+				.invokestatic(
+					ClassDesc.of("abx"),
+					"a",
+					MethodTypeDesc.of(
+						ConstantDescs.CD_String,
+						File::class.classDesc,
+						ConstantDescs.CD_int,
+						ConstantDescs.CD_int
+					)
+				)
+				.invokevirtual(
+					ClassDesc.of("qd"),
+					"a",
+					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String)
+				)
+				.labelBinding(label)
+				.return_()
 		}
 	}
 
@@ -499,6 +552,14 @@ class MinecraftTransform_LWJGL3(
 			"x"
 		) { codeBuilder, codeElement, index ->
 			when (index) {
+				27 -> codeBuilder
+					.aload(0)
+					.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
+					.invokestatic(
+						glfwDesc,
+						"glfwWindowShouldClose",
+						MethodTypeDesc.of(ConstantDescs.CD_boolean, ConstantDescs.CD_long)
+					)
 				120 -> codeBuilder
 					.invokestatic(
 						glfwDesc,
@@ -511,7 +572,6 @@ class MinecraftTransform_LWJGL3(
 					"setErrorSection",
 					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_String)
 				)
-
 				213 -> codeBuilder
 					.aload(0)
 					.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
@@ -520,9 +580,34 @@ class MinecraftTransform_LWJGL3(
 						"b",
 						MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_float, ConstantDescs.CD_long)
 					)
+				222 -> codeBuilder
+					.aload(0)
+					.getfield(thisClassDesc, "window", ConstantDescs.CD_long)
+					.getstatic(
+						glfwDesc,
+						"GLFW_FOCUSED",
+						ConstantDescs.CD_int
+					)
+					.invokestatic(
+						glfwDesc,
+						"glfwGetWindowAttrib",
+						MethodTypeDesc.of(ConstantDescs.CD_int, ConstantDescs.CD_long, ConstantDescs.CD_int)
+					)
+					.getstatic(
+						glfwDesc,
+						"GLFW_TRUE",
+						ConstantDescs.CD_int
+					)
+				223 -> {
+					val original = codeElement as BranchInstruction
+					codeBuilder.if_icmpne(original.target())
+				}
 
 				else if (
-					index !in 164 .. 169 // Delete Display.update & Keyboard call
+					index !in 24 .. 26 && // Replace Display.isCloseRequested
+					index !in 164 .. 169 && // Delete Display.update & Keyboard
+					index !in 271 .. 276 && // Delete Keyboard.isKeyDown & Display.update
+					index !in 277 .. 279 // Relocate screenshot call into key callback
 				) -> codeBuilder.with(codeElement)
 			}
 		}

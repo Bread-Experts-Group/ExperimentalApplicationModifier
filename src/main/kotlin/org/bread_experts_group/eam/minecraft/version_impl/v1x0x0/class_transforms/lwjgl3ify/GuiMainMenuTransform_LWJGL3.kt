@@ -24,8 +24,7 @@ class GuiMainMenuTransform_LWJGL3(
 				ConstantDescs.CD_float
 			)
 		) { codeBuilder, codeElement, index ->
-			println("$index, $codeElement")
-//			codeBuilder.with(codeElement)
+			if (index !in 10 .. 15) codeBuilder.with(codeElement)
 		}
 
 		if (!func_35355_b) classBuilder.with(classElement)

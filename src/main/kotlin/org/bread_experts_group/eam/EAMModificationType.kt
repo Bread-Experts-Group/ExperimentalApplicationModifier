@@ -55,7 +55,6 @@ enum class EAMModificationType(
 					protectionDomain: ProtectionDomain,
 					classfileBuffer: ByteArray
 				): ByteArray? {
-					if (className == "xe") println("THE CLASS IS FOUND")
 					if (arguments.get(logAllLoadsFlag) == true) logger.info(
 						"Loading class $className [$classBeingRedefined, $module] Data#${classfileBuffer.size}"
 					)
@@ -68,9 +67,11 @@ enum class EAMModificationType(
 						it.printStackTrace()
 					}.getOrNull()
 				}
-			}, false)
-			arguments.getRequired(versionFlag).implement(instrumentation, scanning)
+			}, instrumentation.isRetransformClassesSupported)
+			val impl = arguments.getRequired(versionFlag)
+			impl.implement(instrumentation, scanning)
 			MinecraftImplementations.arguments = arguments
+			if (impl.preload().isNotEmpty()) impl.preload().forEach { loadClass(it).getConstructor() }
 		}
 	);
 

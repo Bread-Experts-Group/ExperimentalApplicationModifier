@@ -12,6 +12,7 @@ import java.lang.classfile.ClassFile
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
+// todo work in progress..
 class GuiScreenTransform_LWJGL3(
 	scanning: Scanning,
 	classFile: ClassFile
@@ -37,7 +38,8 @@ class GuiScreenTransform_LWJGL3(
 			handleInputDesc,
 			DEFAULT_VOID
 		) { codeBuilder, codeElement, index ->
-			codeBuilder.return_()
+			codeBuilder.with(codeElement)
+//			codeBuilder.return_()
 		}
 		val handleMouseInput = classBuilder.transformMethodNewSignature(
 			classElement,

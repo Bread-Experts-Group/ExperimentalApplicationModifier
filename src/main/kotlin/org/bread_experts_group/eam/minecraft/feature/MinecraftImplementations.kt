@@ -55,4 +55,9 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 	}
 
 	abstract fun start(scanning: Scanning, classFile: ClassFile)
+
+	/**
+	 * A temporary workaround to force the jvm to load provided classes so they can be transformed.
+	 */
+	open fun preload(): List<String> = listOf()
 }

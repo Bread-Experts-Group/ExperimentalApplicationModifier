@@ -25,6 +25,10 @@ object V1X0X0MinecraftImplementations : MinecraftImplementations() {
 		MinecraftFeatures.BLOCK to mutableListOf(MinecraftBlockFeature1x0x0())
 	)
 
+	override fun preload(): List<String> = listOf(
+		NativeConstantsV1x0x0.net_minecraft_GuiMainMenu
+	)
+
 	override fun start(scanning: Scanning, classFile: ClassFile) {
 		BlockTransform(scanning, classFile).addTransform()
 		ContainerCreativeTransform(scanning, classFile).addTransform()
