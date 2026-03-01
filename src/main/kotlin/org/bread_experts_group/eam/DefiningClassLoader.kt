@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam
 
-class DefiningClassLoader(
+open class DefiningClassLoader(
 	private val name: String? = null,
 	parent: ClassLoader = getSystemClassLoader()
 ) : ClassLoader(parent) {

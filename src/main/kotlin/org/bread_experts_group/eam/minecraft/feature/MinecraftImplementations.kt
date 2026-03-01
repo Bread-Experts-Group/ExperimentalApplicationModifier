@@ -9,7 +9,7 @@ import org.bread_experts_group.api.system.io.IODevice
 import org.bread_experts_group.api.system.io.IODeviceFeatures
 import org.bread_experts_group.api.system.io.open.FileIOReOpenFeatures
 import org.bread_experts_group.api.system.io.open.WindowsIOReOpenFeatures
-import org.bread_experts_group.eam.DefiningClassLoader
+import org.bread_experts_group.eam.JARDefiningClassLoader
 import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
 import org.bread_experts_group.generic.command_line.ArgumentContainer
 import org.bread_experts_group.generic.command_line.Flag
@@ -76,8 +76,9 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 			val zip = ZipInputStream(
 				BSLReaderStream(BSLReader(ioDevice.get(IODeviceFeatures.READ)))
 			)
-			val jarLoader = DefiningClassLoader(
-				"${device.get(SystemDeviceFeatures.SYSTEM_IDENTIFIER).identity} Loader"
+			val jarLoader = JARDefiningClassLoader(
+				"${device.get(SystemDeviceFeatures.SYSTEM_IDENTIFIER).identity} Loader",
+				device
 			)
 			try {
 				while (true) {
