@@ -54,12 +54,8 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 	override val features: MutableList<MinecraftFeatureImplementation<*, *>> = mutableListOf()
 
 	init {
-//		val workingDir = System.getProperty("user.dir")
 		val modJars = Files.list(Path("eam_mods")).toList()
-		modJars.forEach { println(it) }
-		val loader = URLClassLoader(modJars.map { it.toUri().toURL() }.toTypedArray())
-		println(loader.loadClass("org.bread_experts_group.breadmod.BMUtil"))
-		println(loader.loadClass("org.bread_experts_group.breadmod.TestBlockEntity"))
+		val loader = URLClassLoader(modJars.map { it.toUri().toURL() }.toTypedArray(), this::class.java.classLoader)
 		mods = ServiceLoader.load(MinecraftMod::class.java, loader).toList()
 	}
 

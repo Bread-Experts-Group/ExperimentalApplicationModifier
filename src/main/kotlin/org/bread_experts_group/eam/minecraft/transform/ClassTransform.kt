@@ -34,12 +34,22 @@ abstract class ClassTransform(
 	fun addTransform(mods: List<MinecraftMod>) {
 		scanning[targetClass] = { _, _, _, data ->
 			val model = classFile.parse(data)
-			val transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
+			var transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
 				classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
 				model.filterNot { it is ClassFileVersion }.forEach { classElement ->
 					transform().invoke(classBuilder, classElement)
-					// todo passing transforms like this causes duplicate entries, need to figure out how to fix that
-					mods.forEach { it.getClassTransform(targetClass)?.invoke(classBuilder, classElement) }
+				}
+			}
+			// todo any transform that adds it's own classes will cause a NoClassDefFound
+			//  due to that class not being accessible from the game's classloader.
+			//  MC classes are loaded with the app classloader, but mod classes are URLClassLoader
+			mods.forEach {
+				val transform = it.getClassTransform(targetClass) ?: return@forEach
+				val newModel = classFile.parse(transformed)
+				transformed = classFile.build(newModel.thisClass().asSymbol()) { classBuilder ->
+					newModel.forEach { classElement ->
+						transform.invoke(classBuilder, classElement)
+					}
 				}
 			}
 			val path = MinecraftImplementations.arguments.get(writeTransformedClasses)

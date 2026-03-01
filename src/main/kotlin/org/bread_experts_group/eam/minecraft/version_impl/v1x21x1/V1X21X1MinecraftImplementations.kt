@@ -140,6 +140,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		}
 	}
 
+	// todo compile assets from mod jars into one repository to feed into mc
 	@JvmStatic
 	fun addPackSources(self: PackRepository) {
 		logger.info("[EAM Loader] Adding additional pack sources")
