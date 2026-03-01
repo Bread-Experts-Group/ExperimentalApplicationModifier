@@ -25,17 +25,16 @@ enum class EAMModificationType(
 		"minecraft",
 		{ instrumentation, args ->
 			val scanning = mutableMapOf<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>()
+			val versions = mapOf(
+				"1.0" to V1X0X0MinecraftImplementations,
+				"1.0.0" to V1X0X0MinecraftImplementations,
+				"1.21.1" to V1X21X1MinecraftImplementations
+			)
 			val versionFlag = Flag(
 				"version",
-				"The Minecraft version to target.",
+				"The Minecraft version to target.\nAcceptable values: ${versions.keys}",
 				required = 1,
-				conv = {
-					when (it) {
-						"1.0", "1.0.0" -> V1X0X0MinecraftImplementations
-						"1.21.1"       -> V1X21X1MinecraftImplementations
-						else           -> throw IllegalArgumentException("Cannot modify for unknown version $it")
-					}
-				}
+				conv = { versions[it] ?: throw IllegalArgumentException("Cannot modify for unknown version $it") }
 			)
 			val arguments = readArgs(
 				args,

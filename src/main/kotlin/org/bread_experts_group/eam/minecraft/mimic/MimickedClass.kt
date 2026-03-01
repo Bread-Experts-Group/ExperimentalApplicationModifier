@@ -31,7 +31,7 @@ abstract class MimickedClass(
 		builder: (ClassBuilder, String) -> Unit
 	): Constructor<*> {
 		val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
-		val cl = DefiningClassLoader(this::class.java.classLoader)
+		val cl = DefiningClassLoader(parent = this::class.java.classLoader)
 		val name = "EAM_NativeMimic_${mimicClass.simpleName}"
 		val built = cf.build(ClassDesc.of(name)) { builder(it, name) }
 

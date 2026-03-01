@@ -1,5 +1,4 @@
-import java.util.Properties
-import kotlin.apply
+import java.util.*
 
 plugins {
 	kotlin("jvm") version "2.3.10"
@@ -33,7 +32,7 @@ idea {
 dependencies {
 	testImplementation(kotlin("test"))
 	implementation(kotlin("reflect"))
-	implementation("org.bread_experts_group:bread_server_lib-code:D1F5N7P0")
+	implementation("org.bread_experts_group:bread_server_lib-code:D1F5N7P4")
 }
 
 kotlin {
