@@ -18,8 +18,10 @@ import org.bread_experts_group.generic.io.reader.BSLReader
 import java.lang.classfile.ClassFile
 import java.lang.instrument.Instrumentation
 import java.net.URL
+import java.net.URLClassLoader
 import java.nio.file.Files
 import java.security.ProtectionDomain
+import java.util.*
 import java.util.zip.ZipInputStream
 import kotlin.io.path.Path
 
@@ -122,18 +124,17 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 		return loadedClasses
 	}
 
-	private fun javaLoad(): List<URL> {
-		return Files.list(Path("eam_mods")).toList().map { it.toUri().toURL() }
+	private fun javaLoad(): List<MinecraftMod> {
+		val loaded: List<URL> = Files.list(Path("eam_mods")).toList().map { it.toUri().toURL() }
+		val loader = URLClassLoader(loaded.toTypedArray(), this::class.java.classLoader)
+		return ServiceLoader.load(MinecraftMod::class.java, loader).toList()
 	}
 
 	fun implement(
 		instrumentation: Instrumentation,
 		scanning: Scanning
 	) {
-//		val loaded: List<URL> = bslLoad() ?: javaLoad()
-//		val loader = URLClassLoader(loaded.toTypedArray(), this::class.java.classLoader)
-//		mods = ServiceLoader.load(MinecraftMod::class.java, bslLoad()).toList()
-		mods = bslLoad()!!
+		mods = bslLoad() ?: javaLoad()
 		this.instrumentation = instrumentation
 		this.scanning = scanning
 		start(this.scanning, classFile)
