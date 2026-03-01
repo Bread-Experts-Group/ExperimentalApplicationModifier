@@ -1,5 +1,11 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
-	kotlin("jvm") version "2.2.21"
+	kotlin("jvm") version "2.3.10"
+	idea
+	`maven-publish`
+	signing
 }
 
 group = "org.bread_experts_group"
@@ -17,10 +23,17 @@ repositories {
 	mavenLocal()
 }
 
+idea {
+	module {
+		isDownloadSources = true
+		isDownloadJavadoc = true
+	}
+}
+
 dependencies {
 	testImplementation(kotlin("test"))
 	implementation(kotlin("reflect"))
-	implementation("org.bread_experts_group:bread_server_lib-code:D0F1N1P3")
+	implementation("org.bread_experts_group:bread_server_lib-code:D1F5N7P0")
 }
 
 kotlin {
@@ -29,7 +42,7 @@ kotlin {
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -47,4 +60,40 @@ tasks.jar {
 
 tasks.test {
 	useJUnitPlatform()
+}
+
+val localProperties: Properties = Properties().apply {
+	rootProject.file("local.properties").reader().use(::load)
+}
+publishing {
+	publications {
+		create<MavenPublication>("mavenKotlin") {
+			artifactId = "experimental_application_modifier"
+			from(components["kotlin"])
+			artifact(tasks.kotlinSourcesJar)
+			pom {
+				name = "Experimental Application Modifier"
+				description = "Description pending"
+				url = "https://breadexperts.group"
+				scm {
+					connection = "scm:git:git://github.com/Bread-Experts-Group/experimental_application_modifier.git"
+					developerConnection = "scm:git:ssh://git@github.com:Bread-Experts-Group/maven_micro_server.git"
+					url = "https://breadexperts.group"
+				}
+			}
+		}
+	}
+	repositories {
+		maven {
+			url = uri("https://maven.breadexperts.group/")
+			credentials {
+				username = localProperties["mavenUser"] as String
+				password = localProperties["mavenPassword"] as String
+			}
+		}
+	}
+}
+signing {
+	useGpgCmd()
+	sign(publishing.publications["mavenKotlin"])
 }

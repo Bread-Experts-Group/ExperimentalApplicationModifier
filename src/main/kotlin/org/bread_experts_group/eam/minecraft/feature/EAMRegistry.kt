@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.feature
 
-import org.bread_experts_group.logging.ColoredHandler
+import org.bread_experts_group.BSLLogMessage
+import org.bread_experts_group.BSLLogMessage.Companion.info
+import org.bread_experts_group.generic.logging.LevelLogger
 import java.lang.constant.ClassDesc
 
 open class EAMRegistry<T> {
@@ -9,7 +11,7 @@ open class EAMRegistry<T> {
 	}
 
 	private val elements = mutableMapOf<String, MutableMap<String, T>>()
-	private val logger = ColoredHandler.newLogger("TMP logger EAM Registry")
+	private val logger = LevelLogger<BSLLogMessage>("TMP logger EAM Registry")
 	private var locked = false
 
 	fun hasElement(identifier: Identifier): Boolean =

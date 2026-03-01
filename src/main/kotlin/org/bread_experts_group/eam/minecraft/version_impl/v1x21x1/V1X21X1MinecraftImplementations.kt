@@ -1,18 +1,14 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
-import org.bread_experts_group.bslBuildDate
-import org.bread_experts_group.bslVersion
+import org.bread_experts_group.BSLLogMessage
+import org.bread_experts_group.BSLLogMessage.Companion.info
 import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
+import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
-import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContent
-import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient
-import org.bread_experts_group.eam.minecraft.test_mods.breadmod.BMContentClient.TEST_RENDERER
-import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntity
-import org.bread_experts_group.eam.minecraft.test_mods.breadmod.TestBlockEntityRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.AbstractTextureTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
@@ -62,18 +58,23 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.level.block.entity.BlockEntityType.Builder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resources.LoaderPackSource
-import org.bread_experts_group.logging.ColoredHandler
+import org.bread_experts_group.generic.bslBuildDate
+import org.bread_experts_group.generic.bslVersion
+import org.bread_experts_group.generic.logging.LevelLogger
 import java.awt.Color
+import java.io.InputStream
 import java.lang.classfile.ClassFile
 import java.net.URI
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
 import java.util.function.Consumer
+import java.util.jar.JarFile
+import java.util.jar.JarInputStream
 import java.util.logging.Logger
 
 @Suppress("unused")
 object V1X21X1MinecraftImplementations : MinecraftImplementations() {
-	override val logger: Logger = ColoredHandler.newLogger("V1x21x1 Impl")
+	override val logger: LevelLogger<BSLLogMessage> = LevelLogger("V1x21x1 Impl")
 
 	// todo temporary solution until i write adding layers directly into Gui itself
 	val drawLayers: MutableList<LayeredDraw.Layer> = mutableListOf()
@@ -87,39 +88,30 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 	override fun start(scanning: Scanning, classFile: ClassFile) {
 		logger.info("Starting Class Transforms")
-		BuiltInRegistriesTransform(scanning, classFile).addTransform()
-		MinecraftTransform(scanning, classFile).addTransform()
-		GuiTransform(scanning, classFile).addTransform()
-		ItemRendererTransform(scanning, classFile).addTransform()
-		ModelBakeryTransform(scanning, classFile).addTransform()
-		PackRepositoryTransform(scanning, classFile).addTransform()
-		TitleScreenTransform(scanning, classFile).addTransform()
-		CreativeModeTabsTransform(scanning, classFile).addTransform()
-		CreativeModeScreenTransform(scanning, classFile).addTransform()
-		MouseHandlerTransform(scanning, classFile).addTransform()
-		ClientLevelTransform(scanning, classFile).addTransform()
-		CameraTransform(scanning, classFile).addTransform()
-		BlockEntityRenderersTransform(scanning, classFile).addTransform()
-		BlockEntityTypeTransform(scanning, classFile).addTransform()
-		BlockEntitySupplierTransform(scanning, classFile).addTransform()
-		TextureManagerTransform(scanning, classFile).addTransform()
-		AbstractTextureTransform(scanning, classFile).addTransform()
-		GameRendererTransform(scanning, classFile).addTransform()
-		RenderTypeTransform(scanning, classFile).addTransform()
-		RenderStateShardTransform(scanning, classFile).addTransform()
-		LevelRendererTransform(scanning, classFile).addTransform()
-		BuiltInPackSourceTransform(scanning, classFile).addTransform()
-
-		// todo a way to implement natives directly into mimics in the future?
-		scanning["org.bread_experts_group.eam.minecraft.test_mods.breadmod.camera.CameraTexture"] = { _, _, _, data ->
-			val model = classFile.parse(data)
-			classFile.transformClass(model) { classBuilder, classElement ->
-				println(classElement)
-				classBuilder.with(classElement)
-			}
-		}
-
-		this.mods.forEach { it.registerEvents() }
+		mods.forEach { it.prepareClassTransforms() }
+		BuiltInRegistriesTransform(scanning, classFile).addTransform(mods)
+		MinecraftTransform(scanning, classFile).addTransform(mods)
+		GuiTransform(scanning, classFile).addTransform(mods)
+		ItemRendererTransform(scanning, classFile).addTransform(mods)
+		ModelBakeryTransform(scanning, classFile).addTransform(mods)
+		PackRepositoryTransform(scanning, classFile).addTransform(mods)
+		TitleScreenTransform(scanning, classFile).addTransform(mods)
+		CreativeModeTabsTransform(scanning, classFile).addTransform(mods)
+		CreativeModeScreenTransform(scanning, classFile).addTransform(mods)
+		MouseHandlerTransform(scanning, classFile).addTransform(mods)
+		ClientLevelTransform(scanning, classFile).addTransform(mods)
+		CameraTransform(scanning, classFile).addTransform(mods)
+		BlockEntityRenderersTransform(scanning, classFile).addTransform(mods)
+		BlockEntityTypeTransform(scanning, classFile).addTransform(mods)
+		BlockEntitySupplierTransform(scanning, classFile).addTransform(mods)
+		TextureManagerTransform(scanning, classFile).addTransform(mods)
+		AbstractTextureTransform(scanning, classFile).addTransform(mods)
+		GameRendererTransform(scanning, classFile).addTransform(mods)
+		RenderTypeTransform(scanning, classFile).addTransform(mods)
+		RenderStateShardTransform(scanning, classFile).addTransform(mods)
+		LevelRendererTransform(scanning, classFile).addTransform(mods)
+		BuiltInPackSourceTransform(scanning, classFile).addTransform(mods)
+		mods.forEach { it.registerEvents() }
 	}
 
 	// todo refer to MinecraftCreativeTab
@@ -196,7 +188,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		packedLight: Int,
 		packedOverlay: Int
 	) {
-		TEST_RENDERER.renderByItem(stack, displayContext, poseStack, bufferSource, packedLight, packedOverlay)
+		mods.forEach { it.renderBEWLRs(stack, displayContext, poseStack, bufferSource, packedLight, packedOverlay) }
 	}
 
 	@JvmStatic
@@ -205,16 +197,8 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 			it.addBlocks(this.get(MinecraftFeatures.BLOCK))
 			it.addItems(this.get(MinecraftFeatures.ITEM))
 			it.addLayers(this.get(MinecraftFeatures.LAYER))
+			it.afterCreateContents()
 		}
-
-		BMContent.TEST_ENTITY_TYPE = Registry.register(
-			BuiltInRegistries.BLOCK_ENTITY_TYPE,
-			"breadmod:test_entity",
-			Builder.of(
-				BlockEntitySupplier(::TestBlockEntity),
-				BuiltInRegistries.BLOCK.get(ResourceLocation.parse("breadmod:bread_block"))
-			).build()
-		)
 	}
 
 	@JvmStatic
@@ -224,6 +208,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 	@JvmStatic
 	fun postClientInit() {
+		// todo temp creative inv stuff until a proper system to populate tabs exists
 		// adding a 7th entry to the top creative tab texture arrays so it won't crash when trying to render the extra tab
 		addToStaticArray(
 			net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen,
@@ -238,29 +223,15 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 			ResourceLocation.parse("container/creative_inventory/tab_top_selected_1")
 		)
 
-		BlockEntityRenderers.register(
-			BMContent.TEST_ENTITY_TYPE,
-			BlockEntityRendererProvider(::TestBlockEntityRenderer)
-		)
+		this.mods.forEach { it.postClientInit() }
 	}
 
 	// todo shaders are currently hard-coded to the minecraft namespace, make patch reflecting neoforge's change later
 	@JvmStatic
 	fun registerShaders(resourceProvider: ResourceProvider, shaderList: MutableList<Any>) {
 		println("loading shader instances")
-		shaderList.add(
-			makeShaderPair(
-				ShaderInstance(
-					resourceProvider,
-					"position_tex_color_no_cutout",
-					DefaultVertexFormat.POSITION_TEX_COLOR
-				)
-			) { BMContentClient.TEST_SHADER_INSTANCE = it }
-		)
+		this.mods.forEach { it.registerShaders(resourceProvider, shaderList) }
 	}
-
-	private fun makeShaderPair(shaderInstance: ShaderInstance, onLoaded: (ShaderInstance) -> Unit): Any =
-		Pair(shaderInstance.around, Consumer<Any> { onLoaded(ShaderInstance(it)) }).around
 
 	@JvmStatic
 	fun renderTitleScreen(guiGraphics: GuiGraphics) {

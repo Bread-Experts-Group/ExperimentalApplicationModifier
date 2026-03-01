@@ -3,6 +3,7 @@ package org.bread_experts_group.eam.minecraft.transform
 import org.bread_experts_group.eam.clazz
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
+import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
@@ -25,18 +26,20 @@ abstract class ClassTransform(
 	private val targetClass: String,
 	private val deobfClassName: String,
 	private val scanning: Scanning,
-	private val classFile: ClassFile
+	private val classFile: ClassFile,
 ) : CodeTransformer {
 	override val existingElements: MutableList<String> = mutableListOf()
 	val thisClassDesc: ClassDesc = ClassDesc.of(targetClass.replace('/', '.'))
 
-	fun addTransform() {
+	fun addTransform(mods: List<MinecraftMod>) {
 		scanning[targetClass] = { _, _, _, data ->
 			val model = classFile.parse(data)
 			val transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
 				classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
 				model.filterNot { it is ClassFileVersion }.forEach { classElement ->
 					transform().invoke(classBuilder, classElement)
+					// todo passing transforms like this causes duplicate entries, need to figure out how to fix that
+					mods.forEach { it.getClassTransform(targetClass)?.invoke(classBuilder, classElement) }
 				}
 			}
 			val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
@@ -51,9 +54,9 @@ abstract class ClassTransform(
 		}
 	}
 
-	private fun transformClass(data: ByteArray, transform: ClassTransform) {
-		this.classFile.transformClass(this.classFile.parse(data), transform)
-	}
+//	private fun transformClass(data: ByteArray, transform: ClassTransform) {
+//		this.classFile.transformClass(this.classFile.parse(data), transform)
+//	}
 
 	// todo look into lambda transferring
 	/**
@@ -68,106 +71,103 @@ abstract class ClassTransform(
 		generateMimicMethod: Boolean = false
 	) {
 		if (methodName !in existingElements) existingElements.add(methodName) else return
-		val classData = readClassSource(sourceClass)
-		transformClass(classData) { builder, element ->
-			val method = if (
-				element is MethodModel &&
-				element.methodName().equalsString(methodName) &&
-				(element.methodTypeSymbol() == methodTypeDesc || methodTypeDesc == null)
-			) element else return@transformClass
-			this.with(method)
-			// todo lambda stuff is hard...
-			/*this.withMethod(
-				method.methodName().stringValue(),
-				method.methodTypeSymbol(),
-				method.flags().flagsMask()
-			) { mBuilder ->
-				val desc = NativeLookupV1x21x1.nativeClassDesc(ClientLevel::class)
-				method.forEach { element ->
-					if (element is CodeModel) mBuilder.withCode { cB ->
-						element.forEach { cE ->
-							if (cE is InvokeDynamicInstruction) {
+		val classData = classFile.parse(readClassSource(sourceClass))
+		val method = classData.filterIsInstance<MethodModel>().firstOrNull { model ->
+			model.methodName().equalsString(methodName) &&
+					(model.methodTypeSymbol() == methodTypeDesc || methodTypeDesc == null)
+		} ?: return
+		this.with(method)
+		// todo lambda stuff is hard...
+		//  minecraft 1x0x0 has lambda implementations, look into using those to transfer lambdas to other classes
+		/*this.withMethod(
+			method.methodName().stringValue(),
+			method.methodTypeSymbol(),
+			method.flags().flagsMask()
+		) { mBuilder ->
+			val desc = NativeLookupV1x21x1.nativeClassDesc(ClientLevel::class)
+			method.forEach { element ->
+				if (element is CodeModel) mBuilder.withCode { cB ->
+					element.forEach { cE ->
+						if (cE is InvokeDynamicInstruction) {
 //								cB.with(cE)
 //								cB.invokedynamic(cE.invokedynamic())
-								val staticMethod = cE.bootstrapArgs().filterIsInstance<MethodHandleDesc>().first()
-								println(cE.bootstrapArgs())
-								val rType = staticMethod.invocationType().returnType()
-								val mName = staticMethod.toString()
-									.substringBefore("()" + rType.displayName())
-									.substringAfter("::")
+							val staticMethod = cE.bootstrapArgs().filterIsInstance<MethodHandleDesc>().first()
+							println(cE.bootstrapArgs())
+							val rType = staticMethod.invocationType().returnType()
+							val mName = staticMethod.toString()
+								.substringBefore("()" + rType.displayName())
+								.substringAfter("::")
 //								println(mName)
-								transformClass(classData) { b, e ->
-									if (e is MethodModel && e.methodName().equalsString(mName)) {
-										this.with(e)
-										println(e)
-									}
+							transformClass(classData) { b, e ->
+								if (e is MethodModel && e.methodName().equalsString(mName)) {
+									this.with(e)
+									println(e)
 								}
-								cB.invokedynamic(DynamicCallSiteDesc.of(
-									cE.bootstrapMethod(),
-									cE.name().stringValue(),
-									cE.typeSymbol(),
-									cE.bootstrapArgs()[0],
-									MethodHandleDesc.ofMethod(
-										DirectMethodHandleDesc.Kind.STATIC,
-										desc,
-										mName,
-										DEFAULT_VOID
-									),
-									cE.bootstrapArgs()[2]
-								))
-							} else if (cE is InvokeInstruction) {
-								cB.invokevirtual(
+							}
+							cB.invokedynamic(DynamicCallSiteDesc.of(
+								cE.bootstrapMethod(),
+								cE.name().stringValue(),
+								cE.typeSymbol(),
+								cE.bootstrapArgs()[0],
+								MethodHandleDesc.ofMethod(
+									DirectMethodHandleDesc.Kind.STATIC,
 									desc,
-									$$"lambda$lambdaExecute$0",
+									mName,
 									DEFAULT_VOID
-								)
-							} else cB.with(cE)
-						}
-					} else mBuilder.with(element)
-				}
-			}*/
-			if (generateMimicMethod) {
-				val typeDesc = method.methodTypeSymbol()
-				this.withMethodBody(
-					"${method.methodName()}_EAMGenerated",
-					MethodTypeDesc.of(
-						typeDesc.returnType(),
-						typeDesc.parameterList().map { desc ->
-							if (desc.isPrimitive) desc else {
-								val clazz = desc.clazz
-								if (clazz.kotlin.isSubclassOf(MimickedClass::class)) {
-									val companionInst = clazz.kotlin.companionObjectInstance!!
-									companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
-								} else desc
-							}
-						}
-					),
-					ACC_PUBLIC
-				) { codeBuilder ->
-					val parameters = method.methodTypeSymbol().parameterList()
-					codeBuilder.aload(0)
-					parameters.forEachIndexed { index, desc ->
-						val slot = index + 1
-						if (desc.isPrimitive) {
-							when (desc.descriptorString()) {
-								"Z" -> codeBuilder.iload(slot)
-								"D" -> codeBuilder.dload(slot)
-								"F" -> codeBuilder.fload(slot)
-								"J" -> codeBuilder.lload(slot)
-							}
-						} else codeBuilder.invokeSpecialNewMimic(desc, slot)
+								),
+								cE.bootstrapArgs()[2]
+							))
+						} else if (cE is InvokeInstruction) {
+							cB.invokevirtual(
+								desc,
+								$$"lambda$lambdaExecute$0",
+								DEFAULT_VOID
+							)
+						} else cB.with(cE)
 					}
-
-					codeBuilder
-						.invokevirtual(
-							ClassDesc.of(targetClass),
-							methodName,
-							method.methodTypeSymbol()
-						)
-						.return_()
-				}
+				} else mBuilder.with(element)
 			}
-			builder.with(element)
+		}*/
+		if (generateMimicMethod) {
+			val typeDesc = method.methodTypeSymbol()
+			this.withMethodBody(
+				"${method.methodName()}_EAMGenerated",
+				MethodTypeDesc.of(
+					typeDesc.returnType(),
+					typeDesc.parameterList().map { desc ->
+						if (desc.isPrimitive) desc else {
+							val clazz = desc.clazz
+							if (clazz.kotlin.isSubclassOf(MimickedClass::class)) {
+								val companionInst = clazz.kotlin.companionObjectInstance!!
+								companionInst.javaClass.getMethod("getClassDesc").invoke(companionInst) as ClassDesc
+							} else desc
+						}
+					}
+				),
+				ACC_PUBLIC
+			) { codeBuilder ->
+				val parameters = method.methodTypeSymbol().parameterList()
+				codeBuilder.aload(0)
+				parameters.forEachIndexed { index, desc ->
+					val slot = index + 1
+					if (desc.isPrimitive) {
+						when (desc.descriptorString()) {
+							"Z" -> codeBuilder.iload(slot)
+							"D" -> codeBuilder.dload(slot)
+							"F" -> codeBuilder.fload(slot)
+							"J" -> codeBuilder.lload(slot)
+						}
+					} else codeBuilder.invokeSpecialNewMimic(desc, slot)
+				}
+
+				codeBuilder
+					.invokevirtual(
+						ClassDesc.of(targetClass),
+						methodName,
+						method.methodTypeSymbol()
+					)
+					.return_()
+			}
 		}
 	}
 

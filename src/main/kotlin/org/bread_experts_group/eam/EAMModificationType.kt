@@ -1,8 +1,7 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.Mappable
-import org.bread_experts_group.command_line.Flag
-import org.bread_experts_group.command_line.readArgs
+import org.bread_experts_group.BSLLogMessage
+import org.bread_experts_group.BSLLogMessage.Companion.info
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.logAllLoadsFlag
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeMimics
@@ -10,7 +9,10 @@ import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Co
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedFeatures
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1X0X0MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
-import org.bread_experts_group.logging.ColoredHandler
+import org.bread_experts_group.generic.Mappable
+import org.bread_experts_group.generic.command_line.Flag
+import org.bread_experts_group.generic.command_line.readArgs
+import org.bread_experts_group.generic.logging.LevelLogger
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
 import java.security.ProtectionDomain
@@ -30,8 +32,8 @@ enum class EAMModificationType(
 				conv = {
 					when (it) {
 						"1.0", "1.0.0" -> V1X0X0MinecraftImplementations
-						"1.21.1" -> V1X21X1MinecraftImplementations
-						else -> throw IllegalArgumentException("Cannot modify for unknown version $it")
+						"1.21.1"       -> V1X21X1MinecraftImplementations
+						else           -> throw IllegalArgumentException("Cannot modify for unknown version $it")
 					}
 				}
 			)
@@ -45,7 +47,7 @@ enum class EAMModificationType(
 				writeTransformedFeatures,
 				writeMimics
 			)
-			val logger = ColoredHandler.newLogger("TMP logger EAM")
+			val logger = LevelLogger<BSLLogMessage>("TMP logger EAM")
 			instrumentation.addTransformer(object : ClassFileTransformer {
 				override fun transform(
 					module: Module?,

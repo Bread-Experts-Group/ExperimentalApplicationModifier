@@ -1,9 +1,9 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.Mappable.Companion.id
-import org.bread_experts_group.command_line.Flag
-import org.bread_experts_group.command_line.readArgs
-import org.bread_experts_group.logging.ColoredHandler
+import org.bread_experts_group.BSLLogMessage
+import org.bread_experts_group.generic.Mappable.Companion.id
+import org.bread_experts_group.generic.command_line.Flag
+import org.bread_experts_group.generic.command_line.readArgs
 import java.lang.instrument.Instrumentation
 
 @Suppress("unused")
@@ -29,7 +29,6 @@ class Agent {
 
 		@JvmStatic
 		fun premain(agentArgs: String?, instrumentation: Instrumentation) {
-			ColoredHandler.coloring = false
 			val args = readArgs(
 				agentArgs?.split(" ")?.toTypedArray() ?: emptyArray<String>(),
 				"Bread Experts Group EAM (Experimental Application Modifier)",
