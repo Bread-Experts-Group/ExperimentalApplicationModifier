@@ -17,13 +17,8 @@ import org.bread_experts_group.generic.command_line.stringToBoolean
 import org.bread_experts_group.generic.io.reader.BSLReader
 import java.lang.classfile.ClassFile
 import java.lang.instrument.Instrumentation
-import java.net.URL
-import java.net.URLClassLoader
-import java.nio.file.Files
 import java.security.ProtectionDomain
-import java.util.*
 import java.util.zip.ZipInputStream
-import kotlin.io.path.Path
 
 typealias Scanning = MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
 typealias SupportedMCFeatures = MutableMap<FeatureExpression<out MinecraftFeatureImplementation<*, *>>, MutableList<MinecraftFeatureImplementation<*, *>>>
@@ -56,18 +51,17 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 	private val classFile: ClassFile = ClassFile.of(ClassFile.StackMapsOption.GENERATE_STACK_MAPS)
 	private lateinit var instrumentation: Instrumentation
 	protected lateinit var scanning: Scanning
-	protected lateinit var mods: List<MinecraftMod>
+	protected val mods: MutableMap<String, MutableList<MinecraftMod>> = mutableMapOf()
 	override val features: MutableList<MinecraftFeatureImplementation<*, *>> = mutableListOf()
 
 	private val modDir: String = "eam_mods"
-	private fun bslLoad(): List<MinecraftMod>? {
+	private fun bslLoad(): Boolean {
 		val cwd = SystemProvider.getOrNull(SystemFeatures.GET_CURRENT_WORKING_PATH_DEVICE)?.device
-			?: return null
+			?: return false
 		val mods = (cwd.getOrNull(SystemDeviceFeatures.PATH_APPEND)
-			?: return null).append(modDir)
+			?: return false).append(modDir)
 		val modsChildren = mods.getOrNull(SystemDeviceFeatures.PATH_CHILDREN)
-			?: return null
-		val loadedClasses = mutableListOf<MinecraftMod>()
+			?: return false
 		for (device in modsChildren) {
 			val ioStatus = device.get(SystemDeviceFeatures.IO_DEVICE).open(
 				FileIOReOpenFeatures.READ,
@@ -85,11 +79,12 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 			try {
 				while (true) {
 					val nextEntry = zip.nextEntry ?: break
-					if (nextEntry.name != "META-INF/services/${MinecraftMod::class.qualifiedName}")
-						continue
-					val classes = zip.readAllBytes().decodeToString().split('\n').map {
-						it.replace('.', '/').lowercase() + ".class"
-					}.toMutableSet()
+					if (nextEntry.name != "META-INF/eam/mods.txt") continue
+					val classes = mutableMapOf<String, String>()
+					zip.readAllBytes().decodeToString().split('\n').forEach {
+						val (classPath, modID) = it.split(' ', limit = 2)
+						classes[classPath.replace('.', '/').lowercase() + ".class"] = modID
+					}
 					if (classes.isEmpty()) break
 					val ioStatus = device.get(SystemDeviceFeatures.IO_DEVICE).open(
 						FileIOReOpenFeatures.READ,
@@ -103,12 +98,16 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 					try {
 						while (true) {
 							val nextEntry = zip.nextEntry ?: break
-							if (!classes.remove(nextEntry.name.lowercase())) continue
-							val loaded = jarLoader.define(
+							val id = classes.remove(nextEntry.name.lowercase()) ?: continue
+							val adjacentMods = this.mods.getOrPut(id) { mutableListOf() }
+							val noConflictID = if (adjacentMods.isNotEmpty()) "${id}_eam${adjacentMods.size + 1}"
+							else id
+							val modLoader = jarLoader.ModClassLoader(noConflictID)
+							val loaded = modLoader.define(
 								nextEntry.name.take(nextEntry.name.length - 6).replace('/', '.'),
 								zip.readAllBytes()
 							)
-							loadedClasses.add(loaded.getConstructor().newInstance() as MinecraftMod)
+							adjacentMods.add(loaded.getConstructor().newInstance() as MinecraftMod)
 						}
 					} finally {
 						ioDevice.get(IODeviceFeatures.RELEASE).close()
@@ -121,20 +120,14 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 				zip.close()
 			}
 		}
-		return loadedClasses
-	}
-
-	private fun javaLoad(): List<MinecraftMod> {
-		val loaded: List<URL> = Files.list(Path("eam_mods")).toList().map { it.toUri().toURL() }
-		val loader = URLClassLoader(loaded.toTypedArray(), this::class.java.classLoader)
-		return ServiceLoader.load(MinecraftMod::class.java, loader).toList()
+		return true
 	}
 
 	fun implement(
 		instrumentation: Instrumentation,
 		scanning: Scanning
 	) {
-		mods = bslLoad() ?: javaLoad()
+		if (!bslLoad()) throw Error("Startup error: couldn't get BSL to initialize the mods (dbg)")
 		this.instrumentation = instrumentation
 		this.scanning = scanning
 		start(this.scanning, classFile)

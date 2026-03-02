@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "org.bread_experts_group"
-version = "D0F1P0"
+version = "D0F2P6"
 // Bread Experts Group Versioning System, revision 1 (natives/libraries unauthorized outside of Bread Server Library)
 //                          Pertains to the ...
 // Dx ... Design x       //  entire architecture of the project

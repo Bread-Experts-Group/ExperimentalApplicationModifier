@@ -1,5 +1,6 @@
 package org.bread_experts_group.eam.minecraft.feature
 
+import org.bread_experts_group.eam.JARDefiningClassLoader
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlockFeature
 import org.bread_experts_group.eam.minecraft.feature.creative_tab.MinecraftCreativeTabFeature
 import org.bread_experts_group.eam.minecraft.feature.item.MinecraftItemFeature
@@ -15,7 +16,12 @@ import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.util.function.Consumer
 
-abstract class MinecraftMod(val id: String) {
+abstract class MinecraftMod {
+	companion object {
+		val Class<out MinecraftMod>.modID: String
+			get() = (this.classLoader as JARDefiningClassLoader.ModClassLoader).id
+	}
+
 	val transforms: MutableMap<String, (ClassBuilder, ClassElement) -> Unit> = mutableMapOf()
 
 	abstract fun addBlocks(blocks: MinecraftBlockFeature)
