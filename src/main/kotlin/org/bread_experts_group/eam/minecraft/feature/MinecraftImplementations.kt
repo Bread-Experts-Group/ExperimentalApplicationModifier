@@ -55,13 +55,10 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 	override val features: MutableList<MinecraftFeatureImplementation<*, *>> = mutableListOf()
 
 	private val modDir: String = "eam_mods"
-	private fun bslLoad(): Boolean {
-		val cwd = SystemProvider.getOrNull(SystemFeatures.GET_CURRENT_WORKING_PATH_DEVICE)?.device
-			?: return false
-		val mods = (cwd.getOrNull(SystemDeviceFeatures.PATH_APPEND)
-			?: return false).append(modDir)
-		val modsChildren = mods.getOrNull(SystemDeviceFeatures.PATH_CHILDREN)
-			?: return false
+	private fun bslLoad() {
+		val cwd = SystemProvider.get(SystemFeatures.GET_CURRENT_WORKING_PATH_DEVICE).device
+		val mods = cwd.get(SystemDeviceFeatures.PATH_APPEND).append(modDir)
+		val modsChildren = mods.get(SystemDeviceFeatures.PATH_CHILDREN)
 		for (device in modsChildren) {
 			val ioStatus = device.get(SystemDeviceFeatures.IO_DEVICE).open(
 				FileIOReOpenFeatures.READ,
@@ -120,14 +117,13 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 				zip.close()
 			}
 		}
-		return true
 	}
 
 	fun implement(
 		instrumentation: Instrumentation,
 		scanning: Scanning
 	) {
-		if (!bslLoad()) throw Error("Startup error: couldn't get BSL to initialize the mods (dbg)")
+		bslLoad()
 		this.instrumentation = instrumentation
 		this.scanning = scanning
 		start(this.scanning, classFile)

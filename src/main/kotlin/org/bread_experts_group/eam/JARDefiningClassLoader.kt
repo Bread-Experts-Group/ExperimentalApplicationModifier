@@ -8,8 +8,6 @@ import org.bread_experts_group.api.system.io.open.FileIOReOpenFeatures
 import org.bread_experts_group.api.system.io.open.WindowsIOReOpenFeatures
 import org.bread_experts_group.eam.minecraft.feature.BSLReaderStream
 import org.bread_experts_group.generic.io.reader.BSLReader
-import java.net.URL
-import java.util.*
 import java.util.zip.ZipInputStream
 
 open class JARDefiningClassLoader(
@@ -54,11 +52,6 @@ open class JARDefiningClassLoader(
             findLoadedClass(name).let { if (it != null) return it }
             if (name == null) return null
             return this.bslLoadClass(source, name) ?: super.loadClass(name)
-        }
-
-        override fun getResources(name: String?): Enumeration<URL?>? {
-            println("*!* $name")
-            return super.getResources(name)
         }
     }
 

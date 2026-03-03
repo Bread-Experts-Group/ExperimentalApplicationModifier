@@ -7,13 +7,8 @@ import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
-import java.lang.classfile.ClassBuilder
-import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
+import java.lang.classfile.*
 import java.lang.classfile.ClassFile.ACC_PUBLIC
-import java.lang.classfile.ClassFileVersion
-import java.lang.classfile.ClassTransform
-import java.lang.classfile.MethodModel
 import java.lang.constant.ClassDesc
 import java.lang.constant.MethodTypeDesc
 import java.nio.file.Files
@@ -40,17 +35,17 @@ abstract class ClassTransform(
 					transform().invoke(classBuilder, classElement)
 				}
 			}
-			// todo any transform that adds it's own classes will cause a NoClassDefFound
-			//  due to that class not being accessible from the game's classloader.
-			//  MC classes are loaded with the app classloader, but mod classes are URLClassLoader
 			mods.forEach {
 				val transform = it.getClassTransform(targetClass) ?: return@forEach
-				val newModel = classFile.parse(transformed)
-				transformed = classFile.build(newModel.thisClass().asSymbol()) { classBuilder ->
-					newModel.forEach { classElement ->
+				val toModTransform = classFile.parse(transformed)
+				val toEAMTransform = classFile.build(toModTransform.thisClass().asSymbol()) { classBuilder ->
+					toModTransform.forEach { classElement ->
 						transform.invoke(classBuilder, classElement)
 					}
 				}
+				transformed = toEAMTransform/*classFile.parse(toEAMTransform) {
+
+				}*/
 			}
 			val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
 			val target = targetClass.replace('/', '_').substringAfterLast('_')
