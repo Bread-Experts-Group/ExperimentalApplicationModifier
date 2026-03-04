@@ -1,16 +1,23 @@
 package org.bread_experts_group.eam.minecraft.transform
 
+import org.bread_experts_group.eam.JARDefiningClassLoader
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.clazz
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
 import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
+import org.bread_experts_group.eam.minecraft.loadConstant
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
+import org.bread_experts_group.eam.qualifiedName
 import java.lang.classfile.*
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.instruction.FieldInstruction
 import java.lang.constant.ClassDesc
+import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
+import java.lang.reflect.Field
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.createParentDirectories
@@ -35,28 +42,119 @@ abstract class ClassTransform(
 					transform().invoke(classBuilder, classElement)
 				}
 			}
-			mods.forEach {
-				val transform = it.getClassTransform(targetClass) ?: return@forEach
-                var model = classFile.parse(transformed)
-                val modelTransformed = classFile.transformClass(model) { classBuilder, classElement ->
-                    transform(classBuilder, classElement)
+			val clDesc = ClassLoader::class.java.classDesc
+			mods.forEach { mod ->
+				val transform = mod.getClassTransform(targetClass) ?: return@forEach
+				var model = classFile.parse(transformed)
+				val modelTransformed = classFile.transformClass(model) { classBuilder, classElement ->
+					transform(classBuilder, classElement)
 				}
-                model = classFile.parse(modelTransformed)
-                transformed = classFile.transformClass(model) { classBuilder, classElement ->
-                    when (classElement) {
-                        is FieldModel -> {
-                            println(classElement)
-                            classBuilder.with(classElement)
-                        }
+				model = classFile.parse(modelTransformed)
+				val classesInUse = mutableSetOf<String>()
+				val jarClassesInUse = mutableSetOf<String>()
+				val modLoader = mod::class.java.classLoader as JARDefiningClassLoader.ModClassLoader
+				for (classElement in model) when (classElement) {
+					is MethodModel -> classElement.code().ifPresent { code ->
+						for (codeElement in code) when (codeElement) {
+							is FieldInstruction -> classesInUse.add(
+								codeElement.owner().asInternalName().lowercase() + ".class"
+							)
 
-                        is MethodModel -> {
-                            println(classElement)
-                            classBuilder.with(classElement)
-                        }
+							else -> {}
+						}
+					}
 
-                        else -> classBuilder.with(classElement)
-                    }
-                }
+					else -> {}
+				}
+				modLoader.bslFindFiles(classesInUse) { e, _ ->
+					jarClassesInUse.add(e.name.lowercase().take(e.name.length - 6))
+				}
+				transformed = classFile.build(model.thisClass().asSymbol()) { builder ->
+					for (classElement in model) when (classElement) {
+						is MethodModel -> classElement.code().ifPresentOrElse({ code ->
+							builder.withMethodBody(
+								classElement.methodName(),
+								classElement.methodType(),
+								classElement.flags().flagsMask()
+							) { builder ->
+								for (codeElement in code) when (codeElement) {
+									is FieldInstruction -> {
+										if (jarClassesInUse.contains(
+												codeElement.owner().asInternalName().lowercase()
+											)
+										) {
+											val tr =
+												"org.bread_experts_group.eam.minecraft.transform.TransformReflectionKt"
+											builder.invokestatic(
+												clDesc,
+												"getSystemClassLoader",
+												MethodTypeDesc.of(clDesc)
+											).loadConstant(
+												tr
+											).invokevirtual(
+												clDesc,
+												"loadClass",
+												MethodTypeDesc.of(
+													ConstantDescs.CD_Class,
+													ConstantDescs.CD_String
+												)
+											).getstatic(
+												ClassDesc.of(tr),
+												"classLoaders",
+												Map::class.java.classDesc
+											).loadConstant(
+												modLoader.id
+											).invokeinterface(
+												Map::class.java.classDesc,
+												"get",
+												MethodTypeDesc.of(
+													ConstantDescs.CD_Object,
+													ConstantDescs.CD_Object
+												)
+											).checkcast(
+												clDesc
+											).loadConstant(
+												codeElement.owner().asSymbol().qualifiedName
+											).invokevirtual(
+												clDesc,
+												"loadClass",
+												MethodTypeDesc.of(
+													ConstantDescs.CD_Class,
+													ConstantDescs.CD_String
+												)
+											).loadConstant(
+												codeElement.name().stringValue()
+											).invokevirtual(
+												ConstantDescs.CD_Class,
+												"getField",
+												MethodTypeDesc.of(
+													Field::class.java.classDesc,
+													ConstantDescs.CD_String
+												)
+											).aconst_null(
+											).invokevirtual(
+												Field::class.java.classDesc,
+												"get",
+												MethodTypeDesc.of(
+													ConstantDescs.CD_Object,
+													ConstantDescs.CD_Object
+												)
+											).checkcast(
+												codeElement.typeSymbol()
+											)
+										} else builder.with(codeElement)
+									}
+
+									else -> builder.with(codeElement)
+								}
+							}
+						}) {
+							builder.with(classElement)
+						}
+
+						else -> builder.with(classElement)
+					}
+				}
 			}
 			val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
 			val target = targetClass.replace('/', '_').substringAfterLast('_')

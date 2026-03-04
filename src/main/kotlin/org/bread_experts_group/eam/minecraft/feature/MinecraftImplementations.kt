@@ -11,6 +11,7 @@ import org.bread_experts_group.api.system.io.open.FileIOReOpenFeatures
 import org.bread_experts_group.api.system.io.open.WindowsIOReOpenFeatures
 import org.bread_experts_group.eam.JARDefiningClassLoader
 import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
+import org.bread_experts_group.eam.minecraft.transform.classLoaders
 import org.bread_experts_group.generic.command_line.ArgumentContainer
 import org.bread_experts_group.generic.command_line.Flag
 import org.bread_experts_group.generic.command_line.stringToBoolean
@@ -100,6 +101,7 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 							val noConflictID = if (adjacentMods.isNotEmpty()) "${id}_eam${adjacentMods.size + 1}"
 							else id
 							val modLoader = jarLoader.ModClassLoader(noConflictID)
+							classLoaders[noConflictID] = modLoader
 							val loaded = modLoader.define(
 								nextEntry.name.take(nextEntry.name.length - 6).replace('/', '.'),
 								zip.readAllBytes()
