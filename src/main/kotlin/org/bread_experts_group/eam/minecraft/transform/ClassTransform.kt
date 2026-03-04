@@ -37,15 +37,26 @@ abstract class ClassTransform(
 			}
 			mods.forEach {
 				val transform = it.getClassTransform(targetClass) ?: return@forEach
-				val toModTransform = classFile.parse(transformed)
-				val toEAMTransform = classFile.build(toModTransform.thisClass().asSymbol()) { classBuilder ->
-					toModTransform.forEach { classElement ->
-						transform.invoke(classBuilder, classElement)
-					}
+                var model = classFile.parse(transformed)
+                val modelTransformed = classFile.transformClass(model) { classBuilder, classElement ->
+                    transform(classBuilder, classElement)
 				}
-				transformed = toEAMTransform/*classFile.parse(toEAMTransform) {
+                model = classFile.parse(modelTransformed)
+                transformed = classFile.transformClass(model) { classBuilder, classElement ->
+                    when (classElement) {
+                        is FieldModel -> {
+                            println(classElement)
+                            classBuilder.with(classElement)
+                        }
 
-				}*/
+                        is MethodModel -> {
+                            println(classElement)
+                            classBuilder.with(classElement)
+                        }
+
+                        else -> classBuilder.with(classElement)
+                    }
+                }
 			}
 			val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
 			val target = targetClass.replace('/', '_').substringAfterLast('_')
