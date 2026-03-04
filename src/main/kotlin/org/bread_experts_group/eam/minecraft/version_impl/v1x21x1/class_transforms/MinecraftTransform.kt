@@ -35,37 +35,7 @@ class MinecraftTransform(
 			MethodTypeDesc.of(ConstantDescs.CD_void, GameConfig.classDesc),
 			::postClientInit.javaMethod!!
 		)
-		val init = classBuilder.transformMethodCode(
-			classElement,
-			ConstantDescs.INIT_NAME,
-			MethodTypeDesc.of(ConstantDescs.CD_void, GameConfig.classDesc)
-		) { codeBuilder, codeElement, index ->
-			if (index == 25) codeBuilder
-				.getstatic(
-					System::class.classDesc,
-					"out",
-					PrintStream::class.classDesc
-				)
-				.aload(0)
-				.invokevirtual(
-					ConstantDescs.CD_Object,
-					"getClass",
-					MethodTypeDesc.of(ConstantDescs.CD_Class)
-				)
-				.invokevirtual(
-					ConstantDescs.CD_Class,
-					"getClassLoader",
-					MethodTypeDesc.of(ClassLoader::class.classDesc)
-				)
-				.invokevirtual(
-					PrintStream::class.classDesc,
-					"println",
-					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
-				)
 
-			codeBuilder.with(codeElement)
-		}
-
-		if (!(init || r(classBuilder, classElement) || r1(classBuilder, classElement))) classBuilder.with(classElement)
+		if (!(r(classBuilder, classElement) || r1(classBuilder, classElement))) classBuilder.with(classElement)
 	}
 }
