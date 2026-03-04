@@ -8,6 +8,7 @@ import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.*
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
@@ -55,29 +56,30 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	override fun start(scanning: Scanning, classFile: ClassFile) {
 		logger.info("Starting Class Transforms")
 		val asList = mods.flatMap { it.value }
-		asList.forEach { it.prepareClassTransforms() }
-		BuiltInRegistriesTransform(scanning, classFile).addTransform(asList)
-		MinecraftTransform(scanning, classFile).addTransform(asList)
-		GuiTransform(scanning, classFile).addTransform(asList)
-		ItemRendererTransform(scanning, classFile).addTransform(asList)
-		ModelBakeryTransform(scanning, classFile).addTransform(asList)
-		PackRepositoryTransform(scanning, classFile).addTransform(asList)
-		TitleScreenTransform(scanning, classFile).addTransform(asList)
-		CreativeModeTabsTransform(scanning, classFile).addTransform(asList)
-		CreativeModeScreenTransform(scanning, classFile).addTransform(asList)
-		MouseHandlerTransform(scanning, classFile).addTransform(asList)
-		ClientLevelTransform(scanning, classFile).addTransform(asList)
-		CameraTransform(scanning, classFile).addTransform(asList)
-		BlockEntityRenderersTransform(scanning, classFile).addTransform(asList)
-		BlockEntityTypeTransform(scanning, classFile).addTransform(asList)
-		BlockEntitySupplierTransform(scanning, classFile).addTransform(asList)
-		TextureManagerTransform(scanning, classFile).addTransform(asList)
-		AbstractTextureTransform(scanning, classFile).addTransform(asList)
-		GameRendererTransform(scanning, classFile).addTransform(asList)
-		RenderTypeTransform(scanning, classFile).addTransform(asList)
-		RenderStateShardTransform(scanning, classFile).addTransform(asList)
-		LevelRendererTransform(scanning, classFile).addTransform(asList)
-		BuiltInPackSourceTransform(scanning, classFile).addTransform(asList)
+		val holder = ModTransformHolder()
+		holder.gatherTransforms(asList)
+		BuiltInRegistriesTransform(scanning, classFile).addTransform(holder)
+		MinecraftTransform(scanning, classFile).addTransform(holder)
+		GuiTransform(scanning, classFile).addTransform(holder)
+		ItemRendererTransform(scanning, classFile).addTransform(holder)
+		ModelBakeryTransform(scanning, classFile).addTransform(holder)
+		PackRepositoryTransform(scanning, classFile).addTransform(holder)
+		TitleScreenTransform(scanning, classFile).addTransform(holder)
+		CreativeModeTabsTransform(scanning, classFile).addTransform(holder)
+		CreativeModeScreenTransform(scanning, classFile).addTransform(holder)
+		MouseHandlerTransform(scanning, classFile).addTransform(holder)
+		ClientLevelTransform(scanning, classFile).addTransform(holder)
+		CameraTransform(scanning, classFile).addTransform(holder)
+		BlockEntityRenderersTransform(scanning, classFile).addTransform(holder)
+		BlockEntityTypeTransform(scanning, classFile).addTransform(holder)
+		BlockEntitySupplierTransform(scanning, classFile).addTransform(holder)
+		TextureManagerTransform(scanning, classFile).addTransform(holder)
+		AbstractTextureTransform(scanning, classFile).addTransform(holder)
+		GameRendererTransform(scanning, classFile).addTransform(holder)
+		RenderTypeTransform(scanning, classFile).addTransform(holder)
+		RenderStateShardTransform(scanning, classFile).addTransform(holder)
+		LevelRendererTransform(scanning, classFile).addTransform(holder)
+		BuiltInPackSourceTransform(scanning, classFile).addTransform(holder)
 		asList.forEach { it.registerEvents() }
 	}
 
@@ -206,6 +208,7 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 	@JvmStatic
 	fun renderTitleScreen(guiGraphics: GuiGraphics) {
+		println("???")
 		val poseStack = guiGraphics.pose()
 		poseStack.pushPose()
 		poseStack.translate(10f, 3f, 0f)

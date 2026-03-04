@@ -1,5 +1,6 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_Minecraft
@@ -7,6 +8,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstant
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.postClientInit
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.updateWindowTitle
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.main.GameConfig
+import java.io.PrintStream
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
 import java.lang.classfile.ClassFile
@@ -33,7 +35,37 @@ class MinecraftTransform(
 			MethodTypeDesc.of(ConstantDescs.CD_void, GameConfig.classDesc),
 			::postClientInit.javaMethod!!
 		)
+		val init = classBuilder.transformMethodCode(
+			classElement,
+			ConstantDescs.INIT_NAME,
+			MethodTypeDesc.of(ConstantDescs.CD_void, GameConfig.classDesc)
+		) { codeBuilder, codeElement, index ->
+			if (index == 25) codeBuilder
+				.getstatic(
+					System::class.classDesc,
+					"out",
+					PrintStream::class.classDesc
+				)
+				.aload(0)
+				.invokevirtual(
+					ConstantDescs.CD_Object,
+					"getClass",
+					MethodTypeDesc.of(ConstantDescs.CD_Class)
+				)
+				.invokevirtual(
+					ConstantDescs.CD_Class,
+					"getClassLoader",
+					MethodTypeDesc.of(ClassLoader::class.classDesc)
+				)
+				.invokevirtual(
+					PrintStream::class.classDesc,
+					"println",
+					MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
+				)
 
-		if (!(r(classBuilder, classElement) || r1(classBuilder, classElement))) classBuilder.with(classElement)
+			codeBuilder.with(codeElement)
+		}
+
+		if (!(init || r(classBuilder, classElement) || r1(classBuilder, classElement))) classBuilder.with(classElement)
 	}
 }

@@ -6,6 +6,7 @@ import org.bread_experts_group.eam.clazz
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
 import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
+import org.bread_experts_group.eam.minecraft.feature.MinecraftMod.Companion.modID
 import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.loadConstant
@@ -21,9 +22,15 @@ import java.lang.reflect.Field
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.createParentDirectories
+import kotlin.jvm.java
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
+/**
+ * Intended to be used internally by EAM to set up initial transforms for MC Classes.
+ * Mods are passed into the transform after EAM performs the initial processing.
+ * // todo allow mods to define entirely new class transforms in the future
+ */
 abstract class ClassTransform(
 	private val targetClass: String,
 	private val deobfClassName: String,
@@ -33,7 +40,7 @@ abstract class ClassTransform(
 	override val existingElements: MutableList<String> = mutableListOf()
 	val thisClassDesc: ClassDesc = ClassDesc.of(targetClass.replace('/', '.'))
 
-	fun addTransform(mods: List<MinecraftMod>) {
+	fun addTransform(transformHolder: ModTransformHolder) {
 		scanning[targetClass] = { _, _, _, data ->
 			val model = classFile.parse(data)
 			var transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
@@ -43,12 +50,9 @@ abstract class ClassTransform(
 				}
 			}
 			val clDesc = ClassLoader::class.java.classDesc
-			mods.forEach { mod ->
-				val transform = mod.getClassTransform(targetClass) ?: return@forEach
+			transformHolder.getTransforms(targetClass).forEach { (mod, transform) ->
 				var model = classFile.parse(transformed)
-				val modelTransformed = classFile.transformClass(model) { classBuilder, classElement ->
-					transform(classBuilder, classElement)
-				}
+				val modelTransformed = classFile.transformClass(model, transform::process)
 				model = classFile.parse(modelTransformed)
 				val classesInUse = mutableSetOf<String>()
 				val jarClassesInUse = mutableSetOf<String>()
