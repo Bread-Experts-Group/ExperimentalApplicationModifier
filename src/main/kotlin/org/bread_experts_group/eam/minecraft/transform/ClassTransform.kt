@@ -89,20 +89,7 @@ abstract class ClassTransform(
 										) {
 											val tr =
 												"org.bread_experts_group.eam.minecraft.transform.TransformReflectionKt"
-											builder.invokestatic(
-												clDesc,
-												"getSystemClassLoader",
-												MethodTypeDesc.of(clDesc)
-											).loadConstant(
-												tr
-											).invokevirtual(
-												clDesc,
-												"loadClass",
-												MethodTypeDesc.of(
-													ConstantDescs.CD_Class,
-													ConstantDescs.CD_String
-												)
-											).getstatic(
+											builder.getstatic(
 												ClassDesc.of(tr),
 												"classLoaders",
 												Map::class.java.classDesc

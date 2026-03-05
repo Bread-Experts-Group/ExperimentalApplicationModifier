@@ -14,7 +14,6 @@ import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
 import org.bread_experts_group.eam.minecraft.transform.classLoaders
 import org.bread_experts_group.generic.command_line.ArgumentContainer
 import org.bread_experts_group.generic.command_line.Flag
-import org.bread_experts_group.generic.command_line.stringToBoolean
 import org.bread_experts_group.generic.io.reader.BSLReader
 import java.lang.classfile.ClassFile
 import java.lang.instrument.Instrumentation
@@ -26,10 +25,10 @@ typealias SupportedMCFeatures = MutableMap<FeatureExpression<out MinecraftFeatur
 
 abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplementation<*, *>> {
 	companion object {
-		val logAllLoadsFlag: Flag<Boolean> = Flag(
+		val logAllLoadsFlag: Flag<String> = Flag(
 			"log_all_class_loads",
-			"Logs all class loads.",
-			conv = ::stringToBoolean
+			"Logs all class loads to the specified path.",
+			conv = { it }
 		)
 		val writeTransformedClasses: Flag<String> = Flag(
 			"write_transformed_classes",

@@ -32,7 +32,7 @@ idea {
 dependencies {
 	testImplementation(kotlin("test"))
 	implementation(kotlin("reflect"))
-	implementation("org.bread_experts_group:bread_server_lib-code:D1F5N8P7")
+	implementation("org.bread_experts_group:bread_server_lib-code:D1F5N8P9")
 }
 
 kotlin {
