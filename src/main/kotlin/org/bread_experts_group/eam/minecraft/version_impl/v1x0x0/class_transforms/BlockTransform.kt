@@ -2,22 +2,20 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.class_transfor
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.atIndex
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.NativeConstantsV1x0x0
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1X0X0MinecraftImplementations
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.AccessFlag
 
 class BlockTransform(
-	scanning: Scanning,
-	classFile: ClassFile
-) : ClassTransform(NativeConstantsV1x0x0.net_minecraft_Block, "Block", scanning, classFile) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	transformHolder: ModTransformHolder
+) : ClassTransform(NativeConstantsV1x0x0.net_minecraft_Block, "Block", transformHolder) {
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		val init = classBuilder.transformMethod(
 			classElement,
 			ConstantDescs.INIT_NAME

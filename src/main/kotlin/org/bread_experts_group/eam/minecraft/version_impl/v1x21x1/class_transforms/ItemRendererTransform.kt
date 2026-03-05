@@ -1,9 +1,9 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
 import org.bread_experts_group.eam.getLocalVariableInfo
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_renderer_entity_ItemRenderer
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_renderer_entity_ItemRenderer_render
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_renderer_entity_ItemRenderer_renderModelLists
@@ -18,7 +18,6 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.toConstantDesc
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
@@ -27,14 +26,13 @@ import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
 
 class ItemRendererTransform(
-	scanning: Scanning,
-	classFile: ClassFile
+	transformHolder: ModTransformHolder
 ) : ClassTransform(
 	net_minecraft_client_renderer_entity_ItemRenderer,
 	"ItemRenderer",
-	scanning, classFile
+	transformHolder
 ) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		val p = modifyMethodAccess(
 			net_minecraft_client_renderer_entity_ItemRenderer_renderModelLists,
 			MethodTypeDesc.of(

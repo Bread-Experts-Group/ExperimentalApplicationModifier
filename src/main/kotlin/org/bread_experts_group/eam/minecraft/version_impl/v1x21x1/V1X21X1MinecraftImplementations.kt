@@ -6,11 +6,32 @@ import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
-import org.bread_experts_group.eam.minecraft.feature.Scanning
+import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
 import org.bread_experts_group.eam.minecraft.feature.SupportedMCFeatures
 import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_screens_inventory_CreativeModeInventoryScreen
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.*
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.AbstractTextureTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityRenderersTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntitySupplierTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BlockEntityTypeTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInPackSourceTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.BuiltInRegistriesTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CameraTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ClientLevelTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeScreenTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.CreativeModeTabsTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GameRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GuiTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ItemRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.LevelRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MinecraftTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ModelBakeryTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MouseHandlerTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.PackRepositoryTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.RenderStateShardTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.RenderTypeTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TextureManagerTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Gui
@@ -34,7 +55,6 @@ import org.bread_experts_group.generic.bslBuildDate
 import org.bread_experts_group.generic.bslVersion
 import org.bread_experts_group.generic.logging.LevelLogger
 import java.awt.Color
-import java.lang.classfile.ClassFile
 import java.net.URI
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
@@ -53,34 +73,37 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		MinecraftFeatures.CREATIVE_TAB to mutableListOf(MinecraftCreativeTabFeature1x21x1())
 	)
 
-	override fun start(scanning: Scanning, classFile: ClassFile) {
+	override fun preload(): List<String> = listOf(
+		NativeConstantsV1x21x1.net_minecraft_client_gui_screens_TitleScreen
+	)
+
+	override fun start(mods: List<MinecraftMod>, transformHolder: ModTransformHolder) {
 		logger.info("Starting Class Transforms")
-		val asList = mods.flatMap { it.value }
-		val holder = ModTransformHolder()
-		holder.gatherTransforms(asList)
-		BuiltInRegistriesTransform(scanning, classFile).addTransform(holder)
-		MinecraftTransform(scanning, classFile).addTransform(holder)
-		GuiTransform(scanning, classFile).addTransform(holder)
-		ItemRendererTransform(scanning, classFile).addTransform(holder)
-		ModelBakeryTransform(scanning, classFile).addTransform(holder)
-		PackRepositoryTransform(scanning, classFile).addTransform(holder)
-		TitleScreenTransform(scanning, classFile).addTransform(holder)
-		CreativeModeTabsTransform(scanning, classFile).addTransform(holder)
-		CreativeModeScreenTransform(scanning, classFile).addTransform(holder)
-		MouseHandlerTransform(scanning, classFile).addTransform(holder)
-		ClientLevelTransform(scanning, classFile).addTransform(holder)
-		CameraTransform(scanning, classFile).addTransform(holder)
-		BlockEntityRenderersTransform(scanning, classFile).addTransform(holder)
-		BlockEntityTypeTransform(scanning, classFile).addTransform(holder)
-		BlockEntitySupplierTransform(scanning, classFile).addTransform(holder)
-		TextureManagerTransform(scanning, classFile).addTransform(holder)
-		AbstractTextureTransform(scanning, classFile).addTransform(holder)
-		GameRendererTransform(scanning, classFile).addTransform(holder)
-		RenderTypeTransform(scanning, classFile).addTransform(holder)
-		RenderStateShardTransform(scanning, classFile).addTransform(holder)
-		LevelRendererTransform(scanning, classFile).addTransform(holder)
-		BuiltInPackSourceTransform(scanning, classFile).addTransform(holder)
-		asList.forEach { it.registerEvents() }
+		addToScanning(
+			BuiltInRegistriesTransform(transformHolder),
+			MinecraftTransform(transformHolder),
+			GuiTransform(transformHolder),
+			ItemRendererTransform(transformHolder),
+			ModelBakeryTransform(transformHolder),
+			PackRepositoryTransform(transformHolder),
+			TitleScreenTransform(transformHolder),
+			CreativeModeTabsTransform(transformHolder),
+			CreativeModeScreenTransform(transformHolder),
+			MouseHandlerTransform(transformHolder),
+			ClientLevelTransform(transformHolder),
+			CameraTransform(transformHolder),
+			BlockEntityRenderersTransform(transformHolder),
+			BlockEntityTypeTransform(transformHolder),
+			BlockEntitySupplierTransform(transformHolder),
+			TextureManagerTransform(transformHolder),
+			AbstractTextureTransform(transformHolder),
+			GameRendererTransform(transformHolder),
+			RenderTypeTransform(transformHolder),
+			RenderStateShardTransform(transformHolder),
+			LevelRendererTransform(transformHolder),
+			BuiltInPackSourceTransform(transformHolder)
+		)
+		mods.forEach { it.registerEvents() }
 	}
 
 	// todo refer to MinecraftCreativeTab
@@ -208,7 +231,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 
 	@JvmStatic
 	fun renderTitleScreen(guiGraphics: GuiGraphics) {
-		println("???")
 		val poseStack = guiGraphics.pose()
 		poseStack.pushPose()
 		poseStack.translate(10f, 3f, 0f)

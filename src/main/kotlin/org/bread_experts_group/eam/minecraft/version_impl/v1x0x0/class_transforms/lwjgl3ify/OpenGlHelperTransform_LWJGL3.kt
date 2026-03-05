@@ -1,26 +1,19 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.class_transforms.lwjgl3ify
 
 import org.bread_experts_group.eam.minecraft.DEFAULT_VOID
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.NativeConstantsV1x0x0
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class OpenGlHelperTransform_LWJGL3(
-	scanning: Scanning,
-	classFile: ClassFile
-) : ClassTransform(
+class OpenGlHelperTransform_LWJGL3: ClassTransform(
 	NativeConstantsV1x0x0.net_minecraft_OpenGlHelper,
-	"OpenGlHelper",
-	scanning,
-	classFile
+	"OpenGlHelper"
 ) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		val glDesc = ClassDesc.of("org.lwjgl.opengl.GL")
 		val glCapabilitiesDesc = ClassDesc.of("org.lwjgl.opengl.GLCapabilities")
 		val initializeTextures = classBuilder.transformMethodCode(

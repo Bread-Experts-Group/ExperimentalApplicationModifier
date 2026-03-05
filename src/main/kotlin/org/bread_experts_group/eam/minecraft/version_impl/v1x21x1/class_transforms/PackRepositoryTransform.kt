@@ -1,16 +1,15 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
 import org.bread_experts_group.eam.classDesc
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_server_packs_repository_PackRepository
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.server.packs.repository.PackRepository
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.CodeModel
 import java.lang.constant.ClassDesc
@@ -18,14 +17,13 @@ import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
 class PackRepositoryTransform(
-	scanning: Scanning,
-	classFile: ClassFile
+	transformHolder: ModTransformHolder
 ) : ClassTransform(
 	net_minecraft_server_packs_repository_PackRepository,
 	"PackRepository",
-	scanning, classFile
+	transformHolder
 ) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		classBuilder.transformMethod(classElement, ConstantDescs.INIT_NAME) { methodBuilder, methodElement ->
 			if (methodElement is CodeModel) {
 				methodBuilder.transformCode(methodElement) { codeBuilder, codeElement ->

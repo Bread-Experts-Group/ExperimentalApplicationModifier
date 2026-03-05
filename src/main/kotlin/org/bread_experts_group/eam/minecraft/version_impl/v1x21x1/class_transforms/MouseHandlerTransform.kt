@@ -2,7 +2,6 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfo
 
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.getLocalVariableInfo
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleMouseButtonPost
 import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleMouseButtonPre
@@ -13,13 +12,13 @@ import org.bread_experts_group.eam.minecraft.feature.event.EventSystem.handleScr
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.invokeStaticWithLocalVars
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.screens.Screen
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.classfile.CodeModel
 import java.lang.classfile.MethodModel
 import java.lang.classfile.Opcode
@@ -30,14 +29,13 @@ import kotlin.reflect.jvm.javaMethod
 
 // todo clean up later
 class MouseHandlerTransform(
-	scanning: Scanning,
-	classFile: ClassFile
+	transformHolder: ModTransformHolder
 ) : ClassTransform(
 	net_minecraft_client_MouseHandler,
 	"MouseHandler",
-	scanning, classFile
+	transformHolder
 ) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		when (classElement) {
 			is MethodModel if classElement.methodName().equalsString("a") && classElement.methodTypeSymbol() == MethodTypeDesc.of(
 				ConstantDescs.CD_void,

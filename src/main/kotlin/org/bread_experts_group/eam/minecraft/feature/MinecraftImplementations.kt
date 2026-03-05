@@ -11,16 +11,16 @@ import org.bread_experts_group.api.system.io.open.FileIOReOpenFeatures
 import org.bread_experts_group.api.system.io.open.WindowsIOReOpenFeatures
 import org.bread_experts_group.eam.JARDefiningClassLoader
 import org.bread_experts_group.eam.minecraft.MinecraftFeatureImplementation
+import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.transform.classLoaders
 import org.bread_experts_group.generic.command_line.ArgumentContainer
 import org.bread_experts_group.generic.command_line.Flag
 import org.bread_experts_group.generic.io.reader.BSLReader
-import java.lang.classfile.ClassFile
 import java.lang.instrument.Instrumentation
-import java.security.ProtectionDomain
 import java.util.zip.ZipInputStream
 
-typealias Scanning = MutableMap<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>
+typealias Scanning = MutableMap<String, ClassTransform>
 typealias SupportedMCFeatures = MutableMap<FeatureExpression<out MinecraftFeatureImplementation<*, *>>, MutableList<MinecraftFeatureImplementation<*, *>>>
 
 abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplementation<*, *>> {
@@ -48,11 +48,15 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 		lateinit var arguments: ArgumentContainer
 	}
 
-	private val classFile: ClassFile = ClassFile.of(ClassFile.StackMapsOption.GENERATE_STACK_MAPS)
 	private lateinit var instrumentation: Instrumentation
 	protected lateinit var scanning: Scanning
 	protected val mods: MutableMap<String, MutableList<MinecraftMod>> = mutableMapOf()
 	override val features: MutableList<MinecraftFeatureImplementation<*, *>> = mutableListOf()
+	private val transformHolder: ModTransformHolder = ModTransformHolder()
+
+	fun addToScanning(vararg transform: ClassTransform) {
+		transform.forEach { scanning[it.targetClass] = it }
+	}
 
 	private val modDir: String = "eam_mods"
 	private fun bslLoad() {
@@ -127,13 +131,16 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 		bslLoad()
 		this.instrumentation = instrumentation
 		this.scanning = scanning
-		start(this.scanning, classFile)
+		val asList = mods.flatMap { it.value }
+		transformHolder.gatherTransforms(asList)
+		start(asList, transformHolder)
 	}
 
-	abstract fun start(scanning: Scanning, classFile: ClassFile)
+	abstract fun start(mods: List<MinecraftMod>, transformHolder: ModTransformHolder)
 
 	/**
-	 * A temporary workaround to force the jvm to load provided classes so they can be transformed.
+	 * A hacky workaround to force the JVM to load MC classes for transformation.
+	 * (Because somehow the transformer isn't catching the class being loaded unless we load it ourselves)
 	 */
 	open fun preload(): List<String> = listOf()
 }

@@ -14,6 +14,7 @@ import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Co
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeMimics
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedFeatures
+import org.bread_experts_group.eam.minecraft.transform.ClassTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.V1X0X0MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations
 import org.bread_experts_group.generic.Mappable
@@ -33,7 +34,7 @@ enum class EAMModificationType(
 	MINECRAFT(
 		"minecraft",
 		{ instrumentation, args ->
-			val scanning = mutableMapOf<String, (ClassLoader?, Class<*>?, ProtectionDomain, ByteArray) -> ByteArray?>()
+			val scanning = mutableMapOf<String, ClassTransform>()
 			val versions = mapOf(
 				"1.0" to V1X0X0MinecraftImplementations,
 				"1.0.0" to V1X0X0MinecraftImplementations,
@@ -98,10 +99,7 @@ enum class EAMModificationType(
 						)
 					)
 					return try {
-						scanning[className]?.invoke(
-							loader,
-							classBeingRedefined, protectionDomain, classfileBuffer
-						)
+						scanning[className]?.transformClass(classfileBuffer) ?: classfileBuffer
 					} catch (t: Throwable) {
 						t.printStackTrace()
 						throw t

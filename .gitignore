@@ -48,3 +48,4 @@ bin/
 /src/main/resources/client-deobfuscated.jar
 /mc libs/
 /local.properties
+/1.21.1 Sources/

@@ -5,15 +5,16 @@ import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.clazz
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations
 import org.bread_experts_group.eam.minecraft.feature.MinecraftImplementations.Companion.writeTransformedClasses
-import org.bread_experts_group.eam.minecraft.feature.MinecraftMod
-import org.bread_experts_group.eam.minecraft.feature.MinecraftMod.Companion.modID
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.invokeSpecialNewMimic
 import org.bread_experts_group.eam.minecraft.loadConstant
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.qualifiedName
-import java.lang.classfile.*
+import java.lang.classfile.ClassBuilder
+import java.lang.classfile.ClassElement
+import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PUBLIC
+import java.lang.classfile.ClassFileVersion
+import java.lang.classfile.MethodModel
 import java.lang.classfile.instruction.FieldInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
@@ -22,146 +23,151 @@ import java.lang.reflect.Field
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.createParentDirectories
-import kotlin.jvm.java
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
 /**
  * Intended to be used internally by EAM to set up initial transforms for MC Classes.
  * Mods are passed into the transform after EAM performs the initial processing.
- * // todo allow mods to define entirely new class transforms in the future
  */
 abstract class ClassTransform(
-	private val targetClass: String,
+	val targetClass: String,
 	private val deobfClassName: String,
-	private val scanning: Scanning,
-	private val classFile: ClassFile,
+	private val transformHolder: ModTransformHolder? = null
 ) : CodeTransformer {
+	companion object {
+		val classFile: ClassFile = ClassFile.of(ClassFile.StackMapsOption.GENERATE_STACK_MAPS)
+	}
+
 	override val existingElements: MutableList<String> = mutableListOf()
 	val thisClassDesc: ClassDesc = ClassDesc.of(targetClass.replace('/', '.'))
 
-	fun addTransform(transformHolder: ModTransformHolder) {
-		scanning[targetClass] = { _, _, _, data ->
-			val model = classFile.parse(data)
-			var transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
-				classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
-				model.filterNot { it is ClassFileVersion }.forEach { classElement ->
-					transform().invoke(classBuilder, classElement)
-				}
+	fun transformClass(data: ByteArray): ByteArray {
+		println("[EAM Class Transformer] Transforming $targetClass($deobfClassName)")
+		val model = classFile.parse(data)
+		var transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
+			classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
+			model.filterNot { it is ClassFileVersion }.forEach { classElement ->
+				transform(classBuilder, classElement)
 			}
-			val clDesc = ClassLoader::class.java.classDesc
-			transformHolder.getTransforms(targetClass).forEach { (mod, transform) ->
-				var model = classFile.parse(transformed)
-				val modelTransformed = classFile.transformClass(model, transform::process)
-				model = classFile.parse(modelTransformed)
-				val classesInUse = mutableSetOf<String>()
-				val jarClassesInUse = mutableSetOf<String>()
-				val modLoader = mod::class.java.classLoader as JARDefiningClassLoader.ModClassLoader
-				for (classElement in model) when (classElement) {
-					is MethodModel -> classElement.code().ifPresent { code ->
-						for (codeElement in code) when (codeElement) {
-							is FieldInstruction -> classesInUse.add(
-								codeElement.owner().asInternalName().lowercase() + ".class"
-							)
-
-							else -> {}
-						}
-					}
-
-					else -> {}
-				}
-				modLoader.bslFindFiles(classesInUse) { e, _ ->
-					jarClassesInUse.add(e.name.lowercase().take(e.name.length - 6))
-				}
-				transformed = classFile.build(model.thisClass().asSymbol()) { builder ->
-					for (classElement in model) when (classElement) {
-						is MethodModel -> classElement.code().ifPresentOrElse({ code ->
-							builder.withMethodBody(
-								classElement.methodName(),
-								classElement.methodType(),
-								classElement.flags().flagsMask()
-							) { builder ->
-								for (codeElement in code) when (codeElement) {
-									is FieldInstruction -> {
-										if (jarClassesInUse.contains(
-												codeElement.owner().asInternalName().lowercase()
-											)
-										) {
-											val tr =
-												"org.bread_experts_group.eam.minecraft.transform.TransformReflectionKt"
-											builder.getstatic(
-												ClassDesc.of(tr),
-												"classLoaders",
-												Map::class.java.classDesc
-											).loadConstant(
-												modLoader.id
-											).invokeinterface(
-												Map::class.java.classDesc,
-												"get",
-												MethodTypeDesc.of(
-													ConstantDescs.CD_Object,
-													ConstantDescs.CD_Object
-												)
-											).checkcast(
-												clDesc
-											).loadConstant(
-												codeElement.owner().asSymbol().qualifiedName
-											).invokevirtual(
-												clDesc,
-												"loadClass",
-												MethodTypeDesc.of(
-													ConstantDescs.CD_Class,
-													ConstantDescs.CD_String
-												)
-											).loadConstant(
-												codeElement.name().stringValue()
-											).invokevirtual(
-												ConstantDescs.CD_Class,
-												"getField",
-												MethodTypeDesc.of(
-													Field::class.java.classDesc,
-													ConstantDescs.CD_String
-												)
-											).aconst_null(
-											).invokevirtual(
-												Field::class.java.classDesc,
-												"get",
-												MethodTypeDesc.of(
-													ConstantDescs.CD_Object,
-													ConstantDescs.CD_Object
-												)
-											).checkcast(
-												codeElement.typeSymbol()
-											)
-										} else builder.with(codeElement)
-									}
-
-									else -> builder.with(codeElement)
-								}
-							}
-						}) {
-							builder.with(classElement)
-						}
-
-						else -> builder.with(classElement)
-					}
-				}
-			}
-			val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
-			val target = targetClass.replace('/', '_').substringAfterLast('_')
-			if (path != null) Files.write(
-				Path(path)
-					.resolve("$deobfClassName [$target].class")
-					.createParentDirectories(),
-				transformed
-			)
-			transformed
 		}
+		transformed = applyModTransforms(transformed)
+		val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
+		val target = targetClass.replace('/', '_').substringAfterLast('_')
+		if (path != null) Files.write(
+			Path(path)
+				.resolve("$deobfClassName [$target].class")
+				.createParentDirectories(),
+			transformed
+		)
+		return transformed
 	}
 
-//	private fun transformClass(data: ByteArray, transform: ClassTransform) {
-//		this.classFile.transformClass(this.classFile.parse(data), transform)
-//	}
+	private fun applyModTransforms(input: ByteArray): ByteArray {
+		if (transformHolder == null) return input
+		val clDesc = ClassLoader::class.java.classDesc
+		val transforms = transformHolder.getTransforms(targetClass)
+		if (transforms.isEmpty()) return input
+		var transformed = input
+		transforms.forEach { (mod, transform) ->
+			var model = classFile.parse(transformed)
+			val modelTransformed = classFile.transformClass(model, transform::process)
+			model = classFile.parse(modelTransformed)
+			val classesInUse = mutableSetOf<String>()
+			val jarClassesInUse = mutableSetOf<String>()
+			val modLoader = mod::class.java.classLoader as JARDefiningClassLoader.ModClassLoader
+			for (classElement in model) when (classElement) {
+				is MethodModel -> classElement.code().ifPresent { code ->
+					for (codeElement in code) when (codeElement) {
+						is FieldInstruction -> classesInUse.add(
+							codeElement.owner().asInternalName().lowercase() + ".class"
+						)
+
+						else -> {}
+					}
+				}
+
+				else -> {}
+			}
+			modLoader.bslFindFiles(classesInUse) { e, _ ->
+				jarClassesInUse.add(e.name.lowercase().take(e.name.length - 6))
+			}
+			transformed = classFile.build(model.thisClass().asSymbol()) { builder ->
+				for (classElement in model) when (classElement) {
+					is MethodModel -> classElement.code().ifPresentOrElse({ code ->
+						builder.withMethodBody(
+							classElement.methodName(),
+							classElement.methodType(),
+							classElement.flags().flagsMask()
+						) { builder ->
+							for (codeElement in code) when (codeElement) {
+								is FieldInstruction -> {
+									if (jarClassesInUse.contains(
+											codeElement.owner().asInternalName().lowercase()
+										)
+									) {
+										val tr =
+											"org.bread_experts_group.eam.minecraft.transform.TransformReflectionKt"
+										builder.getstatic(
+											ClassDesc.of(tr),
+											"classLoaders",
+											Map::class.java.classDesc
+										).loadConstant(
+											modLoader.id
+										).invokeinterface(
+											Map::class.java.classDesc,
+											"get",
+											MethodTypeDesc.of(
+												ConstantDescs.CD_Object,
+												ConstantDescs.CD_Object
+											)
+										).checkcast(
+											clDesc
+										).loadConstant(
+											codeElement.owner().asSymbol().qualifiedName
+										).invokevirtual(
+											clDesc,
+											"loadClass",
+											MethodTypeDesc.of(
+												ConstantDescs.CD_Class,
+												ConstantDescs.CD_String
+											)
+										).loadConstant(
+											codeElement.name().stringValue()
+										).invokevirtual(
+											ConstantDescs.CD_Class,
+											"getField",
+											MethodTypeDesc.of(
+												Field::class.java.classDesc,
+												ConstantDescs.CD_String
+											)
+										).aconst_null(
+										).invokevirtual(
+											Field::class.java.classDesc,
+											"get",
+											MethodTypeDesc.of(
+												ConstantDescs.CD_Object,
+												ConstantDescs.CD_Object
+											)
+										).checkcast(
+											codeElement.typeSymbol()
+										)
+									} else builder.with(codeElement)
+								}
+
+								else -> builder.with(codeElement)
+							}
+						}
+					}) {
+						builder.with(classElement)
+					}
+
+					else -> builder.with(classElement)
+				}
+			}
+		}
+		return transformed
+	}
 
 	// todo look into lambda transferring
 	/**
@@ -287,5 +293,6 @@ abstract class ClassTransform(
 	 * @see transformMethodCode
 	 * @see transformCodeIndexed
 	 */
-	protected abstract fun transform(): (ClassBuilder, ClassElement) -> Unit
+	protected abstract fun transform(classBuilder: ClassBuilder, classElement: ClassElement)
+	override fun toString(): String = "ClassTransform[$targetClass <-> $deobfClassName]"
 }

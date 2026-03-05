@@ -156,8 +156,14 @@ abstract class AbstractTexture : MimickedClass(0) {
 
 	// Can't annotate with JvmField to remove the getter/setter population because there's no backing field
 	protected var textureId: Int
-		get() = clazz.getField("b").getInt(around)
-		set(value) = clazz.getField("b").setInt(around, value)
+		get() {
+			throw UnsupportedOperationException("throws until we can figure out why this field doesn't exist when it does.")
+			clazz.getField("b").getInt(around)
+		}
+		set(value) {
+			throw UnsupportedOperationException("throws until we can figure out why this field doesn't exist when it does.")
+			clazz.getField("b").setInt(around, value)
+		}
 
 	open fun getId(): Int = clazz.getMethod("a").invoke(around) as Int
 

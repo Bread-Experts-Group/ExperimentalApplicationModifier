@@ -3,7 +3,6 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.class_transfor
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.DEFAULT_VOID
 import org.bread_experts_group.eam.minecraft.LAMBDA_METAFACTORY_METHOD_HANDLE
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.loadConstant
 import org.bread_experts_group.eam.minecraft.localVariable
 import org.bread_experts_group.eam.minecraft.println
@@ -20,7 +19,6 @@ import java.io.File
 import java.io.PrintStream
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_PRIVATE
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.classfile.ClassFile.ACC_SYNTHETIC
@@ -34,14 +32,9 @@ import java.lang.constant.MethodHandleDesc
 import java.lang.constant.MethodTypeDesc
 import java.nio.IntBuffer
 
-class MinecraftTransform_LWJGL3(
-	scanning: Scanning,
-	classFile: ClassFile
-) : ClassTransform(
+class MinecraftTransform_LWJGL3: ClassTransform(
 	NativeConstantsV1x0x0.net_minecraft_client_Minecraft,
-	"Minecraft",
-	scanning,
-	classFile
+	"Minecraft"
 ) {
 	private val guiScreenDesc = ClassDesc.of(NativeConstantsV1x0x0.net_minecraft_GuiScreen)
 	private val callbackDesc = ClassDesc.of("org.lwjgl.glfw.GLFWErrorCallback")
@@ -60,7 +53,7 @@ class MinecraftTransform_LWJGL3(
 	private val glfwCursorPosCallbackIDesc = ClassDesc.of("org.lwjgl.glfw.GLFWCursorPosCallbackI")
 	private val entityRendererDesc = ClassDesc.of(NativeConstantsV1x0x0.net_minecraft_EntityRenderer)
 
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 
 		val startGame = Minecraft_StartGameTransform(classBuilder, classElement, thisClassDesc).run()
 		val init = Minecraft_InitTransform(classBuilder, classElement, thisClassDesc).run()

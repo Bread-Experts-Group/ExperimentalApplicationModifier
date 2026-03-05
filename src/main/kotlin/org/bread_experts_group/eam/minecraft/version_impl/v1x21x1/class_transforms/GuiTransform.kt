@@ -1,14 +1,13 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms
 
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_Gui
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_Gui_layers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.V1X21X1MinecraftImplementations.addLayers
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_FINAL
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.constant.ClassDesc
@@ -16,15 +15,12 @@ import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.jvm.javaMethod
 
-class GuiTransform(
-	scanning: Scanning,
-	classFile: ClassFile
-) : ClassTransform(
+class GuiTransform(transformHolder: ModTransformHolder) : ClassTransform(
 	net_minecraft_client_gui_Gui,
 	"Gui",
-	scanning, classFile
+	transformHolder
 ) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		val r = invokeAtMethodReturns(
 			"<init>",
 			MethodTypeDesc.of(ConstantDescs.CD_void, ClassDesc.of(Minecraft.clazz.name)),

@@ -1,26 +1,21 @@
 package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.class_transforms.lwjgl3ify
 
 import org.bread_experts_group.eam.classDesc
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.MouseHandler
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.NativeConstantsV1x0x0
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.classfile.instruction.BranchInstruction
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class EntityRendererTransform_LWJGL3(
-	scanning: Scanning,
-	classFile: ClassFile
-) : ClassTransform(NativeConstantsV1x0x0.net_minecraft_EntityRenderer, "EntityRenderer", scanning, classFile) {
+class EntityRendererTransform_LWJGL3: ClassTransform(NativeConstantsV1x0x0.net_minecraft_EntityRenderer, "EntityRenderer") {
 	private val glfwDesc = ClassDesc.of("org.lwjgl.glfw.GLFW")
 	private val minecraftDesc = ClassDesc.of("net.minecraft.client.Minecraft")
 
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		val updateCameraAndRender = classBuilder.transformMethodNewSignature(
 			classElement,
 			"b",

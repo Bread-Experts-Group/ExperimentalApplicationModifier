@@ -3,24 +3,22 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.class_transfor
 import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistry
-import org.bread_experts_group.eam.minecraft.feature.Scanning
 import org.bread_experts_group.eam.minecraft.feature.block.MinecraftBlock
 import org.bread_experts_group.eam.minecraft.localVariable
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.transform.ClassTransform
+import org.bread_experts_group.eam.minecraft.transform.ModTransformHolder
 import org.bread_experts_group.eam.minecraft.version_impl.v1x0x0.NativeConstantsV1x0x0
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
 class ContainerCreativeTransform(
-	scanning: Scanning,
-	classFile: ClassFile
-) : ClassTransform(NativeConstantsV1x0x0.net_minecraft_ContainerCreative, "ContainerCreative", scanning, classFile) {
-	override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
+	transformHolder: ModTransformHolder
+) : ClassTransform(NativeConstantsV1x0x0.net_minecraft_ContainerCreative, "ContainerCreative", transformHolder) {
+	override fun transform(classBuilder: ClassBuilder, classElement: ClassElement) {
 		val iteratorClassDesc = EAMRegistry.EAMEntryIterator::class.classDesc
 		val init = classBuilder.transformMethodCode(
 			classElement,
