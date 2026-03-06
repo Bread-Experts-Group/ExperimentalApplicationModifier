@@ -137,10 +137,4 @@ abstract class MinecraftImplementations : FeatureProvider<MinecraftFeatureImplem
 	}
 
 	abstract fun start(mods: List<MinecraftMod>, transformHolder: ModTransformHolder)
-
-	/**
-	 * A hacky workaround to force the JVM to load MC classes for transformation.
-	 * (Because somehow the transformer isn't catching the class being loaded unless we load it ourselves)
-	 */
-	open fun preload(): List<String> = listOf()
 }

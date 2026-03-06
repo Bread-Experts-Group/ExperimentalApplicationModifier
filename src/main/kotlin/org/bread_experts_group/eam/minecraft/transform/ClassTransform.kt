@@ -45,13 +45,12 @@ abstract class ClassTransform(
 	fun transformClass(data: ByteArray): ByteArray {
 		println("[EAM Class Transformer] Transforming $targetClass($deobfClassName)")
 		val model = classFile.parse(data)
-		var transformed = classFile.build(model.thisClass().asSymbol()) { classBuilder ->
-			classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
-			model.filterNot { it is ClassFileVersion }.forEach { classElement ->
-				transform(classBuilder, classElement)
-			}
+		var transformed =  classFile.transformClass(model) { classBuilder, classElement ->
+			if (classElement is ClassFileVersion) classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
+			else transform(classBuilder, classElement)
 		}
-		transformed = applyModTransforms(transformed)
+		// todo applyModTransforms is causing some classes to fail transforming
+//		transformed = applyModTransforms(transformed)
 		val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
 		val target = targetClass.replace('/', '_').substringAfterLast('_')
 		if (path != null) Files.write(
@@ -92,8 +91,8 @@ abstract class ClassTransform(
 			modLoader.bslFindFiles(classesInUse) { e, _ ->
 				jarClassesInUse.add(e.name.lowercase().take(e.name.length - 6))
 			}
-			transformed = classFile.build(model.thisClass().asSymbol()) { builder ->
-				for (classElement in model) when (classElement) {
+			transformed = classFile.transformClass(model) { builder, classElement ->
+				when (classElement) {
 					is MethodModel -> classElement.code().ifPresentOrElse({ code ->
 						builder.withMethodBody(
 							classElement.methodName(),

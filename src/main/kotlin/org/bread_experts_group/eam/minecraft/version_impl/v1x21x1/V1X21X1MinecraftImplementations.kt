@@ -73,10 +73,6 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 		MinecraftFeatures.CREATIVE_TAB to mutableListOf(MinecraftCreativeTabFeature1x21x1())
 	)
 
-	override fun preload(): List<String> = listOf(
-		NativeConstantsV1x21x1.net_minecraft_client_gui_screens_TitleScreen
-	)
-
 	override fun start(mods: List<MinecraftMod>, transformHolder: ModTransformHolder) {
 		logger.info("Starting Class Transforms")
 		addToScanning(

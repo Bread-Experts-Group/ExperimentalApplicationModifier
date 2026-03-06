@@ -110,10 +110,7 @@ class GuiGraphics(around: Any) : MimickedClass(around) {
 		override val mimicClassDesc: ClassDesc = GuiGraphics::class.classDesc
 	}
 
-	fun pose(): PoseStack =
-		PoseStack(
-			clazz.getMethod("c").invoke(around)
-		)
+	fun pose(): PoseStack = PoseStack(clazz.getMethod("c").invoke(around))
 
 	fun drawString(font: Font, string: String, x: Int, y: Int, color: Int) {
 		clazz.getMethod(

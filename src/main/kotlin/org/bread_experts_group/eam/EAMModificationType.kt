@@ -99,7 +99,7 @@ enum class EAMModificationType(
 						)
 					)
 					return try {
-						scanning[className]?.transformClass(classfileBuffer) ?: classfileBuffer
+						scanning[className]?.transformClass(classfileBuffer)
 					} catch (t: Throwable) {
 						t.printStackTrace()
 						throw t
@@ -109,7 +109,6 @@ enum class EAMModificationType(
 			val impl = arguments.getRequired(versionFlag)
 			impl.implement(instrumentation, scanning)
 			MinecraftImplementations.arguments = arguments
-			if (impl.preload().isNotEmpty()) impl.preload().forEach { loadClass(it).getConstructor() }
 		}
 	);
 

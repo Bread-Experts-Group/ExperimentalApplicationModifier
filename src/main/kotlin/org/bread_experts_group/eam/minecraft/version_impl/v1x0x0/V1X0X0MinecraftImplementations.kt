@@ -25,10 +25,6 @@ object V1X0X0MinecraftImplementations : MinecraftImplementations() {
 		MinecraftFeatures.BLOCK to mutableListOf(MinecraftBlockFeature1x0x0())
 	)
 
-	override fun preload(): List<String> = listOf(
-		NativeConstantsV1x0x0.net_minecraft_GuiMainMenu
-	)
-
 	override fun start(mods: List<MinecraftMod>, transformHolder: ModTransformHolder) {
 		addToScanning(
 			BlockTransform(transformHolder),
