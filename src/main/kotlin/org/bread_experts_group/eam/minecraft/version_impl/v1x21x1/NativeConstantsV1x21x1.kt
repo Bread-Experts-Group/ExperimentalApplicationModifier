@@ -162,4 +162,12 @@ object NativeConstantsV1x21x1 : NativeLookup() {
 	const val net_minecraft_server_packs_repository_KnownPack: String = "atl"
 	const val net_minecraft_server_packs_PackSelectionConfig: String = "asr"
 	const val net_minecraft_server_packs_repository_Pack_Position: String = $$"atm$b"
+	const val net_minecraft_client_gui_components_LogoRenderer: String = "fjd"
+	const val net_minecraft_client_gui_components_Button: String = "fim"
+	const val net_minecraft_client_gui_components_Button_Builder: String = $$"fim$a"
+	const val net_minecraft_client_gui_components_Button_OnPress: String = $$"fim$c"
+	const val net_minecraft_client_gui_components_events_GuiEventListener: String = "fki"
+	const val net_minecraft_client_gui_components_AbstractButton: String = "fid"
+	const val net_minecraft_client_gui_components_AbstractWidget: String = "fik"
+	const val net_minecraft_client_gui_components_Tooltip: String = "fjx"
 }

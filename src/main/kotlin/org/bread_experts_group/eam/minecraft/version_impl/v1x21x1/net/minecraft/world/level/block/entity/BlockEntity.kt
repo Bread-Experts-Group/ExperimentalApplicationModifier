@@ -88,7 +88,10 @@ open class BlockEntity(type: BlockEntityType, pos: BlockPos, state: BlockState, 
 	}
 
 	init {
-		if (initAround) this.around = createNative(BlockEntity::class.java) { classBuilder, _ ->
+		if (initAround) this.around = createNative(
+			BlockEntity::class.java,
+			this::class.java.classLoader
+		) { classBuilder, _ ->
 			classBuilder.withSuperclass(classDesc)
 			classBuilder.withMethodBody(
 				"<init>",
@@ -117,7 +120,6 @@ open class BlockEntity(type: BlockEntityType, pos: BlockPos, state: BlockState, 
 					)
 					.return_()
 			}
-
 		}.newInstance(type.around, pos.around, state.around)
 	}
 

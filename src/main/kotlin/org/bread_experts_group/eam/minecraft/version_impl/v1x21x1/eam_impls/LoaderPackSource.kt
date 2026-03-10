@@ -1,4 +1,4 @@
-package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resources
+package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.eam_impls
 
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.resources.ResourceLocation
@@ -44,7 +44,7 @@ class LoaderPackSource(
 		private fun createPackSource(path: Path): VanillaPackResources =
 			VanillaPackResourcesBuilder()
 				.pushAssetPath(PackType.CLIENT_RESOURCES, path)
-				.exposeNamespace("breadmod", "minecraft")
+				.exposeNamespace("breadmod", "minecraft", "eam")
 				.setMetadata(EAM_METADATA)
 				.build(EAM_PACK_INFO)
 

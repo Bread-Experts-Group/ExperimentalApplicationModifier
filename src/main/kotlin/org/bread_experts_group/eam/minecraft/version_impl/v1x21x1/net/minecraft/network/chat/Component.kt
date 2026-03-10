@@ -76,5 +76,9 @@ abstract class Component(around: Any) : MimickedClass(around) {
 			clazz.getMethod("b", String::class.java)
 				.invoke(null, text)
 		)
+
+		fun empty(): MutableComponent = MutableComponent(
+			clazz.getMethod("i").invoke(null)
+		)
 	}
 }

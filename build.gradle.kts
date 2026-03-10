@@ -9,6 +9,7 @@ plugins {
 
 group = "org.bread_experts_group"
 version = "D0F2P6"
+val bslVersion: String = "D1F5N8P12"
 // Bread Experts Group Versioning System, revision 1 (natives/libraries unauthorized outside of Bread Server Library)
 //                          Pertains to the ...
 // Dx ... Design x       //  entire architecture of the project
@@ -32,7 +33,7 @@ idea {
 dependencies {
 	testImplementation(kotlin("test"))
 	implementation(kotlin("reflect"))
-	implementation("org.bread_experts_group:bread_server_lib-code:D1F5N8P11")
+	implementation("org.bread_experts_group:bread_server_lib-code:$bslVersion")
 }
 
 kotlin {

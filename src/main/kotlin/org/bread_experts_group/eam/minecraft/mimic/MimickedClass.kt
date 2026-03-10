@@ -20,30 +20,35 @@ abstract class MimickedClass(
 ) {
 	companion object {
 		val classDesc: ClassDesc = ClassDesc.of(MimickedClass::class.qualifiedName)
-	}
-	/**
-	 * Used for creating classes inheriting natives for this [MimickedClass].
-	 *
-	 * @return The constructor for the generated class.
-	 */
-	fun <T> createNative(
-		mimicClass: Class<T>,
-		builder: (ClassBuilder, String) -> Unit
-	): Constructor<*> {
-		val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
-		val cl = DefiningClassLoader(parent = this::class.java.classLoader)
-		val name = "EAM_NativeMimic_${mimicClass.simpleName}"
-		val built = cf.build(ClassDesc.of(name)) { builder(it, name) }
 
-		val path = MinecraftImplementations.arguments.get(writeMimics)
-		if (path != null) Files.write(
-			Path(path)
-				.resolve("$name.class")
-				.createParentDirectories(),
-			built
-		)
+		/**
+		 * Used for creating classes inheriting natives for the provided [inputClass].
+		 *
+		 * @return The constructor for the generated class.
+		 */
+		fun <T> createNative(
+			inputClass: Class<T>,
+			classLoader: ClassLoader,
+			builder: (ClassBuilder, String) -> Unit
+		): Constructor<*> {
+			val cf = of(StackMapsOption.GENERATE_STACK_MAPS)
+			val cl = DefiningClassLoader(parent = classLoader)
+			val hasLambda = inputClass.simpleName.lowercase().contains("lambda") // can't have names with special chars
+			val inputName = if (hasLambda) inputClass.simpleName.substringBefore("$") + "_Lambda"
+			else inputClass.simpleName
+			val name = "EAM_NativeMimic_$inputName"
+			val built = cf.build(ClassDesc.of(name)) { builder(it, name) }
 
-		return cl.define(name, built).constructors[0]
+			val path = MinecraftImplementations.arguments.get(writeMimics)
+			if (path != null) Files.write(
+				Path(path)
+					.resolve("$name.class")
+					.createParentDirectories(),
+				built
+			)
+
+			return cl.define(name, built).constructors[0]
+		}
 	}
 
 	fun hasSuperclass(clazz: KClass<*>): Boolean = clazz in this::class.superclasses
@@ -66,7 +71,7 @@ abstract class MimickedClass(
 		val companionInst = obj.kotlin.companionObjectInstance ?: return null
 		val clazz = companionInst.javaClass.getMethod("getClazz").invoke(companionInst) as Class<*>
 		return if (clazz.kotlin in around::class.superclasses || around::class.simpleName == clazz.simpleName) {
-			return obj.getConstructor(Object::class.java).newInstance(around) as T
+			obj.getConstructor(Object::class.java).newInstance(around) as T
 		} else null
 	}
 

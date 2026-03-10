@@ -140,11 +140,7 @@ fun CodeBuilder.putReferenceField(name: String, type: ClassDesc): CodeBuilder =
  */
 fun CodeBuilder.invokeDefaultSuper(): CodeBuilder = this
 	.dup()
-	.invokespecial(
-		ConstantDescs.CD_Object,
-		ConstantDescs.INIT_NAME,
-		MethodTypeDesc.of(ConstantDescs.CD_void)
-	)
+	.invokespecial(ConstantDescs.CD_Object, ConstantDescs.INIT_NAME, DEFAULT_VOID)
 
 fun CodeBuilder.loadConstant(string: String): CodeBuilder = this.loadConstant(string.toConstantDesc())
 

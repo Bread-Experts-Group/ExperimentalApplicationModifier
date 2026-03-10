@@ -114,7 +114,10 @@ class BlockEntityType(around: Any) : MimickedClass(around) {
 		}
 
 		init {
-			this.around = createNative(BlockEntitySupplier::class.java) { classBuilder, name ->
+			this.around = createNative(
+				BlockEntitySupplier::class.java,
+				this::class.java.classLoader
+			) { classBuilder, name ->
 				classBuilder.withInterfaceSymbols(classDesc)
 				// todo figure out signatures
 //					classBuilder.with(SignatureAttribute.of { "<T:Ldqh;>Ljava/lang/Object;" })

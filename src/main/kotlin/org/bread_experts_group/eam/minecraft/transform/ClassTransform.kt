@@ -45,28 +45,27 @@ abstract class ClassTransform(
 	fun transformClass(data: ByteArray): ByteArray {
 		println("[EAM Class Transformer] Transforming $targetClass($deobfClassName)")
 		val model = classFile.parse(data)
-		var transformed =  classFile.transformClass(model) { classBuilder, classElement ->
+		val transformed =  classFile.transformClass(model) { classBuilder, classElement ->
 			if (classElement is ClassFileVersion) classBuilder.withVersion(ClassFile.JAVA_24_VERSION, 0)
 			else transform(classBuilder, classElement)
 		}
-		// todo applyModTransforms is causing some classes to fail transforming
-//		transformed = applyModTransforms(transformed)
+		val modTransformed: ByteArray? = /*applyModTransforms(transformed)*/ null
 		val path = MinecraftImplementations.arguments.get(writeTransformedClasses)
 		val target = targetClass.replace('/', '_').substringAfterLast('_')
 		if (path != null) Files.write(
 			Path(path)
 				.resolve("$deobfClassName [$target].class")
 				.createParentDirectories(),
-			transformed
+			modTransformed ?: transformed
 		)
-		return transformed
+		return modTransformed ?: transformed
 	}
 
-	private fun applyModTransforms(input: ByteArray): ByteArray {
-		if (transformHolder == null) return input
+	private fun applyModTransforms(input: ByteArray): ByteArray? {
+		if (transformHolder == null) return null
 		val clDesc = ClassLoader::class.java.classDesc
 		val transforms = transformHolder.getTransforms(targetClass)
-		if (transforms.isEmpty()) return input
+		if (transforms.isEmpty()) return null
 		var transformed = input
 		transforms.forEach { (mod, transform) ->
 			var model = classFile.parse(transformed)

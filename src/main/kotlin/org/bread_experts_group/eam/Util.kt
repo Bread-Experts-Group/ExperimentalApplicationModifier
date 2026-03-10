@@ -9,6 +9,8 @@ import java.lang.constant.ConstantDesc
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
 
+const val BUILD_VERSION: String = "D0F2P6"
+var MOD_COUNT: Int = 0
 private val SYSTEM_CLASS_LOADER: ClassLoader = ClassLoader.getSystemClassLoader()
 
 fun loadClass(clazz: String): Class<*> = SYSTEM_CLASS_LOADER.loadClass(clazz)

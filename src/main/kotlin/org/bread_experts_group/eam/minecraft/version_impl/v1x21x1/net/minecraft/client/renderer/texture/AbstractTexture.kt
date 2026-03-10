@@ -42,7 +42,10 @@ abstract class AbstractTexture : MimickedClass(0) {
 		}
 
 		init {
-			this.around = createNative(AbstractTexture::class.java) { classBuilder, name ->
+			this.around = createNative(
+				AbstractTexture::class.java,
+				this::class.java.classLoader
+			) { classBuilder, name ->
 				classBuilder.withSuperclass(classDesc)
 				if (this.hasSuperclass(Tickable::class)) {
 					classBuilder.withInterfaceSymbols(Tickable.classDesc)

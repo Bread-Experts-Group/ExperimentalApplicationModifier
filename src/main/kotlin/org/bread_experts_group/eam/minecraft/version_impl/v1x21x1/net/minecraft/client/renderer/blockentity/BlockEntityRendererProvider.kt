@@ -32,7 +32,10 @@ class BlockEntityRendererProvider<T : BlockEntity>(
 	}
 
 	init {
-		this.around = createNative(BlockEntityRendererProvider::class.java) { classBuilder, name ->
+		this.around = createNative(
+			BlockEntityRendererProvider::class.java,
+			this::class.java.classLoader
+		) { classBuilder, name ->
 			classBuilder.withInterfaceSymbols(classDesc)
 			classBuilder.withMethodBody(
 				"create",

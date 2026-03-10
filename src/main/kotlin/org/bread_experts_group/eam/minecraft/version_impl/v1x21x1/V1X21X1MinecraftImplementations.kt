@@ -2,6 +2,8 @@ package org.bread_experts_group.eam.minecraft.version_impl.v1x21x1
 
 import org.bread_experts_group.BSLLogMessage
 import org.bread_experts_group.BSLLogMessage.Companion.info
+import org.bread_experts_group.eam.BUILD_VERSION
+import org.bread_experts_group.eam.MOD_COUNT
 import org.bread_experts_group.eam.addToStaticArray
 import org.bread_experts_group.eam.minecraft.MinecraftFeatures
 import org.bread_experts_group.eam.minecraft.feature.EAMRegistries
@@ -24,6 +26,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfor
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.GuiTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ItemRendererTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.LevelRendererTransform
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.LogoRendererTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MinecraftTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.ModelBakeryTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.MouseHandlerTransform
@@ -33,6 +36,7 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transfor
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TextureManagerTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.class_transforms.TitleScreenTransform
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.eam_impls.LoaderPackSource
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.Minecraft
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.Gui
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.client.gui.GuiGraphics
@@ -50,8 +54,6 @@ import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.CreativeModeTabs.Companion.createKey
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemDisplayContext
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
-import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.pack_resources.LoaderPackSource
-import org.bread_experts_group.generic.bslBuildDate
 import org.bread_experts_group.generic.bslVersion
 import org.bread_experts_group.generic.logging.LevelLogger
 import java.awt.Color
@@ -97,7 +99,8 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 			RenderTypeTransform(transformHolder),
 			RenderStateShardTransform(transformHolder),
 			LevelRendererTransform(transformHolder),
-			BuiltInPackSourceTransform(transformHolder)
+			BuiltInPackSourceTransform(transformHolder),
+			LogoRendererTransform(transformHolder)
 		)
 		mods.forEach { it.registerEvents() }
 	}
@@ -226,25 +229,12 @@ object V1X21X1MinecraftImplementations : MinecraftImplementations() {
 	}
 
 	@JvmStatic
-	fun renderTitleScreen(guiGraphics: GuiGraphics) {
-		val poseStack = guiGraphics.pose()
-		poseStack.pushPose()
-		poseStack.translate(10f, 3f, 0f)
-		poseStack.scale(1.25f, 1.25f, 1.25f)
-		poseStack.pushPose()
-		poseStack.scale(2f, 2f, 2f)
-		guiGraphics.renderItem(BuiltInRegistries.ITEM.get(ResourceLocation.parse("breadmod:bread_block")).getDefaultInstance(), 0, 30)
-		poseStack.popPose()
-		guiGraphics.drawString(Minecraft.getInstance().font, "EAM on top", 0, 0, Color.WHITE.rgb)
-		guiGraphics.drawString(
-			Minecraft.getInstance().font,
-			"BSL ${bslVersion()} @ ${bslBuildDate()}",
-			0,
-			10,
-			Color.ORANGE.rgb
-		)
-		poseStack.popPose()
+	fun renderTitleScreen(guiGraphics: GuiGraphics, width: Int, height: Int, mouseX: Int, mouseY: Int) {
+		val font = Minecraft.getInstance().font
+		guiGraphics.drawString(font, "Mods: $MOD_COUNT", 2, height - 40, Color.WHITE.rgb)
+		guiGraphics.drawString(font, "EAM $BUILD_VERSION", 2, height - 30, Color.WHITE.rgb)
 	}
+
 	@JvmStatic
 	fun updateWindowTitle(self: Minecraft) {
 		self.getWindow().setTitle("Minecraft - EAM 1.21.1")

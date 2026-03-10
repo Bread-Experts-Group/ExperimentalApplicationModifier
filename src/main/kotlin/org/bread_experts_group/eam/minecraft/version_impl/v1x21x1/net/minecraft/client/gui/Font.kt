@@ -32,7 +32,6 @@ net.minecraft.client.gui.Font -> fhx:
     291:293:float renderText(java.lang.String,float,float,int,boolean,org.joml.Matrix4f,net.minecraft.client.renderer.MultiBufferSource,net.minecraft.client.gui.Font$DisplayMode,int,int) -> b
     297:299:float renderText(net.minecraft.util.FormattedCharSequence,float,float,int,boolean,org.joml.Matrix4f,net.minecraft.client.renderer.MultiBufferSource,net.minecraft.client.gui.Font$DisplayMode,int,int) -> c
     303:307:void renderChar(net.minecraft.client.gui.font.glyphs.BakedGlyph,boolean,boolean,float,float,float,org.joml.Matrix4f,com.mojang.blaze3d.vertex.VertexConsumer,float,float,float,float,int) -> a
-    310:310:int width(java.lang.String) -> b
     314:314:int width(net.minecraft.network.chat.FormattedText) -> a
     318:318:int width(net.minecraft.util.FormattedCharSequence) -> a
     322:322:java.lang.String plainSubstrByWidth(java.lang.String,int,boolean) -> a
@@ -52,4 +51,7 @@ class Font(around: Any): MimickedClass(around) {
 		override val classDesc: ClassDesc = clazz.classDesc
 		override val mimicClassDesc: ClassDesc = Font::class.classDesc
 	}
+
+	fun width(text: String): Int = clazz.getMethod("b", String::class.java)
+		.invoke(around, text) as Int
 }

@@ -6,6 +6,7 @@ import org.bread_experts_group.eam.minecraft.mimic.ClassInfo
 import org.bread_experts_group.eam.minecraft.mimic.MimickedClass
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.NativeConstantsV1x21x1.net_minecraft_client_gui_GuiGraphics
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.com.mojang.blaze3d.vertex.PoseStack
+import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.network.chat.Component
 import org.bread_experts_group.eam.minecraft.version_impl.v1x21x1.net.minecraft.world.item.ItemStack
 import java.lang.constant.ClassDesc
 
@@ -90,7 +91,6 @@ net.minecraft.client.gui.GuiGraphics -> fhz:
     606:639:void renderItemDecorations(net.minecraft.client.gui.Font,net.minecraft.world.item.ItemStack,int,int,java.lang.String) -> a
     642:643:void renderTooltip(net.minecraft.client.gui.Font,net.minecraft.world.item.ItemStack,int,int) -> b
     646:652:void renderTooltip(net.minecraft.client.gui.Font,java.util.List,java.util.Optional,int,int) -> a
-    655:656:void renderTooltip(net.minecraft.client.gui.Font,net.minecraft.network.chat.Component,int,int) -> a
     659:660:void renderComponentTooltip(net.minecraft.client.gui.Font,java.util.List,int,int) -> a
     663:664:void renderTooltip(net.minecraft.client.gui.Font,java.util.List,int,int) -> b
     667:668:void renderTooltip(net.minecraft.client.gui.Font,java.util.List,net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner,int,int) -> a
@@ -126,6 +126,11 @@ class GuiGraphics(around: Any) : MimickedClass(around) {
 	fun renderItem(stack: ItemStack, x: Int, y: Int) {
 		clazz.getMethod("a", ItemStack.clazz, Int::class.java, Int::class.java)
 			.invoke(around, stack.around, x, y)
+	}
+
+	fun renderTooltip(font: Font, text: Component, mouseX: Int, mouseY: Int) {
+		clazz.getMethod("a", Font.clazz, Component.clazz, Int::class.java, Int::class.java)
+			.invoke(around, font.around, text.around, mouseX, mouseY)
 	}
 
 	/*

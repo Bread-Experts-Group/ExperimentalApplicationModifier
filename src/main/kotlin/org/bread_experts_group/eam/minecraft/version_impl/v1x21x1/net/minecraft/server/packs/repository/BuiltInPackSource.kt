@@ -65,7 +65,10 @@ abstract class BuiltInPackSource(
 	}
 
 	init {
-		this.around = createNative(BuiltInPackSource::class.java) { classBuilder, name ->
+		this.around = createNative(
+			BuiltInPackSource::class.java,
+			this::class.java.classLoader
+		) { classBuilder, name ->
 			classBuilder.withSuperclass(classDesc)
 			classBuilder.withMethodBody(
 				ConstantDescs.INIT_NAME,

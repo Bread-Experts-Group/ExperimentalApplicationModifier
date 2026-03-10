@@ -169,7 +169,10 @@ class CreativeModeTab(around: Any) : AbstractCreativeTab(around) {
 		}
 
 		init {
-			this.around = createNative(DisplayItemsGenerator::class.java) { classBuilder, name ->
+			this.around = createNative(
+				DisplayItemsGenerator::class.java,
+				this::class.java.classLoader
+			) { classBuilder, name ->
 				classBuilder.withInterfaceSymbols(classDesc)
 				classBuilder.withMethodBody(
 					"accept",

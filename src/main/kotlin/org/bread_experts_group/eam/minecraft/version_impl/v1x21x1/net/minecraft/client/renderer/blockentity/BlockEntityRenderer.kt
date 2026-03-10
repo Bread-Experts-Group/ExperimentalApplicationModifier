@@ -40,7 +40,10 @@ abstract class BlockEntityRenderer<T : BlockEntity>(
 	}
 
 	init {
-		this.around = createNative(BlockEntityRenderer::class.java) { classBuilder, name ->
+		this.around = createNative(
+			BlockEntityRenderer::class.java,
+			this::class.java.classLoader
+		) { classBuilder, name ->
 			classBuilder.withInterfaceSymbols(classDesc)
 			classBuilder.withMethodBody(
 				"a",

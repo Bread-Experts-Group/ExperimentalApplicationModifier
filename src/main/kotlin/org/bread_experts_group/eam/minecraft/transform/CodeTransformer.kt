@@ -76,6 +76,8 @@ interface CodeTransformer {
 		if (methodElement is CodeModel) methodBuilder.transformCodeIndexed(methodElement, transform)
 	}
 
+	fun CodeElement.dumpIndex(index: Int) = println("$index, $this")
+
 	/**
 	 * The index refers to the position of a [CodeElement] in the method being transformed.
 	 */
