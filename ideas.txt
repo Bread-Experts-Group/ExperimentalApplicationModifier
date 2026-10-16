@@ -1,0 +1,6 @@
+Functions to take a lambda with code, analyze it's bytecode in the transform and convert placeholder calls to their native versions
+
+Extension functions to ease generating repetitive bytecode segments, like calling methods or instantiating new classes
+
+Full lookup systems for holding methods & fields containing the mimic and native descriptors.
+Extension functions in code builder will allow to directly pass in the lookup to create an instance of the mimic or native
