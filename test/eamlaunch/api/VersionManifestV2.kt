@@ -36,7 +36,7 @@ data class VersionManifestV2(
 
         val time: SerializableManifestDateTime,
         val releaseTime: SerializableManifestDateTime,
-        val sha1: String,
+        val sha1: SHA1,
         val complianceLevel: BigDecimal
     )
 }

@@ -28,11 +28,13 @@ annotation class BSLGPDeserializer(val deserializer: KClass<out IBSLGPDeserializ
 
 fun bslGPEncode(type: KType, data: Any?, buffer: FlushingOutput) {
     val clazz = type.classifier as KClass<*>
-    if (data == null) {
-        buffer.writeByte(0)
-        return
-    }
-    buffer.writeByte(1)
+    if (type.isMarkedNullable) {
+        if (data == null) {
+            buffer.writeByte(0)
+            return
+        }
+        buffer.writeByte(1)
+    } else data!!
     if (clazz.isData) {
         val constructor = clazz.primaryConstructor!!
         constructor.parameters.forEach { parameter ->
@@ -79,7 +81,7 @@ fun bslGPEncode(type: KType, data: Any?, buffer: FlushingOutput) {
         List::class -> {
             @Suppress("UNCHECKED_CAST")
             data as List<Any>
-            buffer.writeInt(data.size)
+            bslGPEncode(data.size, buffer)
             data.forEach { element ->
                 bslGPEncode(type.arguments.first().type!!, element, buffer)
             }
@@ -99,7 +101,7 @@ inline fun <reified T : Any> bslGPEncode(data: T, buffer: FlushingOutput) = bslG
 
 fun bslGPDecode(type: KType, input: BlockingInput): Any? {
     val clazz = type.classifier as KClass<*>
-    if (input.readByte() == 0.toByte()) return null
+    if (type.isMarkedNullable && input.readByte() == 0.toByte()) return null
     return if (clazz.isData) {
         val constructor = clazz.primaryConstructor!!
         constructor.callBy(
@@ -127,7 +129,7 @@ fun bslGPDecode(type: KType, input: BlockingInput): Any? {
 
         Int::class -> input.readInt()
 
-        List::class -> List(input.readInt()) {
+        List::class -> List(bslGPDecode<Int>(input)!!) {
             bslGPDecode(type.arguments.first().type!!, input)
         }
 

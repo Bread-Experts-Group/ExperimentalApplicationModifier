@@ -17,3 +17,9 @@ value class SerializableURI(val value: URI)
 @BSLGPSerializer(ManifestTimeSerializer::class)
 @JvmInline
 value class SerializableManifestDateTime(val value: LocalDateTime)
+
+@JSONDeserializer(SHA1Serializer::class)
+@BSLGPSerializer(SHA1Serializer::class)
+@BSLGPDeserializer(SHA1Serializer::class)
+@JvmInline
+value class SHA1(val value: ByteArray)

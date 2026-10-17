@@ -1,11 +1,7 @@
 package eamlaunch.api
 
-import eamlaunch.pending_bsl.BSLGPSerializer
-import eamlaunch.pending_bsl.JSONDeserializer
 import eamlaunch.pending_bsl.JSONName
-import eamlaunch.pending_bsl.URISerializer
 import java.math.BigDecimal
-import java.net.URI
 
 data class VersionInfo(
     val downloads: Downloads,
@@ -19,7 +15,7 @@ data class VersionInfo(
         @JSONName("server_mappings") val serverMappings: Entry
     ) {
         data class Entry(
-            val sha1: String,
+            val sha1: SHA1,
             val size: BigDecimal,
             val url: SerializableURI
         )
@@ -44,7 +40,7 @@ data class VersionInfo(
         ) {
             data class Artifact(
                 val path: String,
-                val sha1: String,
+                val sha1: SHA1,
                 val size: BigDecimal,
                 val url: SerializableURI
             )

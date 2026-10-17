@@ -98,7 +98,6 @@ fun main() {
         }
     }
 
-    @Suppress("VariableInitializerIsRedundant")
     var versionInfo = if (!update) {
         try {
             bslGPDecode<VersionInfo>(input)
@@ -119,9 +118,11 @@ fun main() {
             )
         )
 
+        channel.truncate(0)
         var fileOffset = 0L
         val output = FlushingOutput.Buffer(ByteBuffer.allocateDirect(32768)) { buffer, size ->
-            channel.write(buffer, fileOffset)
+            println(fileOffset)
+            channel.write(buffer.clear().limit(size), fileOffset)
             fileOffset += size
         }
         bslGPEncode(versionInfo, output)
