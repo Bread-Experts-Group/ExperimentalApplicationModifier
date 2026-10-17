@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="BreadSystemsLibrary">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../BreadSystemsLibrary/out/artifacts/BreadSystemsLibrary_jar/BreadSystemsLibrary.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,5 +1,3 @@
-package test
-
 import org.bread_experts_group.eam.MimickedClass.Companion.mimicDesc
 import org.bread_experts_group.eam.MimickedClass.Companion.nativeDesc
 import org.bread_experts_group.eam.PoseStack
