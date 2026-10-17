@@ -1,7 +1,8 @@
-package org.bread_experts_group.eam
+package org.bread_experts_group.eam.minecraft.v1x21x1
 
 import org.bread_experts_group.eam.mappings.Mappings
 import java.lang.constant.ClassDesc
+import kotlin.collections.get
 import kotlin.reflect.KClass
 
 abstract class MimickedClass(@JvmField var original: Any) {

@@ -1,6 +1,6 @@
 package org.bread_experts_group.eam.mappings
 
-import org.bread_experts_group.eam.MimickedClass
+import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.reflect.KClass
@@ -23,7 +23,10 @@ object Mappings {
         Files.write(mappingsPath, mappingBuilder.toString().toByteArray())
     }
 
-    fun <T : MimickedClass> of(mimicClass: KClass<T>): MappingsEntry =
+    fun <T: MimickedClass> of(mimicClass: KClass<T>): MappingsEntry =
         this.entries[obfuscationEntries[mimicClass.simpleName]] ?:
         throw NullPointerException("No mapping found for ${mimicClass.qualifiedName}")
+
+    fun <T: MimickedClass> obfuscatedClassName(mimicClass: KClass<T>): String =
+        of(mimicClass).classMapping.obfuscatedName
 }

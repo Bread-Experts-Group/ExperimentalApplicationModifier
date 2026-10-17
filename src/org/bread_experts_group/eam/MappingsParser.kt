@@ -1,15 +1,17 @@
-import org.bread_experts_group.eam.MimickedClass.Companion.mimicDesc
-import org.bread_experts_group.eam.MimickedClass.Companion.nativeDesc
-import org.bread_experts_group.eam.PoseStack
+package org.bread_experts_group.eam
+
+import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass.Companion.mimicDesc
+import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass.Companion.nativeDesc
 import org.bread_experts_group.eam.mappings.Mappings
 import org.bread_experts_group.eam.mappings.MappingsBuilder
+import org.bread_experts_group.eam.minecraft.v1x21x1.PoseStack
 import kotlin.io.path.Path
 
 private const val tab: String = "\t"
 private const val newline: String = "\n"
 
-fun main() {
-    val mappingsFile = Path("minecraft_sources/client-1.21.1-20240808.144430-mappings.txt").toFile()
+fun main(vararg args: String) {
+    val mappingsFile = Path(args[0]).toFile()
     val list = mappingsFile.readLines().toMutableList()
     list.removeIf { it.contains("package-info") || it.contains("#") || it.contains("clinit") }
     list.replaceAll {
