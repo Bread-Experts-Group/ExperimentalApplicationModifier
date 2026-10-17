@@ -1,5 +1,2 @@
 Manifest-Version: 1.0
-Class-Path: kotlin-reflect-2.4.20.jar kotlin-stdlib-2.4.20.jar annotatio
- ns-13.0.jar kotlin-stdlib-jdk8-2.4.0.jar kotlin-stdlib-2.4.0.jar annota
- tions-13.0.jar kotlin-stdlib-jdk7-2.4.0.jar BreadSystemsLibrary.jar
-
+Premain-Class: org.bread_experts_group.eam.Agent
