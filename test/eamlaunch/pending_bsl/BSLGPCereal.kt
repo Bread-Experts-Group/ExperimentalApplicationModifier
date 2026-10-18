@@ -93,8 +93,9 @@ fun bslGPEncode(type: KType, data: Any?, buffer: FlushingOutput, context: Encodi
         when (type.classifier as KClass<*>) {
             String::class -> {
                 data as String
-                buffer.writeInt(data.length)
-                buffer.writeData(data.toByteArray())
+                val data = data.toByteArray()
+                buffer.writeInt(data.size)
+                buffer.writeData(data)
             }
 
             ClassDesc::class -> {
