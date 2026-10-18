@@ -28,17 +28,20 @@ import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.Executors
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.fileSize
 import kotlin.io.path.invariantSeparatorsPathString
+import kotlin.io.path.name
 import kotlin.io.path.notExists
 import kotlin.system.exitProcess
 
 const val minecraftVersion = "1.21.1"
 
-val minecraftPath = Path("./minecraft/$minecraftVersion")
+val minecraftPath = Path("./minecraft")
+val minecraftVersionPath = Path("./minecraft/$minecraftVersion")
 
 val libraryPath: Path = minecraftPath.resolve("libraries")
-val gamePath: Path = minecraftPath.resolve("game")
-val eamLaunchResourcePath: Path = minecraftPath.resolve("eam launch")
+val gamePath: Path = minecraftVersionPath.resolve("game")
+val eamLaunchResourcePath: Path = minecraftVersionPath.resolve("eam launch")
 
 val userDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss.SSS")
 
@@ -138,64 +141,66 @@ fun main() {
         versionInfo!!
     }
 
-    val mappingPath = eamLaunchResourcePath.resolve("mapping").also {
-        it.parent.createDirectories()
-    }
-
-    val mapping = (if (mappingPath.notExists() || update) FileChannel.open(
-        mappingPath,
-        StandardOpenOption.READ, StandardOpenOption.WRITE,
-        StandardOpenOption.CREATE
-    ).also {
-        println("No local mapping or version was updated")
-        update = true
-    } else FileChannel.open(
-        mappingPath,
-        StandardOpenOption.READ, StandardOpenOption.WRITE
-    )).use { channel ->
-        val input = BlockingInput()
-        input.suspensionNotification = { required ->
-            var required = required
-            while (required > 0) {
-                val read = channel.read(buffer)
-                if (read == -1) throw EOFException()
-                val data = ByteArray(read)
-                buffer.flip().get(data).clear()
-                input.load(data)
-                required -= read
-            }
+    if (versionInfo.downloads.clientMappings != null) {
+        val mappingPath = eamLaunchResourcePath.resolve("mapping").also {
+            it.parent.createDirectories()
         }
 
-        var mapping = if (!update) {
-            try {
-                bslGPDecode<Mapping>(input)
-            } catch (_: EOFException) {
-                println("Local copy may be corrupt")
-                update = true
-                null
+        val mapping = (if (mappingPath.notExists() || update) FileChannel.open(
+            mappingPath,
+            StandardOpenOption.READ, StandardOpenOption.WRITE,
+            StandardOpenOption.CREATE
+        ).also {
+            println("No local mapping or version was updated")
+            update = true
+        } else FileChannel.open(
+            mappingPath,
+            StandardOpenOption.READ, StandardOpenOption.WRITE
+        )).use { channel ->
+            val input = BlockingInput()
+            input.suspensionNotification = { required ->
+                var required = required
+                while (required > 0) {
+                    val read = channel.read(buffer)
+                    if (read == -1) throw EOFException()
+                    val data = ByteArray(read)
+                    buffer.flip().get(data).clear()
+                    input.load(data)
+                    required -= read
+                }
             }
-        } else null
 
-        if (update) {
-            println("Updating local copy...")
-            mapping = mappingDecode(
-                client.send(
-                    HttpRequest.newBuilder(versionInfo.downloads.clientMappings.url.value).build(),
-                    HttpResponse.BodyHandlers.ofString()
-                ).body().also { println(it.length) }.reader()
-            )!!
+            var mapping = if (!update) {
+                try {
+                    bslGPDecode<Mapping>(input)
+                } catch (_: EOFException) {
+                    println("Local copy may be corrupt")
+                    update = true
+                    null
+                }
+            } else null
 
-            channel.truncate(0)
-            var fileOffset = 0L
-            val output = FlushingOutput.Buffer(ByteBuffer.allocateDirect(32768)) { buffer, size ->
-                channel.write(buffer.clear().limit(size), fileOffset)
-                fileOffset += size
+            if (update) {
+                println("Updating local copy...")
+                mapping = mappingDecode(
+                    client.send(
+                        HttpRequest.newBuilder(versionInfo.downloads.clientMappings.url.value).build(),
+                        HttpResponse.BodyHandlers.ofString()
+                    ).body().also { println(it.length) }.reader()
+                )!!
+
+                channel.truncate(0)
+                var fileOffset = 0L
+                val output = FlushingOutput.Buffer(ByteBuffer.allocateDirect(32768)) { buffer, size ->
+                    channel.write(buffer.clear().limit(size), fileOffset)
+                    fileOffset += size
+                }
+                bslGPEncode(mapping, output)
+                output.flush()
             }
-            bslGPEncode(mapping, output)
-            output.flush()
+
+            mapping!!
         }
-
-        mapping!!
     }
 
     val classPath = ConcurrentSkipListSet<Path>()
@@ -208,14 +213,22 @@ fun main() {
                         if (rule.action != "allow") return@supplyAsync null
                     } else if (rule.action != "deny") return@supplyAsync null
                 }
-                val path = libraryPath.resolve(library.downloads.artifact.path).also {
-                    it.parent.createDirectories()
+
+                val remotePath = library.downloads.artifact.path
+                val fileSeparator = remotePath.lastIndexOf('/')
+                val path = libraryPath.resolve(remotePath.take(fileSeparator)).resolve(
+                    library.downloads.artifact.sha1.value.toHexString()
+                ).resolve(remotePath.substring(fileSeparator + 1))
+                path.parent.createDirectories()
+
+                if (path.notExists()) {
+                    client.send(
+                        HttpRequest.newBuilder(library.downloads.artifact.url.value).build(),
+                        HttpResponse.BodyHandlers.ofFile(path)
+                    )
+                    println("Downloaded ${path.name} (${path.fileSize()} bytes)")
                 }
 
-                if (path.notExists()) client.send(
-                    HttpRequest.newBuilder(library.downloads.artifact.url.value).build(),
-                    HttpResponse.BodyHandlers.ofFile(path)
-                )
                 classPath.add(gamePath.relativize(path))
             }, executor)
         }.toTypedArray()

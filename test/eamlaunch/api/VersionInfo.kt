@@ -10,9 +10,9 @@ data class VersionInfo(
 ) {
     data class Downloads(
         val client: Entry,
-        @JSONName("client_mappings") val clientMappings: Entry,
+        @JSONName("client_mappings") val clientMappings: Entry?,
         val server: Entry,
-        @JSONName("server_mappings") val serverMappings: Entry
+        @JSONName("server_mappings") val serverMappings: Entry?
     ) {
         data class Entry(
             val sha1: SHA1,
