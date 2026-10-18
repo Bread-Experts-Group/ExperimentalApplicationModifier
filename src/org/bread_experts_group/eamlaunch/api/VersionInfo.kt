@@ -1,6 +1,6 @@
-package eamlaunch.api
+package org.bread_experts_group.eamlaunch.api
 
-import eamlaunch.pending_bsl.JSONName
+import org.bread_experts_group.eamlaunch.pending_bsl.JSONName
 import java.math.BigDecimal
 
 data class VersionInfo(

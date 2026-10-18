@@ -1,6 +1,6 @@
-package eamlaunch.pending_bsl
+package org.bread_experts_group.eamlaunch.pending_bsl
 
-import eamlaunch.api.SerializableURI
+import org.bread_experts_group.eamlaunch.api.SerializableURI
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import org.bread_experts_group.bread_systems_library.model.JSONArray

@@ -1,15 +1,15 @@
-package eamlaunch.api
+package org.bread_experts_group.eamlaunch.api
 
-import eamlaunch.pending_bsl.BSLGPDeserializer
-import eamlaunch.pending_bsl.BSLGPSerializer
-import eamlaunch.pending_bsl.DecodingContext
-import eamlaunch.pending_bsl.EncodingContext
-import eamlaunch.pending_bsl.IBSLGPDeserializer
-import eamlaunch.pending_bsl.IBSLGPSerializer
-import eamlaunch.pending_bsl.bslGPDecode
-import eamlaunch.pending_bsl.bslGPEncode
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
+import org.bread_experts_group.eamlaunch.pending_bsl.BSLGPDeserializer
+import org.bread_experts_group.eamlaunch.pending_bsl.BSLGPSerializer
+import org.bread_experts_group.eamlaunch.pending_bsl.DecodingContext
+import org.bread_experts_group.eamlaunch.pending_bsl.EncodingContext
+import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPDeserializer
+import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPSerializer
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPDecode
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPEncode
 import java.lang.constant.ClassDesc
 
 data class Mapping(

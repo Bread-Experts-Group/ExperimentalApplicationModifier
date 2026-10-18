@@ -5,6 +5,8 @@ import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass.Companion.nat
 import org.bread_experts_group.eam.mappings.Mappings
 import org.bread_experts_group.eam.mappings.MappingsBuilder
 import org.bread_experts_group.eam.minecraft.v1x21x1.PoseStack
+import java.lang.constant.ConstantDescs
+import java.lang.constant.MethodTypeDesc
 import kotlin.io.path.Path
 
 private const val tab: String = "\t"
@@ -33,7 +35,7 @@ fun main(vararg args: String) {
         else throw IllegalStateException("Found unknown: $it")
     }
 
-    mappingsBuilder.finish()
+//    mappingsBuilder.finish()
 //    Mappings.dumpToFile()
 
     println(PoseStack::class.nativeDesc)

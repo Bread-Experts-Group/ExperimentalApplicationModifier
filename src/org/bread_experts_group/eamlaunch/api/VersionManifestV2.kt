@@ -1,16 +1,17 @@
-package eamlaunch.api
+package org.bread_experts_group.eamlaunch.api
 
-import eamlaunch.pending_bsl.EncodingContext
-import eamlaunch.pending_bsl.IBSLGPSerializer
-import eamlaunch.pending_bsl.IJSONDeserializer
-import eamlaunch.pending_bsl.bslGPEncode
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
+import org.bread_experts_group.eamlaunch.pending_bsl.EncodingContext
+import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPSerializer
+import org.bread_experts_group.eamlaunch.pending_bsl.IJSONDeserializer
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPEncode
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
-object ManifestTimeSerializer : IJSONDeserializer<String, SerializableManifestDateTime>, IBSLGPSerializer<SerializableManifestDateTime> {
+object ManifestTimeSerializer : IJSONDeserializer<String, SerializableManifestDateTime>,
+    IBSLGPSerializer<SerializableManifestDateTime> {
     override fun jsonDeserialize(input: String?): SerializableManifestDateTime = SerializableManifestDateTime(
         LocalDateTime.parse(input!!, DateTimeFormatter.ISO_DATE_TIME)
     )

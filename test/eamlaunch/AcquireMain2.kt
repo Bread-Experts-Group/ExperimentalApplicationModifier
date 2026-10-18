@@ -1,13 +1,13 @@
 package eamlaunch
 
-import eamlaunch.api.AssetIndex
-import eamlaunch.api.Mapping
-import eamlaunch.api.VersionInfo
-import eamlaunch.api.VersionManifestV2
-import eamlaunch.api.mappingDecode
-import eamlaunch.pending_bsl.bslGPDecode
-import eamlaunch.pending_bsl.bslGPEncode
-import eamlaunch.pending_bsl.jsonDecode
+import org.bread_experts_group.eamlaunch.api.AssetIndex
+import org.bread_experts_group.eamlaunch.api.Mapping
+import org.bread_experts_group.eamlaunch.api.VersionInfo
+import org.bread_experts_group.eamlaunch.api.VersionManifestV2
+import org.bread_experts_group.eamlaunch.api.mappingDecode
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPDecode
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPEncode
+import org.bread_experts_group.eamlaunch.pending_bsl.jsonDecode
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import org.bread_experts_group.bread_systems_library.model.jsonParse
@@ -32,12 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.createDirectories
-import kotlin.io.path.createDirectory
 import kotlin.io.path.fileSize
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.notExists
-import kotlin.io.path.writeBytes
 import kotlin.system.exitProcess
 
 const val minecraftVersion = "1.21.1"

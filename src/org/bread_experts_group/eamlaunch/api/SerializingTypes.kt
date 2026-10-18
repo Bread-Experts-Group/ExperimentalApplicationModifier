@@ -1,9 +1,9 @@
-package eamlaunch.api
+package org.bread_experts_group.eamlaunch.api
 
-import eamlaunch.pending_bsl.BSLGPDeserializer
-import eamlaunch.pending_bsl.BSLGPSerializer
-import eamlaunch.pending_bsl.JSONDeserializer
-import eamlaunch.pending_bsl.URISerializer
+import org.bread_experts_group.eamlaunch.pending_bsl.BSLGPDeserializer
+import org.bread_experts_group.eamlaunch.pending_bsl.BSLGPSerializer
+import org.bread_experts_group.eamlaunch.pending_bsl.JSONDeserializer
+import org.bread_experts_group.eamlaunch.pending_bsl.URISerializer
 import java.net.URI
 import java.time.LocalDateTime
 

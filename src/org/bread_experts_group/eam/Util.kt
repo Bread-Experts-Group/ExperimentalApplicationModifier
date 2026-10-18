@@ -24,4 +24,7 @@ val ClassDesc.qualifiedName: String
 val ClassDesc.clazz: Class<*>
     get() = ClassLoader.getSystemClassLoader().loadClass(this.qualifiedName)
 
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 fun String.toConstantDesc(): ConstantDesc = java.lang.String(this)
+
+fun String.containsAny(vararg delimiters: String): Boolean = delimiters.any { this.contains(it) }
