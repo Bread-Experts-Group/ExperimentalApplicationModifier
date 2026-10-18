@@ -1,7 +1,9 @@
 package eamlaunch
 
+import eamlaunch.api.Mapping
 import eamlaunch.api.VersionInfo
 import eamlaunch.api.VersionManifestV2
+import eamlaunch.api.mappingDecode
 import eamlaunch.pending_bsl.bslGPDecode
 import eamlaunch.pending_bsl.bslGPEncode
 import eamlaunch.pending_bsl.jsonDecode
@@ -15,7 +17,6 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
-import java.nio.channels.FileLock
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
@@ -56,8 +57,11 @@ fun main() {
         it.parent.createDirectories()
     }
 
+    val buffer = ByteBuffer.allocateDirect(16384)
+
     var update = false
-    val channel = if (versionInfoPath.notExists()) FileChannel.open(
+
+    val versionInfo = (if (versionInfoPath.notExists()) FileChannel.open(
         versionInfoPath,
         StandardOpenOption.READ, StandardOpenOption.WRITE,
         StandardOpenOption.CREATE
@@ -82,54 +86,113 @@ fun main() {
                     "(local ${userDateTimeFormatter.format(versionInfoLocalLastModified)})"
         )
         update = version.time.value > versionInfoLocalLastModified
-    }
-
-    val buffer = ByteBuffer.allocateDirect(16384)
-    val input = BlockingInput()
-    input.suspensionNotification = { required ->
-        var required = required
-        while (required > 0) {
-            val read = channel.read(buffer)
-            if (read == -1) throw EOFException()
-            val data = ByteArray(read)
-            buffer.flip().get(data).clear()
-            input.load(data)
-            required -= read
+    }).use { channel ->
+        val input = BlockingInput()
+        input.suspensionNotification = { required ->
+            var required = required
+            while (required > 0) {
+                val read = channel.read(buffer)
+                if (read == -1) throw EOFException()
+                val data = ByteArray(read)
+                buffer.flip().get(data).clear()
+                input.load(data)
+                required -= read
+            }
         }
-    }
 
-    var versionInfo = if (!update) {
-        try {
-            bslGPDecode<VersionInfo>(input)
-        } catch (_: EOFException) {
-            println("Local copy may be corrupt")
-            update = true
-        }
-    } else null
+        var versionInfo = if (!update) {
+            try {
+                bslGPDecode<VersionInfo>(input)
+            } catch (_: EOFException) {
+                println("Local copy may be corrupt")
+                update = true
+                null
+            }
+        } else null
 
-    if (update) {
-        println("Updating local copy...")
-        versionInfo = jsonDecode<VersionInfo>(
-            jsonParse(
-                client.send(
-                    HttpRequest.newBuilder(versionManifest.versions.first { it.id == minecraftVersion }.url.value).build(),
-                    HttpResponse.BodyHandlers.ofString()
-                ).body().reader()
+        if (update) {
+            println("Updating local copy...")
+            versionInfo = jsonDecode<VersionInfo>(
+                jsonParse(
+                    client.send(
+                        HttpRequest.newBuilder(versionManifest.versions.first { it.id == minecraftVersion }.url.value).build(),
+                        HttpResponse.BodyHandlers.ofString()
+                    ).body().reader()
+                )
             )
-        )
 
-        channel.truncate(0)
-        var fileOffset = 0L
-        val output = FlushingOutput.Buffer(ByteBuffer.allocateDirect(32768)) { buffer, size ->
-            println(fileOffset)
-            channel.write(buffer.clear().limit(size), fileOffset)
-            fileOffset += size
+            channel.truncate(0)
+            var fileOffset = 0L
+            val output = FlushingOutput.Buffer(ByteBuffer.allocateDirect(32768)) { buffer, size ->
+                channel.write(buffer.clear().limit(size), fileOffset)
+                fileOffset += size
+            }
+            bslGPEncode(versionInfo, output)
+            output.flush()
         }
-        bslGPEncode(versionInfo, output)
-        output.flush()
+        versionInfo!!
     }
 
-    println(versionInfo)
+    val mappingPath = eamLaunchResourcePath.resolve("mapping").also {
+        it.parent.createDirectories()
+    }
+
+    val mapping = (if (mappingPath.notExists() || update) FileChannel.open(
+        mappingPath,
+        StandardOpenOption.READ, StandardOpenOption.WRITE,
+        StandardOpenOption.CREATE
+    ).also {
+        println("No local mapping or version was updated")
+        update = true
+    } else FileChannel.open(
+        mappingPath,
+        StandardOpenOption.READ, StandardOpenOption.WRITE
+    )).use { channel ->
+        val input = BlockingInput()
+        input.suspensionNotification = { required ->
+            var required = required
+            while (required > 0) {
+                val read = channel.read(buffer)
+                if (read == -1) throw EOFException()
+                val data = ByteArray(read)
+                buffer.flip().get(data).clear()
+                input.load(data)
+                required -= read
+            }
+        }
+
+        var mapping = if (!update) {
+            try {
+                bslGPDecode<Mapping>(input)
+            } catch (_: EOFException) {
+                println("Local copy may be corrupt")
+                update = true
+                null
+            }
+        } else null
+
+        if (update) {
+            println("Updating local copy...")
+            mapping = mappingDecode(
+                client.send(
+                    HttpRequest.newBuilder(versionInfo.downloads.clientMappings.url.value).build(),
+                    HttpResponse.BodyHandlers.ofString()
+                ).body().also { println(it.length) }.reader()
+            )!!
+
+            channel.truncate(0)
+            var fileOffset = 0L
+            val output = FlushingOutput.Buffer(ByteBuffer.allocateDirect(32768)) { buffer, size ->
+                channel.write(buffer.clear().limit(size), fileOffset)
+                fileOffset += size
+            }
+            bslGPEncode(mapping, output)
+            output.flush()
+        }
+
+        mapping!!
+    }
+
     TODO("*")
 
 //    val mappings = client.send(
