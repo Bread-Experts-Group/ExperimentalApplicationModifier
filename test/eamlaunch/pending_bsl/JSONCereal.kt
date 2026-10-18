@@ -74,6 +74,6 @@ object URISerializer : IJSONDeserializer<String, SerializableURI>, IBSLGPSeriali
     }
 
     override fun bslGpDeserialize(input: BlockingInput): SerializableURI = SerializableURI(
-        URI(bslGPDecode<String>(input)!!)
+        URI(bslGPDecode<String>(input))
     )
 }
