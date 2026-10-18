@@ -141,6 +141,15 @@ fun main() {
         versionInfo!!
     }
 
+    val clientJarPath = eamLaunchResourcePath.resolve("client.jar")
+    if (clientJarPath.notExists() || update) {
+        client.send(
+            HttpRequest.newBuilder(versionInfo.downloads.client.url.value).build(),
+            HttpResponse.BodyHandlers.ofFile(clientJarPath)
+        )
+        println("Downloaded ${clientJarPath.name} (${clientJarPath.fileSize()} bytes)")
+    }
+
     if (versionInfo.downloads.clientMappings != null) {
         val mappingPath = eamLaunchResourcePath.resolve("mapping").also {
             it.parent.createDirectories()
@@ -234,18 +243,12 @@ fun main() {
         }.toTypedArray()
     ).join()
 
-    val clientJarPath = eamLaunchResourcePath.resolve("client.jar")
-    if (clientJarPath.notExists()) client.send(
-        HttpRequest.newBuilder(versionInfo.downloads.client.url.value).build(),
-        HttpResponse.BodyHandlers.ofFile(clientJarPath)
-    )
-
     classPath.add(gamePath.relativize(clientJarPath))
     val classPathString = classPath.joinToString(";") { it.invariantSeparatorsPathString }
 
     val minecraft = Runtime.getRuntime().exec(
         arrayOf(
-            "C:\\Users\\BreadExpert\\.gradle\\jdks\\eclipse_adoptium-25-amd64-windows.2\\bin\\java.exe",
+            Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
             "-cp", classPathString,
             "net.minecraft.client.main.Main",
             "--version", minecraftVersion,
