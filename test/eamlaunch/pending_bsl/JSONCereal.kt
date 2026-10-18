@@ -51,6 +51,10 @@ fun jsonDecode(type: KType, primitive: JSONPrimitive?): Any? {
         BigDecimal::class -> (primitive as JSONNumber).number
         String::class -> (primitive as? JSONString)?.value
         List::class -> (primitive as? JSONArray)?.elements?.map { jsonDecode(type.arguments[0].type!!, it) }
+        Map::class -> (primitive as? JSONObject)?.elements?.entries?.associate { (key, element) ->
+            key to jsonDecode(type.arguments[1].type!!, element)
+        }
+
         else -> {
             val deserializerKind = type.findAnnotation<JSONDeserializer>()?.deserializer ?: clazz.findAnnotation<JSONDeserializer>()?.deserializer ?: throw IllegalArgumentException(
                 "Unable to deserialize $type"

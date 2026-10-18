@@ -6,8 +6,19 @@ import java.math.BigDecimal
 data class VersionInfo(
     val downloads: Downloads,
     val libraries: List<Library>,
-    val type: String
+    val type: String,
+    val mainClass: String,
+    @JSONName("assets") val assetIndexID: String,
+    @JSONName("assetIndex") val assetIndex: AssetIndexDownload
 ) {
+    data class AssetIndexDownload(
+        val id: String,
+        val sha1: SHA1,
+        val size: BigDecimal,
+        val totalSize: BigDecimal,
+        val url: SerializableURI
+    )
+
     data class Downloads(
         val client: Entry,
         @JSONName("client_mappings") val clientMappings: Entry?,

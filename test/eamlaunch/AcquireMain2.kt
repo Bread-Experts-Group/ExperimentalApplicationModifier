@@ -1,5 +1,6 @@
 package eamlaunch
 
+import eamlaunch.api.AssetIndex
 import eamlaunch.api.Mapping
 import eamlaunch.api.VersionInfo
 import eamlaunch.api.VersionManifestV2
@@ -11,6 +12,7 @@ import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import org.bread_experts_group.bread_systems_library.model.jsonParse
 import java.io.EOFException
+import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -26,12 +28,16 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.Path
+import kotlin.io.path.bufferedReader
 import kotlin.io.path.createDirectories
+import kotlin.io.path.createDirectory
 import kotlin.io.path.fileSize
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.notExists
+import kotlin.io.path.writeBytes
 import kotlin.system.exitProcess
 
 const val minecraftVersion = "1.21.1"
@@ -40,6 +46,7 @@ val minecraftPath = Path("./minecraft")
 val minecraftVersionPath = Path("./minecraft/$minecraftVersion")
 
 val libraryPath: Path = minecraftPath.resolve("libraries")
+val assetsPath: Path = minecraftPath.resolve("assets")
 val gamePath: Path = minecraftVersionPath.resolve("game")
 val eamLaunchResourcePath: Path = minecraftVersionPath.resolve("eam launch")
 
@@ -212,8 +219,48 @@ fun main() {
         }
     }
 
+    val assetIndexPath = assetsPath.resolve("indexes").createDirectories()
+        .resolve("${versionInfo.assetIndexID}.json")
+
+    val executor = Executors.newFixedThreadPool(5)
+    val assetsDownloaded = AtomicInteger(0)
+
+    if (true) {
+        client.send(
+            HttpRequest.newBuilder(versionInfo.assetIndex.url.value).build(),
+            HttpResponse.BodyHandlers.ofFile(assetIndexPath)
+        )
+
+        val assetIndex = jsonDecode<AssetIndex>(jsonParse(assetIndexPath.bufferedReader()))
+        val objectsPath = assetsPath.resolve("objects")
+        CompletableFuture.allOf(
+            *assetIndex.objects.map { (_, obj) ->
+                CompletableFuture.runAsync({
+                    val hex = obj.hash.value.toHexString()
+                    val hex2 = hex.substring(0..1)
+                    val path = objectsPath.resolve(hex2).createDirectories().resolve(hex)
+                    if (path.notExists()) {
+                        var tries = 0
+                        while (tries < 3) try {
+                            client.send(
+                                HttpRequest.newBuilder(URI("https://resources.download.minecraft.net/$hex2/$hex")).build(),
+                                HttpResponse.BodyHandlers.ofFile(path)
+                            )
+                            println("Downloaded ${path.fileName} (${path.fileSize()} bytes) ${assetsDownloaded.incrementAndGet()} / ${assetIndex.objects.size}")
+                            break
+                        } catch (e: IOException) {
+                            tries++
+                            if (tries == 3) println("Failed ${path.fileName} ${assetsDownloaded.incrementAndGet()} / ${assetIndex.objects.size}: $e")
+                        }
+                    } else {
+                        println("Cached ${path.fileName} ${assetsDownloaded.incrementAndGet()} / ${assetIndex.objects.size}")
+                    }
+                }, executor)
+            }.toTypedArray()
+        ).join()
+    }
+
     val classPath = ConcurrentSkipListSet<Path>()
-    val executor = Executors.newVirtualThreadPerTaskExecutor()
     CompletableFuture.allOf(
         *versionInfo.libraries.map library@{ library ->
             CompletableFuture.supplyAsync({
@@ -246,18 +293,31 @@ fun main() {
     classPath.add(gamePath.relativize(clientJarPath))
     val classPathString = classPath.joinToString(";") { it.invariantSeparatorsPathString }
 
+    println("=/= =/= =/= =/= =/= =/=")
+
+    //   --username
+    //   --uuid
+    //   --userType
+
     val minecraft = Runtime.getRuntime().exec(
         arrayOf(
             Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
             "-cp", classPathString,
-            "net.minecraft.client.main.Main",
+            versionInfo.mainClass,
+            "--gameDir", ".",
+            "--assetsDir", gamePath.relativize(assetsPath).invariantSeparatorsPathString,
+            "--assetIndex", versionInfo.assetIndexID,
             "--version", minecraftVersion,
-            "--accessToken", "0"
+            "--accessToken", "0",
+            "--versionType", "release"
         ),
         null,
         gamePath.createDirectories().toFile()
     )
-    minecraft.inputStream.transferTo(System.out)
-    minecraft.errorStream.transferTo(System.err)
+    Thread.ofVirtual().start {
+        minecraft.inputStream.transferTo(System.out)
+        minecraft.errorStream.transferTo(System.err)
+        System.`in`.transferTo(minecraft.outputStream)
+    }
     println(minecraft.waitFor())
 }
