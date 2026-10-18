@@ -235,7 +235,7 @@ fun main() {
             "C:\\Users\\BreadExpert\\.gradle\\jdks\\eclipse_adoptium-25-amd64-windows.2\\bin\\java.exe",
             "-cp", classPathString,
             "net.minecraft.client.main.Main",
-            "--version", "1.21.1",
+            "--version", minecraftVersion,
             "--accessToken", "0"
         ),
         null,
