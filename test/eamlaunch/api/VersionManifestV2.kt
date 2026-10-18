@@ -1,5 +1,6 @@
 package eamlaunch.api
 
+import eamlaunch.pending_bsl.EncodingContext
 import eamlaunch.pending_bsl.IBSLGPSerializer
 import eamlaunch.pending_bsl.IJSONDeserializer
 import eamlaunch.pending_bsl.bslGPEncode
@@ -14,9 +15,9 @@ object ManifestTimeSerializer : IJSONDeserializer<String, SerializableManifestDa
         LocalDateTime.parse(input!!, DateTimeFormatter.ISO_DATE_TIME)
     )
 
-    override fun bslGpSerialize(data: SerializableManifestDateTime, output: FlushingOutput) {
-        bslGPEncode(data.value.getLong(ChronoField.NANO_OF_DAY), output)
-        bslGPEncode(data.value.getLong(ChronoField.EPOCH_DAY), output)
+    override fun bslGpSerialize(data: SerializableManifestDateTime, output: FlushingOutput, context: EncodingContext) {
+        bslGPEncode(data.value.getLong(ChronoField.NANO_OF_DAY), output, context)
+        bslGPEncode(data.value.getLong(ChronoField.EPOCH_DAY), output, context)
     }
 }
 

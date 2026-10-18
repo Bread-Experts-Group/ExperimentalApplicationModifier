@@ -1,5 +1,7 @@
 package eamlaunch.api
 
+import eamlaunch.pending_bsl.DecodingContext
+import eamlaunch.pending_bsl.EncodingContext
 import eamlaunch.pending_bsl.IBSLGPDeserializer
 import eamlaunch.pending_bsl.IBSLGPSerializer
 import eamlaunch.pending_bsl.IJSONDeserializer
@@ -15,9 +17,11 @@ object SHA1Serializer : IJSONDeserializer<String, SHA1>, IBSLGPDeserializer<SHA1
         }
     )
 
-    override fun bslGpDeserialize(input: BlockingInput): SHA1 = SHA1(input.readBytes(20))
+    override fun bslGpDeserialize(input: BlockingInput, context: DecodingContext): SHA1 = SHA1(
+        input.readBytes(20)
+    )
 
-    override fun bslGpSerialize(data: SHA1, output: FlushingOutput) {
+    override fun bslGpSerialize(data: SHA1, output: FlushingOutput, context: EncodingContext) {
         if (data.value.size != 20) throw IllegalArgumentException(
             "SHA-1 must be 20 bytes (40 hexadecimal characters: ${data.value.toHexString()} [${data.value.size}])"
         )

@@ -1,5 +1,15 @@
 package eamlaunch.api
 
+import eamlaunch.pending_bsl.BSLGPDeserializer
+import eamlaunch.pending_bsl.BSLGPSerializer
+import eamlaunch.pending_bsl.DecodingContext
+import eamlaunch.pending_bsl.EncodingContext
+import eamlaunch.pending_bsl.IBSLGPDeserializer
+import eamlaunch.pending_bsl.IBSLGPSerializer
+import eamlaunch.pending_bsl.bslGPDecode
+import eamlaunch.pending_bsl.bslGPEncode
+import org.bread_experts_group.bread_systems_library.generic.BlockingInput
+import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import java.lang.constant.ClassDesc
 
 data class Mapping(
@@ -37,9 +47,33 @@ data class Mapping(
     @JvmInline
     value class NonObfuscatedClass(val desc: ClassDesc) : ClassKind
 
+    @JvmInline
+    value class ObfuscatedClass(val desc: ClassDesc) : ClassKind
+
     object SelfReference : ClassKind
 
-    data class PendFuture(
-        val a: Int = 0
-    ) : ClassKind
+    @BSLGPDeserializer(ResolvedFuture.Serializer::class)
+    @BSLGPSerializer(ResolvedFuture.Serializer::class)
+    class ResolvedFuture : ClassKind {
+        private var internal: ClassKind? = null
+        val value: ClassKind
+            get() = internal ?: throw IllegalStateException("Not initialized")
+
+        fun initialize(value: ClassKind) {
+            if (this.internal != null) throw IllegalStateException("Already set")
+            this.internal = value
+        }
+
+        object Serializer : IBSLGPSerializer<ResolvedFuture>, IBSLGPDeserializer<ResolvedFuture> {
+            override fun bslGpSerialize(data: ResolvedFuture, output: FlushingOutput, context: EncodingContext) {
+                bslGPEncode(data.value, output, context)
+            }
+
+            override fun bslGpDeserialize(
+                input: BlockingInput, context: DecodingContext
+            ): ResolvedFuture = ResolvedFuture().also {
+                it.initialize(bslGPDecode(input, context))
+            }
+        }
+    }
 }

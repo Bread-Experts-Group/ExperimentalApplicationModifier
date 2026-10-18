@@ -5,9 +5,7 @@ import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import java.lang.constant.ClassDesc
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.nio.channels.WritableByteChannel
 import java.util.IdentityHashMap
-import java.util.Objects
 import kotlin.collections.indexOf
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -19,11 +17,11 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 interface IBSLGPSerializer<T> {
-    fun bslGpSerialize(data: T, output: FlushingOutput)
+    fun bslGpSerialize(data: T, output: FlushingOutput, context: EncodingContext)
 }
 
 interface IBSLGPDeserializer<T> {
-    fun bslGpDeserialize(input: BlockingInput): T
+    fun bslGpDeserialize(input: BlockingInput, context: DecodingContext): T
 }
 
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
@@ -72,7 +70,7 @@ fun bslGPEncode(type: KType, data: Any?, buffer: FlushingOutput, context: Encodi
     if (serializerKind != null) {
         capture {
             @Suppress("UNCHECKED_CAST")
-            (serializerKind.objectInstance as IBSLGPSerializer<Any>).bslGpSerialize(data, buffer)
+            (serializerKind.objectInstance as IBSLGPSerializer<Any>).bslGpSerialize(data, buffer, context)
         }
         return
     }
@@ -193,7 +191,7 @@ fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = De
         val deserializerKind = type.findAnnotation<BSLGPDeserializer>()?.deserializer ?: clazz.findAnnotation<BSLGPDeserializer>()?.deserializer
         if (deserializerKind != null) {
             @Suppress("UNCHECKED_CAST")
-            return (deserializerKind.objectInstance as IBSLGPDeserializer<Any>).bslGpDeserialize(input)
+            return (deserializerKind.objectInstance as IBSLGPDeserializer<Any>).bslGpDeserialize(input, context)
         }
 
         if (clazz.isData || clazz.isValue) {

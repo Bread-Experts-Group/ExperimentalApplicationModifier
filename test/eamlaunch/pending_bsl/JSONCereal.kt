@@ -69,11 +69,11 @@ inline fun <reified T> jsonDecode(primitive: JSONPrimitive?): T = jsonDecode(typ
 object URISerializer : IJSONDeserializer<String, SerializableURI>, IBSLGPSerializer<SerializableURI>, IBSLGPDeserializer<SerializableURI> {
     override fun jsonDeserialize(input: String?): SerializableURI = SerializableURI(URI(input!!))
 
-    override fun bslGpSerialize(data: SerializableURI, output: FlushingOutput) {
-        bslGPEncode(data.value.toString(), output)
+    override fun bslGpSerialize(data: SerializableURI, output: FlushingOutput, context: EncodingContext) {
+        bslGPEncode(data.value.toString(), output, context)
     }
 
-    override fun bslGpDeserialize(input: BlockingInput): SerializableURI = SerializableURI(
-        URI(bslGPDecode<String>(input))
+    override fun bslGpDeserialize(input: BlockingInput, context: DecodingContext): SerializableURI = SerializableURI(
+        URI(bslGPDecode<String>(input, context))
     )
 }

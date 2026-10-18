@@ -1,6 +1,5 @@
 package eamlaunch.api
 
-import java.io.File
 import java.io.Reader
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
@@ -12,7 +11,7 @@ fun mappingDecode(reader: Reader): Mapping? {
     val obf2Class = mutableMapOf<ClassDesc, Mapping.Class>()
     val unObf2Class = mutableMapOf<ClassDesc, Mapping.Class>()
 
-    val futures = mutableSetOf<String>()
+    val futures = mutableMapOf<String, MutableList<(Mapping.ClassKind) -> Unit>>()
     while (lines.isNotEmpty()) {
         val trimmed = lines.removeFirst().trim()
         if (trimmed.isEmpty() || trimmed[0] == '#') continue
@@ -31,12 +30,14 @@ fun mappingDecode(reader: Reader): Mapping? {
         val obfuscated = ClassDesc.of(trimmed.substring(separator + 4..<end))
         val members = mutableListOf<Mapping.Class.ObfuscatedMember>()
 
+        futures.remove(trimmed.take(separator))?.let {
+            it.forEach { task -> task(Mapping.ObfuscatedClass(obfuscated)) }
+        }
+
         val mClass = Mapping.Class(obfuscated, unobfuscated, members)
         obf2Class[obfuscated] = mClass
         unObf2Class[unobfuscated] = mClass
-        if (futures.remove(trimmed.take(separator))) {
-            println("Resolved! B")
-        }
+
         list.add(mClass)
 
         fun resolveClassKind(item: String): Mapping.ClassKind {
@@ -59,16 +60,16 @@ fun mappingDecode(reader: Reader): Mapping? {
                 if (baseDesc == unobfuscated) return Mapping.SelfReference
 
                 //.arrayType((item.length - arrayIndex) / 2)
-                return obf2Class[baseDesc] ?: unObf2Class[baseDesc] ?: Mapping.PendFuture().also {
-                    futures.add(item.take(arrayIndex))
+                return obf2Class[baseDesc] ?: unObf2Class[baseDesc] ?: Mapping.ResolvedFuture().also { future ->
+                    futures.getOrPut(item.take(arrayIndex)) { mutableListOf() }.add(future::initialize)
                 }
             }
 
             val desc = ClassDesc.of(item)
             if (desc == unobfuscated) return Mapping.SelfReference
 
-            return obf2Class[desc] ?: unObf2Class[desc] ?: Mapping.PendFuture().also {
-                futures.add(item)
+            return obf2Class[desc] ?: unObf2Class[desc] ?: Mapping.ResolvedFuture().also { future ->
+                futures.getOrPut(item) { mutableListOf() }.add(future::initialize)
             }
         }
 
@@ -124,6 +125,10 @@ fun mappingDecode(reader: Reader): Mapping? {
                 )
             )
         }
+    }
+    futures.forEach { (kind, tasks) ->
+        val desc = ClassDesc.of(kind)
+        tasks.forEach { task -> task(Mapping.NonObfuscatedClass(desc)) }
     }
     return Mapping(list, obf2Class, unObf2Class)
 }
