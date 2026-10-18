@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="ExperimentalApplicationModifier:jar">
+  <artifact type="jar" build-on-make="true" name="ExperimentalApplicationModifier:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/ExperimentalApplicationModifier_jar</output-path>
     <root id="archive" name="ExperimentalApplicationModifier.jar">
       <element id="module-output" name="ExperimentalApplicationModifier" />

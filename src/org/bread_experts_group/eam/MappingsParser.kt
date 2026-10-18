@@ -34,7 +34,7 @@ fun main(vararg args: String) {
     }
 
     mappingsBuilder.finish()
-    Mappings.dumpToFile()
+//    Mappings.dumpToFile()
 
     println(PoseStack::class.nativeDesc)
     println(PoseStack::class.mimicDesc)
