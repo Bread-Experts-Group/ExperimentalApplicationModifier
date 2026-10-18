@@ -23,8 +23,12 @@ import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentSkipListSet
+import java.util.concurrent.Executors
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.notExists
 import kotlin.system.exitProcess
 
@@ -33,6 +37,7 @@ const val minecraftVersion = "1.21.1"
 val minecraftPath = Path("./minecraft/$minecraftVersion")
 
 val libraryPath: Path = minecraftPath.resolve("libraries")
+val gamePath: Path = minecraftPath.resolve("game")
 val eamLaunchResourcePath: Path = minecraftPath.resolve("eam launch")
 
 val userDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss.SSS")
@@ -192,4 +197,51 @@ fun main() {
 
         mapping!!
     }
+
+    val classPath = ConcurrentSkipListSet<Path>()
+    val executor = Executors.newVirtualThreadPerTaskExecutor()
+    CompletableFuture.allOf(
+        *versionInfo.libraries.map library@{ library ->
+            CompletableFuture.supplyAsync({
+                library.rules?.forEach { rule ->
+                    if (rule.os!!.name == "windows") {
+                        if (rule.action != "allow") return@supplyAsync null
+                    } else if (rule.action != "deny") return@supplyAsync null
+                }
+                val path = libraryPath.resolve(library.downloads.artifact.path).also {
+                    it.parent.createDirectories()
+                }
+
+                if (path.notExists()) client.send(
+                    HttpRequest.newBuilder(library.downloads.artifact.url.value).build(),
+                    HttpResponse.BodyHandlers.ofFile(path)
+                )
+                classPath.add(gamePath.relativize(path))
+            }, executor)
+        }.toTypedArray()
+    ).join()
+
+    val clientJarPath = eamLaunchResourcePath.resolve("client.jar")
+    if (clientJarPath.notExists()) client.send(
+        HttpRequest.newBuilder(versionInfo.downloads.client.url.value).build(),
+        HttpResponse.BodyHandlers.ofFile(clientJarPath)
+    )
+
+    classPath.add(gamePath.relativize(clientJarPath))
+    val classPathString = classPath.joinToString(";") { it.invariantSeparatorsPathString }
+
+    val minecraft = Runtime.getRuntime().exec(
+        arrayOf(
+            "C:\\Users\\BreadExpert\\.gradle\\jdks\\eclipse_adoptium-25-amd64-windows.2\\bin\\java.exe",
+            "-cp", classPathString,
+            "net.minecraft.client.main.Main",
+            "--version", "1.21.1",
+            "--accessToken", "0"
+        ),
+        null,
+        gamePath.createDirectories().toFile()
+    )
+    minecraft.inputStream.transferTo(System.out)
+    minecraft.errorStream.transferTo(System.err)
+    println(minecraft.waitFor())
 }
