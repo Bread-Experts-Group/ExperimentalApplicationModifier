@@ -1,10 +1,9 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.eam.mappings.Mappings
-import org.bread_experts_group.eam.minecraft.v1x21x1.Minecraft
 import org.bread_experts_group.eam.minecraft.v1x21x1.transform.MinecraftTransform
 import org.bread_experts_group.eam.transform.ClassTransform
 import org.bread_experts_group.eam.transform.TransformUtil
+import org.bread_experts_group.eamlaunch.api.Mapping
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
 import java.security.ProtectionDomain
@@ -14,8 +13,9 @@ class Agent {
 	companion object {
 		@JvmStatic
 		fun premain(agentArgs: String, instrumentation: Instrumentation) {
+			val args = agentArgs.split(",")
 			// todo remove legacy parsing and mappings with new code after it's finished
-			main(agentArgs)
+			Mapping.INSTANCE = Mapping.getMappingForMinecraftVersion(args[0])
 			println("Starting EAM Agent")
 
 			instrumentation.addTransformer(object : ClassFileTransformer {
@@ -31,12 +31,12 @@ class Agent {
 			})
 		}
 
-		private val transforms: Array<ClassTransform<*>> = arrayOf(MinecraftTransform())
+		private val transforms: Array<ClassTransform<*>> = arrayOf(MinecraftTransform)
 
 		fun runTransforms(className: String, classFileBuffer: ByteArray): ByteArray? {
 			val classFile = TransformUtil.classFile
 
-			val transform = transforms.firstOrNull { className == Mappings.obfuscatedClassName(it.target) }
+			val transform = transforms.firstOrNull { className == Mapping.of(it.target).obfuscated.displayName() }
 			val model = classFile.parse(classFileBuffer)
 			return if (transform != null) {
 				classFile.transformClass(model) { classBuilder, classElement ->

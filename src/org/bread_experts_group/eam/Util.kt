@@ -28,3 +28,11 @@ val ClassDesc.clazz: Class<*>
 fun String.toConstantDesc(): ConstantDesc = java.lang.String(this)
 
 fun String.containsAny(vararg delimiters: String): Boolean = delimiters.any { this.contains(it) }
+
+fun <K, V> Map<K, V>.first(checker: (Map.Entry<K, V>) -> Boolean): V =
+    this.firstOrNull(checker) ?: throw NullPointerException("No element of the map was found.")
+
+fun <K, V> Map<K, V>.firstOrNull(checker: (Map.Entry<K, V>) -> Boolean): V? {
+    for (element in this) if (checker(element)) return element.value
+    return null
+}

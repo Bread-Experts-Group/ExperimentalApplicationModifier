@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/../BreadSystemsLibrary/out/artifacts/BreadSystemsLibrary_jar/BreadSystemsLibrary.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../BreadSystemsLibrary/src" />
+    </SOURCES>
   </library>
 </component>

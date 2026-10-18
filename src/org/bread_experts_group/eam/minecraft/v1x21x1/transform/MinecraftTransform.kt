@@ -16,10 +16,10 @@ import java.lang.classfile.CodeModel
 import java.lang.constant.ConstantDescs
 import java.lang.constant.MethodTypeDesc
 
-class MinecraftTransform : ClassTransform<Minecraft>(Minecraft::class) {
+object MinecraftTransform : ClassTransform<Minecraft>(Minecraft::class) {
     override fun transform(): (ClassBuilder, ClassElement) -> Unit = { classBuilder, classElement ->
         val init = classBuilder.transformMethod(classElement, "<init>", null) { methodBuilder, methodElement ->
-            TransformUtil.dumpIndex(methodElement)
+//            TransformUtil.dumpIndex(methodElement)
             if (methodElement is CodeModel) {
                 methodBuilder.beforeFinalReturn(methodElement) { codeBuilder ->
                     codeBuilder
