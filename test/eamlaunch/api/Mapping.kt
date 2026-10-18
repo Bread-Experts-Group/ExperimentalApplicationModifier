@@ -37,6 +37,8 @@ data class Mapping(
     @JvmInline
     value class NonObfuscatedClass(val desc: ClassDesc) : ClassKind
 
+    object SelfReference : ClassKind
+
     data class PendFuture(
         val a: Int = 0
     ) : ClassKind

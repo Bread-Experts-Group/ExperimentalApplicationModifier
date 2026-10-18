@@ -5,7 +5,9 @@ import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import java.lang.constant.ClassDesc
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.nio.channels.WritableByteChannel
 import java.util.IdentityHashMap
+import java.util.Objects
 import kotlin.collections.indexOf
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -35,7 +37,8 @@ class EncodingContext(
 ) {
     class Entry(
         var lastID: Int = Int.MIN_VALUE,
-        val map: IdentityHashMap<Any, Int> = IdentityHashMap()
+        val map: IdentityHashMap<Any, Int> = IdentityHashMap(),
+        val preMap: IdentityHashMap<Any, Int> = IdentityHashMap()
     )
 }
 
@@ -52,98 +55,113 @@ fun bslGPEncode(type: KType, data: Any?, buffer: FlushingOutput, context: Encodi
         buffer.writeByte(2)
         buffer.writeInt(previous)
         return
-    } else {
+    }
+
+    fun capture(run: () -> Unit) {
+        if (written.preMap.containsKey(data)) {
+            throw IllegalArgumentException("Cannot encode: $type self-references itself.")
+        }
         buffer.writeByte(1)
+        written.preMap[data] = 0
+        run()
+        written.preMap.remove(data)
         written.map[data] = written.lastID++
     }
 
     val serializerKind = type.findAnnotation<BSLGPSerializer>()?.serializer ?: clazz.findAnnotation<BSLGPSerializer>()?.serializer
     if (serializerKind != null) {
-        @Suppress("UNCHECKED_CAST")
-        (serializerKind.objectInstance as IBSLGPSerializer<Any>).bslGpSerialize(data, buffer)
+        capture {
+            @Suppress("UNCHECKED_CAST")
+            (serializerKind.objectInstance as IBSLGPSerializer<Any>).bslGpSerialize(data, buffer)
+        }
         return
     }
 
     if (clazz.isData || clazz.isValue) {
-        val constructor = clazz.primaryConstructor!!
-        constructor.parameters.forEach { parameter ->
-            @Suppress("UNCHECKED_CAST")
-            val property = clazz.memberProperties.first {
-                it.name == parameter.name && it.returnType == parameter.type
-            } as KProperty1<Any, *>
-            bslGPEncode(property.returnType, property.get(data), buffer, context)
+        capture {
+            val constructor = clazz.primaryConstructor!!
+            constructor.parameters.forEach { parameter ->
+                @Suppress("UNCHECKED_CAST")
+                val property = clazz.memberProperties.first {
+                    it.name == parameter.name && it.returnType == parameter.type
+                } as KProperty1<Any, *>
+                bslGPEncode(property.returnType, property.get(data), buffer, context)
+            }
         }
         return
     }
 
-    when (type.classifier as KClass<*>) {
-        String::class -> {
-            data as String
-            buffer.writeInt(data.length)
-            buffer.writeData(data.toByteArray())
-        }
-
-        ClassDesc::class -> {
-            data as ClassDesc
-            bslGPEncode(data.descriptorString(), buffer, context)
-        }
-
-        Int::class -> {
-            data as Int
-            buffer.writeInt(data)
-        }
-
-        Long::class -> {
-            data as Long
-            buffer.writeLong(data)
-        }
-
-        BigDecimal::class -> {
-            data as BigDecimal
-            bslGPEncode(data.scale(), buffer, context)
-            bslGPEncode(data.unscaledValue(), buffer, context)
-        }
-
-        BigInteger::class -> {
-            data as BigInteger
-            bslGPEncode(data.toByteArray(), buffer, context)
-        }
-
-        ByteArray::class -> {
-            data as ByteArray
-            bslGPEncode(data.size, buffer, context)
-            buffer.writeData(data)
-        }
-
-        List::class -> {
-            @Suppress("UNCHECKED_CAST")
-            data as List<Any>
-            bslGPEncode(data.size, buffer, context)
-            data.forEach { element ->
-                bslGPEncode(type.arguments.first().type!!, element, buffer, context)
+    capture {
+        when (type.classifier as KClass<*>) {
+            String::class -> {
+                data as String
+                buffer.writeInt(data.length)
+                buffer.writeData(data.toByteArray())
             }
-        }
 
-        Map::class -> {
-            @Suppress("UNCHECKED_CAST")
-            data as Map<Any, Any>
-            bslGPEncode(data.size, buffer, context)
-            val t0 = type.arguments[0].type!!
-            val t1 = type.arguments[1].type!!
-            data.forEach { (key, value) ->
-                bslGPEncode(t0, key, buffer, context)
-                bslGPEncode(t1, value, buffer, context)
+            ClassDesc::class -> {
+                data as ClassDesc
+                bslGPEncode(data.descriptorString(), buffer, context)
             }
-        }
 
-        else if clazz.isSealed -> {
-            val index = clazz.sealedSubclasses.indexOf(data::class)
-            if (index == -1) TODO("open polymorphism")
-            buffer.writeInt(index)
-            bslGPEncode(clazz.sealedSubclasses[index].createType(), data, buffer, context)
-        }
+            Int::class -> {
+                data as Int
+                buffer.writeInt(data)
+            }
 
-        else -> throw IllegalArgumentException("Unable to serialize $type")
+            Long::class -> {
+                data as Long
+                buffer.writeLong(data)
+            }
+
+            BigDecimal::class -> {
+                data as BigDecimal
+                bslGPEncode(data.scale(), buffer, context)
+                bslGPEncode(data.unscaledValue(), buffer, context)
+            }
+
+            BigInteger::class -> {
+                data as BigInteger
+                bslGPEncode(data.toByteArray(), buffer, context)
+            }
+
+            ByteArray::class -> {
+                data as ByteArray
+                bslGPEncode(data.size, buffer, context)
+                buffer.writeData(data)
+            }
+
+            List::class -> {
+                @Suppress("UNCHECKED_CAST")
+                data as List<Any>
+                bslGPEncode(data.size, buffer, context)
+                data.forEach { element ->
+                    bslGPEncode(type.arguments.first().type!!, element, buffer, context)
+                }
+            }
+
+            Map::class -> {
+                @Suppress("UNCHECKED_CAST")
+                data as Map<Any, Any>
+                bslGPEncode(data.size, buffer, context)
+                val t0 = type.arguments[0].type!!
+                val t1 = type.arguments[1].type!!
+                data.forEach { (key, value) ->
+                    bslGPEncode(t0, key, buffer, context)
+                    bslGPEncode(t1, value, buffer, context)
+                }
+            }
+
+            else if clazz.isSealed -> {
+                val index = clazz.sealedSubclasses.indexOf(data::class)
+                if (index == -1) TODO("open polymorphism")
+                buffer.writeInt(index)
+                if (data::class.objectInstance != null) return@capture
+                bslGPEncode(clazz.sealedSubclasses[index].createType(), data, buffer, context)
+            }
+
+            else -> throw IllegalArgumentException("Unable to serialize $type")
+        }
     }
 }
 
@@ -215,7 +233,7 @@ fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = De
 
             Map::class -> buildMap {
                 val t0 = type.arguments[0].type!!
-                val t1 = type.arguments[0].type!!
+                val t1 = type.arguments[1].type!!
                 repeat(bslGPDecode<Int>(input, context)) {
                     put(bslGPDecode(t0, input, context), bslGPDecode(t1, input, context))
                 }
@@ -223,7 +241,9 @@ fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = De
 
             else if clazz.isSealed -> {
                 val index = input.readInt()
-                bslGPDecode(clazz.sealedSubclasses[index].createType(), input, context)
+                val subclass = clazz.sealedSubclasses[index]
+                subclass.objectInstance?.let { return it }
+                bslGPDecode(subclass.createType(), input, context)
             }
 
             else -> throw IllegalArgumentException("Unable to deserialize $type")

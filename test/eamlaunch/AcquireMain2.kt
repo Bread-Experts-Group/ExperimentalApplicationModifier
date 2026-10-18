@@ -11,6 +11,7 @@ import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import org.bread_experts_group.bread_systems_library.model.jsonParse
 import java.io.EOFException
+import java.io.File
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -193,10 +194,4 @@ fun main() {
         mapping!!
     }
 
-    TODO("*")
-
-//    val mappings = client.send(
-//        HttpRequest.newBuilder(versionInfo.downloads.clientMappings.url).build(),
-//        HttpResponse.BodyHandlers.ofString()
-//    )
 }

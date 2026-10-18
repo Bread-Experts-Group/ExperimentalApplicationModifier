@@ -1,5 +1,6 @@
 package eamlaunch.api
 
+import java.io.File
 import java.io.Reader
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs
@@ -11,27 +12,7 @@ fun mappingDecode(reader: Reader): Mapping? {
     val obf2Class = mutableMapOf<ClassDesc, Mapping.Class>()
     val unObf2Class = mutableMapOf<ClassDesc, Mapping.Class>()
 
-    fun resolveClassKind(item: String): Mapping.ClassKind {
-        val primitive = when (item) {
-            "void" -> ConstantDescs.CD_void
-            "byte" -> ConstantDescs.CD_byte
-            "short" -> ConstantDescs.CD_short
-            "char" -> ConstantDescs.CD_char
-            "int" -> ConstantDescs.CD_int
-            "long" -> ConstantDescs.CD_long
-            "float" -> ConstantDescs.CD_float
-            "double" -> ConstantDescs.CD_double
-            else -> null
-        }
-        if (primitive != null) return Mapping.NonObfuscatedClass(primitive)
-        val arrayIndex = item.indexOf("[]")
-        val desc = if (arrayIndex != -1)
-            ClassDesc.of(item.take(arrayIndex)).arrayType((item.length - arrayIndex) / 2)
-        else ClassDesc.of(item)
-
-        return obf2Class[desc] ?: unObf2Class[desc] ?: Mapping.PendFuture()
-    }
-
+    val futures = mutableSetOf<String>()
     while (lines.isNotEmpty()) {
         val trimmed = lines.removeFirst().trim()
         if (trimmed.isEmpty() || trimmed[0] == '#') continue
@@ -48,8 +29,49 @@ fun mappingDecode(reader: Reader): Mapping? {
 
         val unobfuscated = ClassDesc.of(trimmed.take(separator))
         val obfuscated = ClassDesc.of(trimmed.substring(separator + 4..<end))
-
         val members = mutableListOf<Mapping.Class.ObfuscatedMember>()
+
+        val mClass = Mapping.Class(obfuscated, unobfuscated, members)
+        obf2Class[obfuscated] = mClass
+        unObf2Class[unobfuscated] = mClass
+        if (futures.remove(trimmed.take(separator))) {
+            println("Resolved! B")
+        }
+        list.add(mClass)
+
+        fun resolveClassKind(item: String): Mapping.ClassKind {
+            val primitive = when (item) {
+                "void" -> ConstantDescs.CD_void
+                "byte" -> ConstantDescs.CD_byte
+                "short" -> ConstantDescs.CD_short
+                "char" -> ConstantDescs.CD_char
+                "int" -> ConstantDescs.CD_int
+                "long" -> ConstantDescs.CD_long
+                "float" -> ConstantDescs.CD_float
+                "double" -> ConstantDescs.CD_double
+                else -> null
+            }
+            if (primitive != null) return Mapping.NonObfuscatedClass(primitive)
+
+            val arrayIndex = item.indexOf("[]")
+            if (arrayIndex != -1) {
+                val baseDesc = ClassDesc.of(item.take(arrayIndex))
+                if (baseDesc == unobfuscated) return Mapping.SelfReference
+
+                //.arrayType((item.length - arrayIndex) / 2)
+                return obf2Class[baseDesc] ?: unObf2Class[baseDesc] ?: Mapping.PendFuture().also {
+                    futures.add(item.take(arrayIndex))
+                }
+            }
+
+            val desc = ClassDesc.of(item)
+            if (desc == unobfuscated) return Mapping.SelfReference
+
+            return obf2Class[desc] ?: unObf2Class[desc] ?: Mapping.PendFuture().also {
+                futures.add(item)
+            }
+        }
+
         while (lines.isNotEmpty()) {
             val member = lines.removeFirst().trim()
             if (member.isEmpty() || member[0] == '#') continue
@@ -102,10 +124,6 @@ fun mappingDecode(reader: Reader): Mapping? {
                 )
             )
         }
-        val mClass = Mapping.Class(obfuscated, unobfuscated, members)
-        obf2Class[obfuscated] = mClass
-        unObf2Class[unobfuscated] = mClass
-        list.add(mClass)
     }
     return Mapping(list, obf2Class, unObf2Class)
 }
