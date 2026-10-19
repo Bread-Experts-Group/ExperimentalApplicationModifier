@@ -41,7 +41,7 @@ abstract class MimickedClass(@JvmField var original: Any) {
         }
     }
 
-    fun callMethod(methodName: String, vararg args: Any): Any {
+    fun callMethod(methodName: String, vararg args: Any): Any? {
         val mapping = Mapping.of(this::class)
         val methodMapping = mapping.members.first { it.unobfuscated == methodName } as Mapping.Class.Method
         val parameters = methodMapping.parameters.map {
