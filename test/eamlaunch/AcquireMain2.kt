@@ -1,18 +1,13 @@
 package eamlaunch
 
-import org.bread_experts_group.eamlaunch.api.AssetIndex
-import org.bread_experts_group.eamlaunch.api.Mapping
-import org.bread_experts_group.eamlaunch.api.VersionInfo
-import org.bread_experts_group.eamlaunch.api.VersionManifestV2
-import org.bread_experts_group.eamlaunch.api.mappingDecode
-import org.bread_experts_group.eamlaunch.pending_bsl.bslGPDecode
-import org.bread_experts_group.eamlaunch.pending_bsl.bslGPEncode
-import org.bread_experts_group.eamlaunch.pending_bsl.jsonDecode
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import org.bread_experts_group.bread_systems_library.model.jsonParse
+import org.bread_experts_group.eamlaunch.api.*
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPDecode
+import org.bread_experts_group.eamlaunch.pending_bsl.bslGPEncode
+import org.bread_experts_group.eamlaunch.pending_bsl.jsonDecode
 import java.io.EOFException
-import java.io.File
 import java.io.IOException
 import java.lang.management.ManagementFactory
 import java.net.URI
@@ -22,26 +17,16 @@ import java.net.http.HttpResponse
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.file.Files
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentSkipListSet
-import java.util.concurrent.Executors
-import java.util.concurrent.Flow
+import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.io.path.Path
-import kotlin.io.path.bufferedReader
-import kotlin.io.path.createDirectories
-import kotlin.io.path.exists
-import kotlin.io.path.fileSize
-import kotlin.io.path.invariantSeparatorsPathString
-import kotlin.io.path.name
-import kotlin.io.path.notExists
+import kotlin.concurrent.thread
+import kotlin.io.path.*
 import kotlin.math.min
 import kotlin.reflect.typeOf
 import kotlin.system.exitProcess
@@ -454,6 +439,16 @@ fun main() {
         directory(gamePath.createDirectories().toFile())
         start()
     }
+    Runtime.getRuntime().addShutdownHook(
+        thread {
+            minecraft.destroy()
+            try {
+                if (!minecraft.waitFor(5, TimeUnit.SECONDS)) minecraft.destroyForcibly()
+            } catch (_: InterruptedException) {
+                minecraft.destroyForcibly()
+            }
+        }
+    )
     val exit = minecraft.waitFor()
     println("=/= =/= =/= =/= =/= =/=")
     exitProcess(exit)
