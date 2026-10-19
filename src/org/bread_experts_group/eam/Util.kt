@@ -19,7 +19,7 @@ val KClass<*>.classDesc: ClassDesc
     }
 
 val ClassDesc.qualifiedName: String
-    get() = "${this.packageName()}.${this.displayName()}"
+    get() = this.packageName().let { if (it.isEmpty()) "" else "$it." } + this.displayName()
 
 val ClassDesc.clazz: Class<*>
     get() = ClassLoader.getSystemClassLoader().loadClass(this.qualifiedName)
