@@ -334,11 +334,6 @@ fun main() {
 
             mapping!!
         }
-
-        mapping.classes.forEach {
-            File("a").appendText(it.toString() + "\n")
-        }
-        TODO("@!#@!")
     }
 
     val assetIndexPath = assetsPath.resolve("indexes").createDirectories()
