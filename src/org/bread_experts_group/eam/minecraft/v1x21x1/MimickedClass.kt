@@ -41,8 +41,6 @@ abstract class MimickedClass(@JvmField var original: Any) {
         }
     }
 
-    fun nativeClass(): Class<*> = this::class.nativeDesc.clazz
-
     fun callMethod(methodName: String, vararg args: Any): Any {
         val mapping = Mapping.of(this::class)
         val methodMapping = mapping.members.first { it.unobfuscated == methodName } as Mapping.Class.Method
@@ -55,22 +53,14 @@ abstract class MimickedClass(@JvmField var original: Any) {
                 else -> throw IllegalStateException("Unknown state: $value")
             }.clazz
         }
-//        val returnType = when (val type = methodMapping.returnType) {
-//            is Mapping.Class -> type.obfuscated
-//            is Mapping.ObfuscatedClass -> type.desc
-//            is Mapping.NonObfuscatedClass -> type.desc
-//            else -> throw IllegalStateException("Unknown state: $type")
-//        }.clazz
 
-//        println("method: $methodName")
-//        methodMapping.parameters.map { if (it is Mapping.ResolvedFuture) it.value else it }.forEach(::println)
-//        println(returnType)
-
-        val method = nativeClass().getMethod(methodMapping.obfuscated, *parameters.toTypedArray())
-        println(method)
-        return Unit // todo
+        val method = original::class.java.getMethod(methodMapping.obfuscated, *parameters.toTypedArray())
+        val arguments = args.map { (it as? MimickedClass)?.original ?: it }
+        return method.invoke(original, *arguments.toTypedArray())
     }
 
-//    override fun equals(other: Any?): Boolean =
-//        if (other is MimickedClass) other.original == original else other == original
+    override fun equals(other: Any?): Boolean =
+        if (other is MimickedClass) other.original == original else other == original
+
+    override fun hashCode(): Int = original.hashCode()
 }

@@ -32,12 +32,6 @@ object MinecraftTransform : ClassTransform<Minecraft>(Minecraft::class) {
                                 ConstantDescs.CD_void, ConstantDescs.CD_String
                             )
                         )
-                        .aload(0)
-                        .invokestatic(
-                            V1x21x1Hooks::class.classDesc,
-                            "minecraft_setTitleScreen",
-                            MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
-                        )
                 }
                 // todo figure out why having this run breaks the call above (it didn't before)
 //                methodBuilder.transformCodeIndexed(methodElement) { codeBuilder, codeElement, index ->
@@ -46,6 +40,22 @@ object MinecraftTransform : ClassTransform<Minecraft>(Minecraft::class) {
 //                }
             } else methodBuilder.with(methodElement)
         }
-        if (!init) classBuilder.with(classElement)
+
+        val updateTitle = classBuilder.transformMethod(
+            classElement,
+            obfMethodName("updateTitle"),
+            MethodTypeDesc.of(ConstantDescs.CD_void)
+        ) { methodBuilder, methodElement ->
+            if (methodElement is CodeModel) methodBuilder.beforeFinalReturn(methodElement) { codeBuilder ->
+                codeBuilder
+                    .aload(0)
+                    .invokestatic(
+                        V1x21x1Hooks::class.classDesc,
+                        "minecraft_setTitleScreen",
+                        MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
+                    )
+            }
+        }
+        if (!(init || updateTitle)) classBuilder.with(classElement)
     }
 }

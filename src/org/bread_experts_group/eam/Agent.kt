@@ -31,9 +31,8 @@ class Agent {
 			})
 		}
 
-		private val transforms: Array<ClassTransform<*>> = arrayOf(MinecraftTransform)
-
 		fun runTransforms(className: String, classFileBuffer: ByteArray): ByteArray? {
+			val transforms: Array<ClassTransform<*>> = arrayOf(MinecraftTransform)
 			val classFile = TransformUtil.classFile
 			val transform = transforms.firstOrNull { className == Mapping.of(it.target).obfuscated.displayName() }
 			return if (transform != null) {
