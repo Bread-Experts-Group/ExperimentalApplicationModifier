@@ -433,6 +433,7 @@ fun main() {
             Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
             "-cp", classPathString,
             "-javaagent:${Path("./out/artifacts/ExperimentalApplicationModifier_jar/ExperimentalApplicationModifier.jar").toAbsolutePath()}=$minecraftVersion",
+            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
             versionInfo.mainClass,
             "--gameDir", ".",
             "--assetsDir", gamePath.relativize(assetsPath).invariantSeparatorsPathString,
