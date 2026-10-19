@@ -31,7 +31,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 /.idea/misc.xml
-/.idea/workspace.xml
+
 /minecraft/
 /minecraft_sources/
 /out/
