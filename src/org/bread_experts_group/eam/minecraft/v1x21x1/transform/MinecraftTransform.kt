@@ -1,7 +1,9 @@
 package org.bread_experts_group.eam.minecraft.v1x21x1.transform
 
 import org.bread_experts_group.eam.classDesc
+import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass.Companion.nativeDesc
 import org.bread_experts_group.eam.minecraft.v1x21x1.Minecraft
+import org.bread_experts_group.eam.minecraft.v1x21x1.V1x21x1Hooks
 import org.bread_experts_group.eam.toConstantDesc
 import org.bread_experts_group.eam.transform.ClassTransform
 import org.bread_experts_group.eam.transform.TransformUtil
@@ -30,11 +32,18 @@ object MinecraftTransform : ClassTransform<Minecraft>(Minecraft::class) {
                                 ConstantDescs.CD_void, ConstantDescs.CD_String
                             )
                         )
+                        .aload(0)
+                        .invokestatic(
+                            V1x21x1Hooks::class.classDesc,
+                            "minecraft_setTitleScreen",
+                            MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object)
+                        )
                 }
-                methodBuilder.transformCodeIndexed(methodElement) { codeBuilder, codeElement, index ->
+                // todo figure out why having this run breaks the call above (it didn't before)
+//                methodBuilder.transformCodeIndexed(methodElement) { codeBuilder, codeElement, index ->
                     // drop the setting user debug print (testing)
-                    if (!codeBuilder.dropInstructions(index, 265 .. 270)) codeBuilder.with(codeElement)
-                }
+//                    if (!codeBuilder.dropInstructions(index, 265 .. 270)) codeBuilder.with(codeElement)
+//                }
             } else methodBuilder.with(methodElement)
         }
         if (!init) classBuilder.with(classElement)

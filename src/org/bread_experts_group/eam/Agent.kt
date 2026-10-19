@@ -35,10 +35,10 @@ class Agent {
 
 		fun runTransforms(className: String, classFileBuffer: ByteArray): ByteArray? {
 			val classFile = TransformUtil.classFile
-
 			val transform = transforms.firstOrNull { className == Mapping.of(it.target).obfuscated.displayName() }
-			val model = classFile.parse(classFileBuffer)
 			return if (transform != null) {
+				println("Transforming ${transform.target.simpleName} ($className)")
+				val model = classFile.parse(classFileBuffer)
 				classFile.transformClass(model) { classBuilder, classElement ->
 					transform.transform().invoke(classBuilder, classElement)
 				}
