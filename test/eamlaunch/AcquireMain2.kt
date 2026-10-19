@@ -14,6 +14,7 @@ import org.bread_experts_group.bread_systems_library.model.jsonParse
 import java.io.EOFException
 import java.io.File
 import java.io.IOException
+import java.lang.management.ManagementFactory
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -41,6 +42,7 @@ import kotlin.io.path.fileSize
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.notExists
+import kotlin.math.min
 import kotlin.reflect.typeOf
 import kotlin.system.exitProcess
 
@@ -428,27 +430,31 @@ fun main() {
     //   --uuid
     //   --userType
 
-    val minecraft = Runtime.getRuntime().exec(
-        arrayOf(
-            Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
-            "-cp", classPathString,
-            "-javaagent:${Path("./out/artifacts/ExperimentalApplicationModifier_jar/ExperimentalApplicationModifier.jar").toAbsolutePath()}=$minecraftVersion",
-            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
-            versionInfo.mainClass,
-            "--gameDir", ".",
-            "--assetsDir", gamePath.relativize(assetsPath).invariantSeparatorsPathString,
-            "--assetIndex", versionInfo.assetIndexID,
-            "--version", minecraftVersion,
-            "--accessToken", "0",
-            "--versionType", "release"
-        ),
-        null,
-        gamePath.createDirectories().toFile()
-    )
-    Thread.ofVirtual().start {
-        minecraft.inputStream.transferTo(System.out)
-        minecraft.errorStream.transferTo(System.err)
-        System.`in`.transferTo(minecraft.outputStream)
+    val suspend = if (
+        ManagementFactory.getRuntimeMXBean().inputArguments.any { it.startsWith("-agentlib:jdwp") }
+    ) {
+        println("Suspend debug mode: attach to the Minecraft process remotely")
+        'y'
+    } else 'n'
+
+    val minecraft = ProcessBuilder(
+        Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
+        "-cp", classPathString,
+        "-javaagent:${Path("./out/artifacts/ExperimentalApplicationModifier_jar/ExperimentalApplicationModifier.jar").toAbsolutePath()}=$minecraftVersion",
+        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=$suspend,address=*:5005",
+        versionInfo.mainClass,
+        "--gameDir", ".",
+        "--assetsDir", gamePath.relativize(assetsPath).invariantSeparatorsPathString,
+        "--assetIndex", versionInfo.assetIndexID,
+        "--version", minecraftVersion,
+        "--accessToken", "0",
+        "--versionType", "release"
+    ).run {
+        inheritIO()
+        directory(gamePath.createDirectories().toFile())
+        start()
     }
-    println(minecraft.waitFor())
+    val exit = minecraft.waitFor()
+    println("=/= =/= =/= =/= =/= =/=")
+    exitProcess(exit)
 }
