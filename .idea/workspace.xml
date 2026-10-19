@@ -9,10 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca66ca5a-7996-4991-a8fc-cf288ea3efd9" name="Changes" comment="Map16">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-    </list>
+    <list default="true" id="ca66ca5a-7996-4991-a8fc-cf288ea3efd9" name="Changes" comment="Map19" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -151,7 +148,9 @@
     <MESSAGE value="Map14" />
     <MESSAGE value="Map15" />
     <MESSAGE value="Map16" />
-    <option name="LAST_COMMIT_MESSAGE" value="Map16" />
+    <MESSAGE value="Map17" />
+    <MESSAGE value="Map19" />
+    <option name="LAST_COMMIT_MESSAGE" value="Map19" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

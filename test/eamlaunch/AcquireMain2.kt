@@ -440,7 +440,7 @@ fun main() {
         start()
     }
     Runtime.getRuntime().addShutdownHook(
-        thread {
+        thread(false) {
             minecraft.destroy()
             try {
                 if (!minecraft.waitFor(5, TimeUnit.SECONDS)) minecraft.destroyForcibly()
