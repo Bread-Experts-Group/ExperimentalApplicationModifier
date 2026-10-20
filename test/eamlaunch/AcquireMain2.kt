@@ -20,14 +20,12 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 import kotlin.io.path.*
 import kotlin.system.exitProcess
 
 const val minecraftVersion = "1.21.1"
-
-val minecraftPath = Path("./minecraft")
-val minecraftVersionPath = Path("./minecraft/$minecraftVersion")
 
 fun main() {
     println("EAM launch starting...")
@@ -45,17 +43,13 @@ fun main() {
         System.err.println("Version manifest did not provide an entry for version \"$minecraftVersion\".")
         exitProcess(1)
     }
-    val versionInfoPath = eamLaunchResourcePath.resolve("version_info").also {
-        it.parent.createDirectories()
-    }
 
     val localData = ThreadLocal.withInitial { ByteBuffer.allocateDirect(32768) }
     val localSha = ThreadLocal.withInitial { MessageDigest.getInstance("SHA-1") }
     val (versionInfo, versionInfoUpdated) = getVersionInfo(version, versionInfoPath, client, localData.get())
 
-    val clientJarPath = eamLaunchResourcePath.resolve("client.jar")
     try {
-        FileChannel.open(clientJarPath, StandardOpenOption.READ).use {
+        FileChannel.open(versionClientJARPath, StandardOpenOption.READ).use {
             if (!versionInfoUpdated) verify(
                 localSha.get(),
                 versionInfo.downloads.client.sha1.value,
@@ -68,15 +62,12 @@ fun main() {
             client,
             localSha.get(),
             versionInfo.downloads.client,
-            clientJarPath
+            versionClientJARPath
         )
     }
 
     versionInfo.downloads.clientMappings?.let {
-        val mappingPath = eamLaunchResourcePath.resolve("mapping").also { mappingFile ->
-            mappingFile.parent.createDirectories()
-        }
-        getMapping(it, versionInfoUpdated, mappingPath, client, localSha.get(), localData.get())
+        getMapping(it, versionInfoUpdated, versionClientMappingsPath, client, localSha.get(), localData.get())
     }
 
     val assetIndexPath = assetsPath.resolve("indexes").createDirectories()
@@ -103,9 +94,11 @@ fun main() {
             break
         } catch (e: IOException) {
             tries++
-            if (tries == 3) println("Failed ${path.fileName}: $e")
+            if (tries == 3) throw e
         }
     }
+
+    val counter = AtomicInteger(0)
 
     val assetIndex = jsonDecode<AssetIndex>(jsonParse(assetIndexPath.bufferedReader()))
     val objectsPath = assetsPath.resolve("objects")
@@ -125,7 +118,9 @@ fun main() {
 
             if (path.notExists()) CompletableFuture.runAsync({
                 download()
-            }, downloadExecutor) else CompletableFuture.runAsync({
+            }, downloadExecutor).thenRun {
+                println("Processed ${path.fileName} (${counter.incrementAndGet()} / ${assetIndex.objects.size})")
+            } else (CompletableFuture.runAsync({
                 FileChannel.open(path, StandardOpenOption.READ).use {
                     verify(
                         localSha.get(),
@@ -134,65 +129,79 @@ fun main() {
                         it
                     )
                 }
+                counter.incrementAndGet()
             }, verificationExecutor).exceptionallyAsync({ _ ->
                 println("Redownloading ${path.fileName}")
                 download()
+                counter.incrementAndGet()
                 null
-            }, downloadExecutor)
+            }, downloadExecutor)).handle { _, throwable ->
+                if (throwable != null) println("Failed ${path.fileName}: $throwable")
+                null
+            }
         }.toTypedArray()
     ).join()
+    println("Assets ${counter.get()} / ${assetIndex.objects.size}")
 
+    counter.set(0)
     val classPath = ConcurrentSkipListSet<Path>()
+    val filteredLibraries = versionInfo.libraries.filter { library ->
+        library.rules?.forEach { rule ->
+            if (rule.os!!.name == "windows") {
+                if (rule.action != "allow") return@filter false
+            } else if (rule.action != "deny") return@filter false
+        }
+        true
+    }
     CompletableFuture.allOf(
-        *versionInfo.libraries.map library@{ library ->
-            CompletableFuture.supplyAsync({
-                library.rules?.forEach { rule ->
-                    if (rule.os!!.name == "windows") {
-                        if (rule.action != "allow") return@supplyAsync null
-                    } else if (rule.action != "deny") return@supplyAsync null
-                }
+        *filteredLibraries.map library@{ library ->
+            val remotePath = library.downloads.artifact.path
+            val fileSeparator = remotePath.lastIndexOf('/')
+            val path = libraryPath.resolve(remotePath.take(fileSeparator)).resolve(
+                library.downloads.artifact.sha1.value.toHexString()
+            ).resolve(remotePath.substring(fileSeparator + 1))
+            path.parent.createDirectories()
 
-                val remotePath = library.downloads.artifact.path
-                val fileSeparator = remotePath.lastIndexOf('/')
-                val path = libraryPath.resolve(remotePath.take(fileSeparator)).resolve(
-                    library.downloads.artifact.sha1.value.toHexString()
-                ).resolve(remotePath.substring(fileSeparator + 1))
-                path.parent.createDirectories()
+            val download = {
+                downloadRetry(
+                    library.downloads.artifact.url.value,
+                    library.downloads.artifact.sha1,
+                    path
+                )
+            }
 
-                val download = {
-                    downloadRetry(
-                        library.downloads.artifact.url.value,
-                        library.downloads.artifact.sha1,
-                        path
+            (if (path.notExists()) CompletableFuture.runAsync({
+                download()
+            }, downloadExecutor).thenRun {
+                println("Processed ${path.fileName} (${counter.incrementAndGet()} / ${filteredLibraries.size})")
+            } else CompletableFuture.runAsync({
+                FileChannel.open(path, StandardOpenOption.READ).use {
+                    verify(
+                        localSha.get(),
+                        library.downloads.artifact.sha1.value,
+                        localData.get(),
+                        it
                     )
                 }
-
-                if (path.notExists()) CompletableFuture.runAsync({
-                    download()
-                }, downloadExecutor) else CompletableFuture.runAsync({
-                    FileChannel.open(path, StandardOpenOption.READ).use {
-                        verify(
-                            localSha.get(),
-                            library.downloads.artifact.sha1.value,
-                            localData.get(),
-                            it
-                        )
-                    }
-                }, verificationExecutor).exceptionallyAsync({ _ ->
-                    println("Redownloading ${path.fileName}")
-                    download()
-                    null
-                }, downloadExecutor)
-
-                classPath.add(gamePath.relativize(path))
-            }, downloadExecutor)
+                counter.incrementAndGet()
+            }, verificationExecutor).exceptionallyAsync({ _ ->
+                println("Redownloading ${path.fileName}")
+                download()
+                counter.incrementAndGet()
+                null
+            }, downloadExecutor)).handle { _, throwable ->
+                if (throwable != null) println("Failed ${path.fileName}: $throwable")
+                else classPath.add(gamePath.relativize(path))
+                null
+            }
         }.toTypedArray()
     ).join()
+    println("Libraries ${counter.get()} / ${filteredLibraries.size}")
 
     verificationExecutor.shutdown()
     downloadExecutor.shutdown()
 
-    classPath.add(gamePath.relativize(clientJarPath))
+    classPath.add(gamePath.relativize(versionClientJARPath))
     val classPathString = classPath.joinToString(";") { it.invariantSeparatorsPathString }
 
     println("=/= =/= =/= =/= =/= =/=")

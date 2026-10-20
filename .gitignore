@@ -32,6 +32,6 @@ bin/
 .DS_Store
 /.idea/misc.xml
 
-/minecraft/
 /minecraft_sources/
 /out/
+/eam launch/

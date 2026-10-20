@@ -27,14 +27,22 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Flow
 import kotlin.collections.forEach
+import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.notExists
 import kotlin.reflect.typeOf
 
-val libraryPath: Path = minecraftPath.resolve("libraries")
-val assetsPath: Path = minecraftPath.resolve("assets")
+val eamLaunchPath = Path("./eam launch")
+val minecraftVersionPath: Path = eamLaunchPath.resolve(minecraftVersion)
+
+val libraryPath: Path = eamLaunchPath.resolve("libraries")
+val assetsPath: Path = eamLaunchPath.resolve("assets")
 val gamePath: Path = minecraftVersionPath.resolve("game")
-val eamLaunchResourcePath: Path = minecraftVersionPath.resolve("eam launch")
+
+val minecraftVersionResourcePath: Path = minecraftVersionPath.resolve("eam resources")
+val versionInfoPath: Path = minecraftVersionResourcePath.resolve("version info.bsl gp")
+val versionClientJARPath: Path = minecraftVersionResourcePath.resolve("client.jar")
+val versionClientMappingsPath: Path = minecraftVersionResourcePath.resolve("client mappings.bsl gp")
 
 val userDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss.SSS")
 
@@ -181,6 +189,8 @@ fun getVersionInfo(
     client: HttpClient,
     buffer: ByteBuffer
 ): UpdatableValue<VersionInfo> {
+    versionInfoPath.parent.createDirectories()
+
     var update = false
     val versionInfo = (if (versionInfoPath.notExists()) FileChannel.open(
         versionInfoPath,
@@ -246,6 +256,7 @@ fun getMapping(
     sha1: MessageDigest,
     buffer: ByteBuffer
 ): UpdatableValue<Mapping> {
+    path.parent.createDirectories()
     var update = false
     val mapping = (if (path.notExists() || versionInfoUpdated) FileChannel.open(
         path,
