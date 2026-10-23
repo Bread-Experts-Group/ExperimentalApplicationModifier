@@ -2,6 +2,7 @@ package eamlaunch
 
 import org.bread_experts_group.bread_systems_library.model.jsonParse
 import org.bread_experts_group.eamlaunch.api.AssetIndex
+import org.bread_experts_group.eamlaunch.api.Mapping
 import org.bread_experts_group.eamlaunch.api.SHA1
 import org.bread_experts_group.eamlaunch.api.VersionManifestV2
 import org.bread_experts_group.eamlaunch.pending_bsl.jsonDecode
@@ -67,7 +68,8 @@ fun main() {
     }
 
     versionInfo.downloads.clientMappings?.let {
-        getMapping(it, versionInfoUpdated, versionClientMappingsPath, client, localSha.get(), localData.get())
+        val mapping = getMapping(it, versionInfoUpdated, versionClientMappingsPath, client, localSha.get(), localData.get())
+        Mapping.INSTANCE = mapping.value
     }
 
     val assetIndexPath = assetsPath.resolve("indexes").createDirectories()
@@ -217,6 +219,10 @@ fun main() {
         'y'
     } else 'n'
 
+    val infoPath = Path("client_info.txt")
+    val clientInfo: List<String> = if (infoPath.exists()) infoPath.readLines()
+    else listOf("EAM_Dev", "069a79f4-44e9-4726-a5be-fca90e38aaf5")
+
     val minecraft = ProcessBuilder(
         Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
         "-cp", classPathString,
@@ -227,6 +233,8 @@ fun main() {
         "--assetsDir", gamePath.relativize(assetsPath).invariantSeparatorsPathString,
         "--assetIndex", versionInfo.assetIndexID,
         "--version", minecraftVersion,
+        "--username", clientInfo[0],
+        "--uuid", clientInfo[1],
         "--accessToken", "0",
         "--versionType", "release"
     ).run {

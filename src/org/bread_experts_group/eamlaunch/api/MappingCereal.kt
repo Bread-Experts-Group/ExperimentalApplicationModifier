@@ -105,7 +105,8 @@ fun mappingDecode(reader: Reader): Mapping? {
                         },
                         resolveClassKind(
                             returnTypeAndName.take(separator)
-                        )
+                        ),
+                        mClass.unobfuscated
                     )
                 )
                 continue
@@ -121,7 +122,8 @@ fun mappingDecode(reader: Reader): Mapping? {
                     unobfuscatedAndObfuscated.take(nameSeparator),
                     resolveClassKind(
                         member.take(typeAndNameSeparator)
-                    )
+                    ),
+                    mClass.unobfuscated
                 )
             )
         }

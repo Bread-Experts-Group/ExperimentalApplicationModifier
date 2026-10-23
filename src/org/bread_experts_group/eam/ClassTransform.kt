@@ -1,21 +1,15 @@
-package org.bread_experts_group.eam.transform
+package org.bread_experts_group.eam
 
-import java.lang.classfile.ClassBuilder
-import java.lang.classfile.ClassElement
-import java.lang.classfile.ClassFile
-import java.lang.classfile.CodeBuilder
-import java.lang.classfile.CodeElement
-import java.lang.classfile.CodeModel
-import java.lang.classfile.MethodBuilder
-import java.lang.classfile.MethodElement
-import java.lang.classfile.MethodModel
-import java.lang.classfile.Opcode
-import java.lang.classfile.instruction.ReturnInstruction
+import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass
+import org.bread_experts_group.eamlaunch.api.Mapping
+import java.lang.classfile.*
 import java.lang.constant.MethodTypeDesc
-import java.util.Optional
+import kotlin.reflect.KClass
 
-object TransformUtil {
-    val classFile: ClassFile = ClassFile.of()
+abstract class ClassTransform<T: MimickedClass>(val target: KClass<T>) {
+    val classMapping: Mapping.Class = Mapping.of(target)
+
+    abstract fun transform(): (ClassBuilder, ClassElement) -> Unit
 
     fun dumpIndex(model: MethodElement) {
         if (model !is CodeModel) return
@@ -24,7 +18,32 @@ object TransformUtil {
         }
     }
 
-    fun CodeBuilder.dropInstructions(index: Int, vararg instructions: IntRange): Boolean = instructions.any { index in it }
+    fun CodeBuilder.atIndex(source: Int, target: Int, builder: (CodeBuilder) -> Unit): CodeBuilder =
+        this.also { if (source == target) builder(this) }
+
+    fun ClassBuilder.transformMethod(
+        classElement: ClassElement,
+        methodName: String,
+        typeDesc: MethodTypeDesc?,
+        transform: (MethodBuilder, MethodElement) -> Unit
+    ): Boolean {
+        val method = classMapping.getMethod(
+            methodName,
+            *typeDesc?.parameterList()?.toTypedArray() ?: arrayOf()
+        ) ?: return false
+        if (
+            classElement is MethodModel &&
+            classElement.methodName().equalsString(method.obfuscated) /*&&
+            classElement.methodTypeSymbol() == method.obfTypeDesc()*/
+        ) {
+            this.transformMethod(classElement, transform)
+            return true
+        }
+        return false
+    }
+
+    /*
+    fun dropInstructions(index: Int, vararg instructions: IntRange): Boolean = instructions.any { index in it }
 
     fun CodeBuilder.atIndex(indexSource: Int, indexTarget: Int, builder: (CodeBuilder) -> Unit): CodeBuilder =
         this.also { if (indexSource == indexTarget) builder(this) }
@@ -50,24 +69,6 @@ object TransformUtil {
         }
     }
 
-    fun MethodBuilder.transformCode(
-        methodElement: MethodElement,
-        transform: (CodeBuilder, CodeElement, Int) -> Unit
-    ) {
-        if (methodElement is CodeModel) this.transformCodeIndexed(methodElement, transform)
-        else this.with(methodElement)
-    }
-
-    fun ClassBuilder.getMethodCode(
-        classElement: ClassElement,
-        methodName: String,
-        methodDescriptor: MethodTypeDesc?,
-    ): Optional<CodeModel> = if (
-        classElement is MethodModel &&
-        classElement.methodName().equalsString(methodName) &&
-        (classElement.methodTypeSymbol() == methodDescriptor || methodDescriptor == null)
-    ) classElement.code() else Optional.empty()
-
     fun ClassBuilder.transformMethod(
         classElement: ClassElement,
         methodName: String,
@@ -84,13 +85,5 @@ object TransformUtil {
         }
         return false
     }
-
-    fun ClassBuilder.transformMethodCode(
-        classElement: ClassElement,
-        methodName: String,
-        methodDescriptor: MethodTypeDesc?,
-        transform: (CodeBuilder, CodeElement, Int) -> Unit
-    ): Boolean = this.transformMethod(classElement, methodName, methodDescriptor) { mB, mE ->
-        mB.transformCode(mE, transform)
-    }
+     */
 }

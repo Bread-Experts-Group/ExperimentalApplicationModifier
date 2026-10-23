@@ -1,6 +1,8 @@
 package org.bread_experts_group.eam.minecraft.v1x21x1
 
+import org.bread_experts_group.eam.classDesc
 import org.bread_experts_group.eam.clazz
+import org.bread_experts_group.eam.mapArgs
 import org.bread_experts_group.eamlaunch.api.Mapping
 import java.lang.constant.ClassDesc
 import java.lang.reflect.AccessFlag
@@ -24,6 +26,7 @@ abstract class MimickedClass(@JvmField var original: Any) {
         val <T : MimickedClass> Class<T>.nativeDesc: ClassDesc
             get() = Mapping.of(this.kotlin).obfuscated
 
+        // hahaha what is this
         fun <T : MimickedClass> addToStaticArray(mClass: KClass<T>, fieldName: String, vararg elements: Any) {
             val mapping = Mapping.of(mClass)
             val obfClass = mapping.obfuscated.clazz
@@ -39,28 +42,33 @@ abstract class MimickedClass(@JvmField var original: Any) {
             }
             obfClass.getField(fieldName).set(null, newArray)
         }
+
+        fun <T : MimickedClass> callStaticMethod(
+            mClass: KClass<T>,
+            methodName: String,
+            parameters: List<KClass<*>> = listOf(),
+            vararg args: Any?
+        ): Any? {
+            val method = Mapping.of(mClass).getMethod(
+                methodName,
+                *parameters.map { it.classDesc }.toTypedArray()
+            )?.obfMethod()
+            return method?.invoke(null, *mapArgs(args))
+        }
     }
 
-    fun callMethod(methodName: String, vararg args: Any): Any? {
-        val mapping = Mapping.of(this::class)
-        val methodMapping = mapping.members.first { it.unobfuscated == methodName } as Mapping.Class.Method
-        val parameters = methodMapping.parameters.map {
-            val value = (it as? Mapping.ResolvedFuture)?.value ?: it
-            when (value) {
-                is Mapping.Class -> value.obfuscated
-                is Mapping.ObfuscatedClass -> value.desc
-                is Mapping.NonObfuscatedClass -> value.desc
-                else -> throw IllegalStateException("Unknown state: $value")
-            }.clazz
-        }
-
-        val method = original::class.java.getMethod(methodMapping.obfuscated, *parameters.toTypedArray())
-        val arguments = args.map { (it as? MimickedClass)?.original ?: it }
-        return method.invoke(original, *arguments.toTypedArray())
+    fun callMethod(methodName: String, parameters: List<KClass<*>> = listOf(), vararg args: Any?): Any? {
+        val method = Mapping.of(this::class).getMethod(
+            methodName,
+            *parameters.map { it.classDesc }.toTypedArray()
+        )?.obfMethod()
+        return method?.invoke(original, *mapArgs(args))
     }
 
     override fun equals(other: Any?): Boolean =
         if (other is MimickedClass) other.original == original else other == original
 
     override fun hashCode(): Int = original.hashCode()
+
+    override fun toString(): String = original.toString()
 }

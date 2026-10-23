@@ -9,6 +9,8 @@
       <excludeFolder url="file://$MODULE_DIR$/minecraft" />
       <excludeFolder url="file://$MODULE_DIR$/minecraft_sources" />
       <excludeFolder url="file://$MODULE_DIR$/eam launch" />
+      <excludeFolder url="file://$MODULE_DIR$/client_info.txt" />
+      <excludeFolder url="file://$MODULE_DIR$/ideas.txt" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

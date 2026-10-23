@@ -2,23 +2,12 @@ package org.bread_experts_group.eamlaunch.api
 
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
-import org.bread_experts_group.bread_systems_library.model.jsonParse
+import org.bread_experts_group.eam.clazz
 import org.bread_experts_group.eam.first
 import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass
-import org.bread_experts_group.eamlaunch.pending_bsl.BSLGPDeserializer
-import org.bread_experts_group.eamlaunch.pending_bsl.BSLGPSerializer
-import org.bread_experts_group.eamlaunch.pending_bsl.DecodingContext
-import org.bread_experts_group.eamlaunch.pending_bsl.EncodingContext
-import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPDeserializer
-import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPSerializer
-import org.bread_experts_group.eamlaunch.pending_bsl.bslGPDecode
-import org.bread_experts_group.eamlaunch.pending_bsl.bslGPEncode
-import org.bread_experts_group.eamlaunch.pending_bsl.jsonDecode
+import org.bread_experts_group.eamlaunch.pending_bsl.*
 import java.lang.constant.ClassDesc
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.KClass
 
 data class Mapping(
@@ -29,38 +18,10 @@ data class Mapping(
     companion object {
         lateinit var INSTANCE: Mapping
 
-        // todo stripped down version of mappings downloader in AcquireMain2
-        fun getMappingForMinecraftVersion(minecraftVersion: String): Mapping {
-            val client = HttpClient.newHttpClient()
-            val versionManifest = jsonDecode<VersionManifestV2>(
-                jsonParse(
-                    client.send(
-                        HttpRequest.newBuilder(URI("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"))
-                            .build(),
-                        HttpResponse.BodyHandlers.ofString()
-                    ).body().reader()
-                )
-            )
-            val versionInfo = jsonDecode<VersionInfo>(
-                jsonParse(
-                    client.send(
-                        HttpRequest.newBuilder(versionManifest.versions.first { it.id == minecraftVersion }.url.value)
-                            .build(),
-                        HttpResponse.BodyHandlers.ofString()
-                    ).body().reader()
-                )
-            )
-
-            return mappingDecode(
-                client.send(
-                    HttpRequest.newBuilder(versionInfo.downloads.clientMappings?.url?.value).build(),
-                    HttpResponse.BodyHandlers.ofString()
-                ).body().also { println(it.length) }.reader()
-            )!!
-        }
-
         fun <T : MimickedClass> of(mimicClass: KClass<T>): Class =
             INSTANCE.unobfuscatedToClass.first { it.key.displayName() == mimicClass.simpleName }
+
+        fun of(desc: ClassDesc): Class = INSTANCE.unobfuscatedToClass.first { it.key == desc }
     }
 
     sealed interface ClassKind
@@ -70,23 +31,84 @@ data class Mapping(
         val unobfuscated: ClassDesc,
         val members: List<ObfuscatedMember>
     ) : ClassKind {
+        fun getMethod(methodName: String, vararg parameters: ClassDesc): Method? =
+            members.filterIsInstance<Method>().firstOrNull { method ->
+                (method.unobfuscated == methodName) && (method.unobfTypeDesc().parameterList() == parameters.toList() || parameters.isEmpty())
+            }
+
         sealed interface ObfuscatedMember {
             val obfuscated: String
             val unobfuscated: String
             val returnType: ClassKind
+            val parentClass: ClassDesc
         }
 
         data class Method(
             override val obfuscated: String,
             override val unobfuscated: String,
             val parameters: List<ClassKind>,
-            override val returnType: ClassKind
-        ) : ObfuscatedMember
+            override val returnType: ClassKind,
+            override val parentClass: ClassDesc
+        ) : ObfuscatedMember {
+            private fun resolveFutures(): List<ClassKind> = parameters.map { (it as? ResolvedFuture)?.value ?: it }
+            private fun resolveReturnType(): ClassKind = (returnType as? ResolvedFuture)?.value ?: returnType
+
+            private fun paramsToDesc(): List<ClassDesc> = resolveFutures().map {
+                when (it) {
+                    is Class -> it.unobfuscated
+                    is ObfuscatedClass -> it.desc
+                    is NonObfuscatedClass -> it.desc
+                    else -> throw IllegalStateException("Unknown state: $it")
+                }
+            }
+
+            private fun paramsToDescObf(): List<ClassDesc> = resolveFutures().map {
+                when (it) {
+                    is Class -> it.obfuscated
+                    is ObfuscatedClass -> it.desc
+                    is NonObfuscatedClass -> it.desc
+                    else -> throw IllegalStateException("Unknown state: $it")
+                }
+            }
+
+            fun obfReturnDesc(): ClassDesc {
+                val kind = when(val value = resolveReturnType()) {
+                    is Class -> value.obfuscated
+                    is ObfuscatedClass -> value.desc
+                    is NonObfuscatedClass -> value.desc
+                    else -> throw IllegalStateException("Unknown state: $value")
+                }
+                return kind
+            }
+
+            fun unobfReturnDesc(): ClassDesc {
+                val kind = when(val value = resolveReturnType()) {
+                    is Class -> value.unobfuscated
+                    is ObfuscatedClass -> value.desc
+                    is NonObfuscatedClass -> value.desc
+                    else -> throw IllegalStateException("Unknown state: $value")
+                }
+                return kind
+            }
+
+            fun obfTypeDesc(): MethodTypeDesc = MethodTypeDesc.of(obfReturnDesc(), paramsToDescObf())
+            fun unobfTypeDesc(): MethodTypeDesc = MethodTypeDesc.of(unobfReturnDesc(), paramsToDesc())
+
+            /**
+             * @return The java method belonging to the obfuscated class.
+             *
+             * ### Do not call this during class transforms!
+             */
+            fun obfMethod(): java.lang.reflect.Method = of(parentClass).obfuscated.clazz.getMethod(
+                obfuscated, *paramsToDescObf().map { it.clazz }.toTypedArray()
+            )
+        }
 
         data class Field(
             override val obfuscated: String,
             override val unobfuscated: String,
-            override val returnType: ClassKind
+            override val returnType: ClassKind,
+            override val parentClass: ClassDesc
         ) : ObfuscatedMember
     }
 
