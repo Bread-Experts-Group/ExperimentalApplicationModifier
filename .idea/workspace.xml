@@ -10,22 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="314fab50-478d-4e23-9702-29e0f72dbe1b" name="Changes" comment="Verification for library files, tool file">
-      <change afterPath="$PROJECT_DIR$/ideas.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExperimentalApplicationModifier.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalApplicationModifier.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Agent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Agent.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Util.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Util.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/MimickedClass.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/MimickedClass.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/Minecraft.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/Minecraft.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/V1x21x1Hooks.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/V1x21x1Hooks.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/Window.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/Window.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/transform/MinecraftTransform.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/transform/MinecraftTransform.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/ClassTransform.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/ClassTransform.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/TransformUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/TransformUtil.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/Mapping.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/Mapping.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/MappingCereal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/MappingCereal.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/AgentTesting.kt" beforeDir="false" afterPath="$PROJECT_DIR$/test/AgentTesting.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/eamlaunch/AcquireMain2.kt" beforeDir="false" afterPath="$PROJECT_DIR$/test/eamlaunch/AcquireMain2.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/pending_bsl/BSLGPCereal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/pending_bsl/BSLGPCereal.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/eamlaunch/AcquireMain2.kt" beforeDir="false" afterPath="$PROJECT_DIR$/test/org/bread_experts_group/eamlaunch/AcquireMain2.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/eamlaunch/AcquireTools.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/AcquireTools.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/eamlaunch/ProcessObfuscated.kt" beforeDir="false" afterPath="$PROJECT_DIR$/test/org/bread_experts_group/eamlaunch/ProcessObfuscated.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +75,7 @@
     "Kotlin.AcquireMain2Kt.executor": "Run",
     "Kotlin.AcquireMainKt.executor": "Run",
     "Kotlin.AgentTestingKt.executor": "Run",
-    "Kotlin.Run EAM 1.21.1.executor": "Debug",
+    "Kotlin.Run EAM 1.21.1.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Remote JVM Debug.Unnamed.executor": "Debug",
     "Repository.Attach.Annotations": "false",
@@ -99,7 +89,7 @@
     "git-widget-placeholder": "rewrite",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "F:/IntelliJ Projects/ExperimentalApplicationModifier",
+    "last_opened_file_path": "F:/IntelliJ Projects/ExperimentalApplicationModifier/src/org/bread_experts_group/eamlaunch",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -112,6 +102,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\IntelliJ Projects\ExperimentalApplicationModifier\src\org\bread_experts_group\eamlaunch" />
+    </key>
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
       <recent name="eamlaunch" />
       <recent name="test" />
@@ -126,7 +119,7 @@
       </method>
     </configuration>
     <configuration name="Run EAM 1.21.1" type="JetRunConfigurationType">
-      <option name="MAIN_CLASS_NAME" value="eamlaunch.AcquireMain2Kt" />
+      <option name="MAIN_CLASS_NAME" value="org.bread_experts_group.eamlaunch.AcquireMain2Kt" />
       <module name="ExperimentalApplicationModifier" />
       <shortenClasspath name="NONE" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -137,6 +130,10 @@
         </option>
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Kotlin.Run EAM 1.21.1" />
+      <item itemvalue="Kotlin.AgentTestingKt" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Kotlin.AgentTestingKt" />
@@ -202,10 +199,6 @@
           <properties class="java.util.NoSuchElementException" package="java.util" />
           <option name="timeStamp" value="9" />
         </breakpoint>
-        <breakpoint enabled="true" type="java-exception">
-          <properties class="java.lang.IllegalArgumentException" package="java.lang" />
-          <option name="timeStamp" value="23" />
-        </breakpoint>
         <breakpoint type="java-exception">
           <properties class="java.nio.BufferUnderflowException" package="java.nio" />
           <option name="timeStamp" value="37" />
@@ -226,6 +219,11 @@
           <url>file://$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/ClassTransform.kt</url>
           <line>29</line>
           <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/org/bread_experts_group/eam/Agent.kt</url>
+          <line>22</line>
+          <option name="timeStamp" value="81" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

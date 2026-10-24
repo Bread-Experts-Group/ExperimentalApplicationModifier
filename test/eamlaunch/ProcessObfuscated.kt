@@ -1,5 +1,0 @@
-package eamlaunch
-
-fun main() {
-
-}

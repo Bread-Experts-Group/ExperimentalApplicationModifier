@@ -1,4 +1,4 @@
-package eamlaunch
+package org.bread_experts_group.eamlaunch
 
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
@@ -26,11 +26,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Flow
-import kotlin.collections.forEach
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.notExists
 import kotlin.reflect.typeOf
+import kotlin.system.exitProcess
+
+const val minecraftVersion = "1.21.1"
 
 val eamLaunchPath = Path("./eam launch")
 val minecraftVersionPath: Path = eamLaunchPath.resolve(minecraftVersion)
@@ -65,6 +67,24 @@ fun verify(
         hash.update(buffer.flip())
     }
     verifyFail("content", hash.digest(), verifyHash)
+}
+
+fun getVersionManifest(client: HttpClient): VersionManifestV2 = jsonDecode<VersionManifestV2>(
+    jsonParse(
+        client.send(
+            HttpRequest.newBuilder(URI("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")).build(),
+            HttpResponse.BodyHandlers.ofString()
+        ).body().reader()
+    )
+)
+
+fun getVersion(versionManifest: VersionManifestV2, id: String = minecraftVersion): VersionManifestV2.Version {
+    val version = versionManifest.versions.firstOrNull { it.id == id }
+    if (version == null) {
+        System.err.println("Version manifest did not provide an entry for version \"$minecraftVersion\".")
+        exitProcess(1)
+    }
+    return version
 }
 
 fun downloadString(

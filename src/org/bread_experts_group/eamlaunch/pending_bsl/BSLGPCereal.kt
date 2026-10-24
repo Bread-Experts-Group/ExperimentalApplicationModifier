@@ -5,8 +5,8 @@ import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
 import java.lang.constant.ClassDesc
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.IdentityHashMap
-import kotlin.collections.indexOf
+import java.nio.ByteOrder
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
@@ -178,6 +178,7 @@ class DecodingContext(
 }
 
 fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = DecodingContext()): Any? {
+    input.endian = ByteOrder.nativeOrder()
     val clazz = type.classifier as KClass<*>
 
     val entryKind = input.readByte()
@@ -186,6 +187,7 @@ fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = De
         0.toByte() -> return null
         1.toByte() -> {}
         2.toByte() -> return written.map[input.readInt()]!!
+        else -> throw IllegalStateException("Illegal object code $entryKind reading $type at #${input.reads - 1}")
     }
 
     fun decode(): Any? {
@@ -220,7 +222,9 @@ fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = De
                 BigDecimal(bslGPDecode<BigInteger>(input, context), scale)
             }
 
-            BigInteger::class -> BigInteger(bslGPDecode<ByteArray>(input, context))
+            BigInteger::class -> bslGPDecode<ByteArray>(input, context).let {
+                if (it.isEmpty()) BigInteger.ZERO else BigInteger(it)
+            }
 
             ByteArray::class -> input.readBytes(bslGPDecode<Int>(input, context))
 

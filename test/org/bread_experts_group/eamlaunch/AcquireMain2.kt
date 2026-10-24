@@ -1,10 +1,8 @@
-package eamlaunch
+package org.bread_experts_group.eamlaunch
 
 import org.bread_experts_group.bread_systems_library.model.jsonParse
 import org.bread_experts_group.eamlaunch.api.AssetIndex
-import org.bread_experts_group.eamlaunch.api.Mapping
 import org.bread_experts_group.eamlaunch.api.SHA1
-import org.bread_experts_group.eamlaunch.api.VersionManifestV2
 import org.bread_experts_group.eamlaunch.pending_bsl.jsonDecode
 import java.io.IOException
 import java.lang.management.ManagementFactory
@@ -26,24 +24,13 @@ import kotlin.concurrent.thread
 import kotlin.io.path.*
 import kotlin.system.exitProcess
 
-const val minecraftVersion = "1.21.1"
-
 fun main() {
     println("EAM launch starting...")
+
     val client = HttpClient.newHttpClient()
-    val versionManifest = jsonDecode<VersionManifestV2>(
-        jsonParse(
-            client.send(
-                HttpRequest.newBuilder(URI("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")).build(),
-                HttpResponse.BodyHandlers.ofString()
-            ).body().reader()
-        )
-    )
-    val version = versionManifest.versions.firstOrNull { it.id == minecraftVersion }
-    if (version == null) {
-        System.err.println("Version manifest did not provide an entry for version \"$minecraftVersion\".")
-        exitProcess(1)
-    }
+
+    val versionManifest = getVersionManifest(client)
+    val version = getVersion(versionManifest)
 
     val localData = ThreadLocal.withInitial { ByteBuffer.allocateDirect(32768) }
     val localSha = ThreadLocal.withInitial { MessageDigest.getInstance("SHA-1") }
@@ -65,11 +52,6 @@ fun main() {
             versionInfo.downloads.client,
             versionClientJARPath
         )
-    }
-
-    versionInfo.downloads.clientMappings?.let {
-        val mapping = getMapping(it, versionInfoUpdated, versionClientMappingsPath, client, localSha.get(), localData.get())
-        Mapping.INSTANCE = mapping.value
     }
 
     val assetIndexPath = assetsPath.resolve("indexes").createDirectories()
@@ -226,7 +208,7 @@ fun main() {
     val minecraft = ProcessBuilder(
         Path(System.getProperty("java.home")).resolve("bin").resolve("java").toString(),
         "-cp", classPathString,
-        "-javaagent:${Path("./out/artifacts/ExperimentalApplicationModifier_jar/ExperimentalApplicationModifier.jar").toAbsolutePath()}=$minecraftVersion",
+        "-javaagent:${Path("./out/artifacts/ExperimentalApplicationModifier_jar/ExperimentalApplicationModifier.jar").toAbsolutePath()}=${Path(".").absolute().invariantSeparatorsPathString}",
         "-agentlib:jdwp=transport=dt_socket,server=y,suspend=$suspend,address=*:5005",
         versionInfo.mainClass,
         "--gameDir", ".",
