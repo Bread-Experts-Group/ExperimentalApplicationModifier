@@ -2,11 +2,7 @@ package org.bread_experts_group.eamlaunch.api
 
 import org.bread_experts_group.bread_systems_library.generic.BlockingInput
 import org.bread_experts_group.bread_systems_library.generic.FlushingOutput
-import org.bread_experts_group.eamlaunch.pending_bsl.DecodingContext
-import org.bread_experts_group.eamlaunch.pending_bsl.EncodingContext
-import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPDeserializer
-import org.bread_experts_group.eamlaunch.pending_bsl.IBSLGPSerializer
-import org.bread_experts_group.eamlaunch.pending_bsl.IJSONDeserializer
+import org.bread_experts_group.bread_systems_library.model.codings.*
 
 object SHA1Serializer : IJSONDeserializer<String, SHA1>, IBSLGPDeserializer<SHA1>, IBSLGPSerializer<SHA1> {
     override fun jsonDeserialize(input: String?): SHA1 = SHA1(

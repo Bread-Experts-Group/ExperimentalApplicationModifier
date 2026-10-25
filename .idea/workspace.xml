@@ -9,8 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="314fab50-478d-4e23-9702-29e0f72dbe1b" name="Changes" comment="WHY DOESN'T IT WORK">
+    <list default="true" id="314fab50-478d-4e23-9702-29e0f72dbe1b" name="Changes" comment="FADEd">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/AcquireTools.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/AcquireTools.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/Mapping.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/Mapping.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/SHA1Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/SHA1Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/SerializingTypes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/SerializingTypes.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/VersionInfo.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/VersionInfo.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/VersionManifestV2.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/VersionManifestV2.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/pending_bsl/BSLGPCereal.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/pending_bsl/JSONCereal.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +78,7 @@
     "Kotlin.AcquireMain2Kt.executor": "Run",
     "Kotlin.AcquireMainKt.executor": "Run",
     "Kotlin.AgentTestingKt.executor": "Run",
-    "Kotlin.Run EAM 1.21.1.executor": "Debug",
+    "Kotlin.Run EAM 1.21.1.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Remote JVM Debug.Unnamed.executor": "Debug",
     "Repository.Attach.Annotations": "false",
@@ -183,7 +191,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Project init 2" />
     <MESSAGE value="APhA" />
     <MESSAGE value="APhA2" />
     <MESSAGE value="APha#" />
@@ -208,7 +215,8 @@
     <MESSAGE value="Map19" />
     <MESSAGE value="updateTitle" />
     <MESSAGE value="Verification for library files, tool file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Verification for library files, tool file" />
+    <MESSAGE value="FADEd" />
+    <option name="LAST_COMMIT_MESSAGE" value="FADEd" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
