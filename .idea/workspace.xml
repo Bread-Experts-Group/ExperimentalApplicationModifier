@@ -10,27 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="314fab50-478d-4e23-9702-29e0f72dbe1b" name="Changes" comment="WHY DOESN'T IT WORK">
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Color.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/joml/Quaternionf.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/Font.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/PoseStack.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/TitleScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/v1x21x1/MinecraftTransform.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/v1x21x1/TitleScreenTransform.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Agent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Agent.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/ClassTransform.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/ClassTransform.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Util.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/Util.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/GuiGraphics.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/GuiGraphics.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/MimickedClass.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/MimickedClass.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/Minecraft.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/Minecraft.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/PoseStack.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/V1x21x1Hooks.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/V1x21x1Hooks.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/Window.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/Window.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eam/minecraft/v1x21x1/transform/MinecraftTransform.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/Mapping.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/api/Mapping.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/pending_bsl/BSLGPCereal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/bread_experts_group/eamlaunch/pending_bsl/BSLGPCereal.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/AgentTesting.kt" beforeDir="false" afterPath="$PROJECT_DIR$/test/AgentTesting.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +70,7 @@
     "Kotlin.AcquireMain2Kt.executor": "Run",
     "Kotlin.AcquireMainKt.executor": "Run",
     "Kotlin.AgentTestingKt.executor": "Run",
-    "Kotlin.Run EAM 1.21.1.executor": "Run",
+    "Kotlin.Run EAM 1.21.1.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Remote JVM Debug.Unnamed.executor": "Debug",
     "Repository.Attach.Annotations": "false",
@@ -257,6 +237,11 @@
           <url>file://$PROJECT_DIR$/src/org/bread_experts_group/eam/transform/ClassTransform.kt</url>
           <line>29</line>
           <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/org/bread_experts_group/eam/mimics/minecraft/v1x21x1/GuiGraphics.kt</url>
+          <line>6</line>
+          <option name="timeStamp" value="82" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

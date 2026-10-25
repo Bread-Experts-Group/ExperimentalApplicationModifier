@@ -59,7 +59,7 @@ abstract class MimickedClass(@JvmField var original: Any) {
     }
 
     protected fun callMethod(methodName: String, vararg args: Any?): Any? {
-        val params = if (args.isEmpty()) emptyArray() else mapArgsToDesc(args)
+        val params = if (args.isEmpty()) emptyArray() else mapArgsToDesc(*args)
         val method = Mapping.of(this::class).getMethod(methodName, *params)?.obfMethod()
         return method?.invoke(original, *mapArgs(args))
     }
