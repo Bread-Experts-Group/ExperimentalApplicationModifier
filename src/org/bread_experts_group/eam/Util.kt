@@ -1,6 +1,5 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.eam.minecraft.v1x21x1.MimickedClass
 import java.lang.classfile.CodeElement
 import java.lang.classfile.CodeModel
 import java.lang.constant.ClassDesc
@@ -24,25 +23,30 @@ val KClass<*>.classDesc: ClassDesc
 val ClassDesc.qualifiedName: String
     get() = this.packageName().let { if (it.isEmpty()) "" else "$it." } + this.displayName()
 
+/**
+ * Gets the java class associated with this [ClassDesc].
+ *
+ * #### !!! Do not use this during class transforms, it will most likely cause a classloading error !!!
+ * Specifically, invoking this method inside a class transform will make the JVM load that class.
+ * Which could throw an exception if that class is the one currently being transformed.
+ */
 val ClassDesc.clazz: Class<*>
     get() = ClassLoader.getSystemClassLoader().loadClass(this.qualifiedName)
 
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 fun String.toConstantDesc(): ConstantDesc = java.lang.String(this)
 
-fun <K, V> Map<K, V>.first(checker: (Map.Entry<K, V>) -> Boolean): V =
-    this.firstOrNull(checker) ?: throw NullPointerException("No element of the map was found.")
+fun <K, V> Map<K, V>.first(predicate: (Map.Entry<K, V>) -> Boolean): V =
+    this.firstOrNull(predicate) ?: throw NullPointerException("No element of the map was found.")
 
-fun <K, V> Map<K, V>.firstOrNull(checker: (Map.Entry<K, V>) -> Boolean): V? {
-    for (element in this) if (checker(element)) return element.value
+fun <K, V> Map<K, V>.firstOrNull(predicate: (Map.Entry<K, V>) -> Boolean): V? {
+    for (element in this) if (predicate(element)) return element.value
     return null
 }
-
-fun mapArgs(args: Array<out Any?>): Array<Any?> = args.map { (it as? MimickedClass)?.original ?: it }.toTypedArray()
 
 operator fun CodeModel.get(index: Int): CodeElement {
     this.forEachIndexed { i, element ->
         if (index == i) return element
     }
-    throw NullPointerException("No element with index $index found.")
+    throw NoSuchElementException("No CodeElement at index $index found.")
 }

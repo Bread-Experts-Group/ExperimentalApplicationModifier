@@ -240,7 +240,7 @@ fun bslGPDecode(type: KType, input: BlockingInput, context: DecodingContext = De
                 repeat(bslGPDecode<Int>(input, context)) {
                     put(bslGPDecode(t0, input, context), bslGPDecode(t1, input, context))
                 }
-            }
+            }.toMutableMap()
 
             else if clazz.isSealed -> {
                 val index = input.readInt()

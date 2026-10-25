@@ -1,9 +1,11 @@
 package org.bread_experts_group.eam
 
-import org.bread_experts_group.eam.minecraft.v1x21x1.transform.MinecraftTransform
+import org.bread_experts_group.eam.transform.v1x21x1.MinecraftTransform
+import org.bread_experts_group.eam.transform.v1x21x1.TitleScreenTransform
 import org.bread_experts_group.eamlaunch.*
 import org.bread_experts_group.eamlaunch.api.Mapping
 import java.lang.classfile.ClassFile
+import java.lang.constant.ClassDesc
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
 import java.net.http.HttpClient
@@ -49,6 +51,20 @@ class Agent {
 			configureMappings(if (agentArgs.isEmpty()) Path(".") else Path(agentArgs))
 
 			instrumentation.addTransformer(object : ClassFileTransformer {
+				val transforms: Array<ClassTransform<*>> = arrayOf(MinecraftTransform, TitleScreenTransform)
+				val whitelist: Array<String> = arrayOf("joml")
+
+				/**
+				 * Adds non-mc classes to the mappings, such as joml so mimics can access them during runtime.
+				 */
+				fun addNonMinecraftClassToMappings(className: String) {
+					if (whitelist.any { className.contains(it) }) {
+						val desc = ClassDesc.of(className)
+						// todo members
+						Mapping.INSTANCE.unobfuscatedToClass[desc] = Mapping.Class(desc, desc, listOf())
+					}
+				}
+
 				override fun transform(
 					module: Module?,
 					loader: ClassLoader?,
@@ -58,16 +74,21 @@ class Agent {
 					classfileBuffer: ByteArray
 				): ByteArray? {
 					try {
-						val transforms: Array<ClassTransform<*>> = arrayOf(MinecraftTransform())
-						transforms.forEach { transform ->
-							val mapping = Mapping.of(transform.target)
-							if (className != mapping.obfuscated.displayName()) return null
-							val model = classFile.parse(classfileBuffer)
+						val transform = transforms.firstOrNull { className == it.classMapping.obfuscated.displayName() }
+						if (transform == null) {
+							val name = className.replace('/', '.')
+							if (Mapping.contains(name)) return null
+							addNonMinecraftClassToMappings(name)
+							return null
+						}
 
-							println("Transforming ${transform.target.simpleName} ($className)")
-							return classFile.transformClass(model) { classBuilder, classElement ->
-								transform.transform().invoke(classBuilder, classElement)
-							}
+						val mapping = Mapping.of(transform.target)
+						if (className != mapping.obfuscated.displayName()) return null
+						val model = classFile.parse(classfileBuffer)
+
+						println("Transforming ${transform.target.simpleName} ($className)")
+						return classFile.transformClass(model) { classBuilder, classElement ->
+							transform.transform().invoke(classBuilder, classElement)
 						}
 					} catch (e: Throwable) {
 						println("Agent transformation error...")

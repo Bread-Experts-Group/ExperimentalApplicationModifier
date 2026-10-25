@@ -1,6 +1,6 @@
 
 import org.bread_experts_group.bread_systems_library.model.jsonParse
-import org.bread_experts_group.eam.minecraft.v1x21x1.Minecraft
+import org.bread_experts_group.eam.mimics.minecraft.v1x21x1.Minecraft
 import org.bread_experts_group.eamlaunch.api.Mapping
 import org.bread_experts_group.eamlaunch.api.VersionInfo
 import org.bread_experts_group.eamlaunch.api.VersionManifestV2
@@ -18,13 +18,13 @@ fun main() {
 
     mapping.let {
         println("name: ${it.unobfuscated} (${it.obfuscated})")
-        val init = it.getMethod(ConstantDescs.INIT_NAME) ?: return
+        val init = it.getMethod(ConstantDescs.INIT_NAME,) ?: return
 
         println(init)
-        println(init.obfTypeDesc())
-        println(init.obfReturnDesc())
-        println(init.unobfTypeDesc())
-        println(init.unobfReturnDesc())
+        println(init.obfTypeDesc)
+        println(init.obfReturnDesc)
+        println(init.unobfTypeDesc)
+        println(init.unobfReturnDesc)
     }
 }
 
